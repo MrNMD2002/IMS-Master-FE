@@ -129,12 +129,6 @@
 		}
 	},
 	"dashboard": {
-		"greet": {
-			"morning": "Chào buổi sáng",
-			"noon": "Chào buổi trưa",
-			"afternoon": "Chào buổi chiều",
-			"evening": "Chào buổi tối"
-		},
 		"totalDevices": "Tổng phương tiện",
 		"onlineDevices": "Đang trực tuyến",
 		"mobilizedCount": "{{count}} xe đang làm nhiệm vụ",
@@ -145,7 +139,50 @@
 		"incidentByStatus": "Sự vụ theo trạng thái",
 		"totalIncidents": "Tổng",
 		"recentIncidents": "Sự vụ mới nhất",
-		"noIncident": "Chưa có sự vụ nào"
+		"noIncident": "Chưa có sự vụ nào",
+		"quotes": [
+			{
+				"text": "Không có việc gì khó, chỉ sợ lòng không bền.",
+				"author": "Hồ Chí Minh"
+			},
+			{
+				"text": "Cách duy nhất để làm nên công việc vĩ đại là yêu những gì bạn làm.",
+				"author": "Steve Jobs"
+			},
+			{
+				"text": "Một mình chúng ta làm được rất ít; cùng nhau, chúng ta làm được rất nhiều.",
+				"author": "Helen Keller"
+			},
+			{
+				"text": "Hãy làm những gì bạn có thể, với những gì bạn có, ở nơi bạn đang đứng.",
+				"author": "Theodore Roosevelt"
+			},
+			{
+				"text": "Kỷ luật là cầu nối giữa mục tiêu và thành tựu.",
+				"author": "Jim Rohn"
+			},
+			{
+				"text": "Nhanh là tốt, nhưng chính xác mới là tất cả.",
+				"author": "Wyatt Earp"
+			},
+			{
+				"text": "Đoàn kết, đoàn kết, đại đoàn kết. Thành công, thành công, đại thành công.",
+				"author": "Hồ Chí Minh"
+			},
+			{
+				"text": "Tài năng thắng trận đấu, nhưng tinh thần đồng đội và trí tuệ mới thắng chức vô địch.",
+				"author": "Michael Jordan"
+			},
+			{
+				"text": "Phòng bệnh hơn chữa bệnh.",
+				"author": "Tục ngữ"
+			},
+			{
+				"text": "Việc hôm nay chớ để ngày mai.",
+				"author": "Tục ngữ"
+			}
+		],
+		"nextQuote": "Câu khác"
 	},
 	"monitor": {
 		"vehicles": "Phương tiện",

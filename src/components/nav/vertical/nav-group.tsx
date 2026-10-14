@@ -25,37 +25,39 @@ export function NavGroup({ name, items }: NavGroupProps) {
 	);
 }
 
+/**
+ * Tiêu đề nhóm menu: chữ đậm viết hoa, mũi tên luôn hiện. Khi THU GỌN thì tô nổi (màu chủ đạo,
+ * nền nhạt) để biết nhóm đang ẩn mục bên trong — trước đây chỉ còn dòng chữ xám nhỏ khó thấy.
+ */
 function Group({ name, open, onClick }: { name?: string; open: boolean; onClick: (nextValue: boolean) => void }) {
 	const { t } = useLocale();
 	return (
 		name && (
 			<button
 				type="button"
+				title={t(name)}
 				className={cn(
-					"group w-full inline-flex items-center justify-start relative gap-2 cursor-pointer pt-4 pr-2 pb-2 pl-3 transition-all duration-300 ease-in-out",
-					"hover:pl-4",
+					"group mt-3 w-full inline-flex items-center justify-between gap-2 cursor-pointer rounded-lg py-2 pl-3 pr-2",
+					"transition-colors duration-200 hover:bg-action-hover",
+					!open && "bg-primary/10 text-primary hover:bg-primary/15",
 				)}
 				onClick={() => onClick(!open)}
 			>
-				<Icon
-					icon="local:ic-chevron-right"
-					className={cn(
-						"absolute left-[-4px] h-4 w-4 inline-flex shrink-0 transition-all duration-300 ease-in-out",
-						"opacity-0 group-hover:opacity-100",
-						{
-							"rotate-90": open,
-						},
-					)}
-				/>
-
 				<span
 					className={cn(
-						"text-xs font-medium transition-all duration-300 ease-in-out text-text-disabled",
-						"hover:text-text-primary",
+						"text-xs font-bold uppercase tracking-wider",
+						open ? "text-text-secondary group-hover:text-text-primary" : "text-primary",
 					)}
 				>
 					{t(name)}
 				</span>
+				<Icon
+					icon="local:ic-chevron-right"
+					className={cn(
+						"h-4 w-4 shrink-0 transition-transform duration-200",
+						open ? "rotate-90 opacity-60" : "opacity-100",
+					)}
+				/>
 			</button>
 		)
 	);
