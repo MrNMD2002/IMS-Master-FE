@@ -110,10 +110,8 @@ export default function AuditPage() {
 						</Button>
 					</>
 				}
-			/>
-			<Card className="gap-0 py-5">
-				<CardContent className="px-4 sm:px-6">
-					<div className="mb-4 flex flex-wrap gap-2">
+				toolbar={
+					<>
 						<Input.Search
 							allowClear
 							className="max-w-xs"
@@ -155,7 +153,11 @@ export default function AuditPage() {
 								setPage(1);
 							}}
 						/>
-					</div>
+					</>
+				}
+			/>
+			<Card className="gap-0 py-5">
+				<CardContent className="px-4 sm:px-6">
 					<Table
 						rowKey="id"
 						size="middle"

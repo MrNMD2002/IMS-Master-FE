@@ -133,18 +133,18 @@ export default function IncidentListPage() {
 						)}
 					</>
 				}
-			/>
-			<Card className="gap-0 py-0">
-				<CardContent className="px-4 sm:px-6">
-					<Tabs
-						activeKey={status}
-						onChange={setStatus}
-						items={[
-							{ key: "", label: t("common.all") },
-							...INCIDENT_STATUSES.map((s) => ({ key: s, label: t(`incident.status.${s}`) })),
-						]}
-					/>
-					<div className="mb-4 flex flex-wrap gap-2">
+				toolbar={
+					<>
+						<div className="w-full -mb-3">
+							<Tabs
+								activeKey={status}
+								onChange={setStatus}
+								items={[
+									{ key: "", label: t("common.all") },
+									...INCIDENT_STATUSES.map((s) => ({ key: s, label: t(`incident.status.${s}`) })),
+								]}
+							/>
+						</div>
 						<Input.Search
 							allowClear
 							className="max-w-xs"
@@ -163,7 +163,11 @@ export default function IncidentListPage() {
 								setPage(1);
 							}}
 						/>
-					</div>
+					</>
+				}
+			/>
+			<Card className="gap-0 py-5">
+				<CardContent className="px-4 sm:px-6">
 					<Table
 						rowKey="id"
 						size="middle"

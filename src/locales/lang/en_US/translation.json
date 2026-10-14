@@ -129,12 +129,6 @@
 		}
 	},
 	"dashboard": {
-		"greet": {
-			"morning": "Good morning",
-			"noon": "Good afternoon",
-			"afternoon": "Good afternoon",
-			"evening": "Good evening"
-		},
 		"totalDevices": "Total vehicles",
 		"onlineDevices": "Online now",
 		"mobilizedCount": "{{count}} on a mission",
@@ -145,7 +139,50 @@
 		"incidentByStatus": "Incidents by status",
 		"totalIncidents": "Total",
 		"recentIncidents": "Latest incidents",
-		"noIncident": "No incidents yet"
+		"noIncident": "No incidents yet",
+		"quotes": [
+			{
+				"text": "Nothing is difficult; the only fear is that the heart is not steadfast.",
+				"author": "Ho Chi Minh"
+			},
+			{
+				"text": "The only way to do great work is to love what you do.",
+				"author": "Steve Jobs"
+			},
+			{
+				"text": "Alone we can do so little; together we can do so much.",
+				"author": "Helen Keller"
+			},
+			{
+				"text": "Do what you can, with what you have, where you are.",
+				"author": "Theodore Roosevelt"
+			},
+			{
+				"text": "Discipline is the bridge between goals and accomplishment.",
+				"author": "Jim Rohn"
+			},
+			{
+				"text": "Fast is fine, but accuracy is everything.",
+				"author": "Wyatt Earp"
+			},
+			{
+				"text": "Unity, unity, great unity. Success, success, great success.",
+				"author": "Ho Chi Minh"
+			},
+			{
+				"text": "Talent wins games, but teamwork and intelligence win championships.",
+				"author": "Michael Jordan"
+			},
+			{
+				"text": "An ounce of prevention is worth a pound of cure.",
+				"author": "Benjamin Franklin"
+			},
+			{
+				"text": "Never put off till tomorrow what you can do today.",
+				"author": "Proverb"
+			}
+		],
+		"nextQuote": "Another quote"
 	},
 	"monitor": {
 		"vehicles": "Vehicles",
