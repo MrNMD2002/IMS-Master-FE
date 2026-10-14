@@ -61,6 +61,7 @@ export default function IncidentDetailPage() {
 
 	const refresh = () => {
 		qc.invalidateQueries({ queryKey: ["incident-detail", id] });
+		qc.invalidateQueries({ queryKey: ["incident-images", id] });
 		qc.invalidateQueries({ queryKey: ["incident-logs", id] });
 		qc.invalidateQueries({ queryKey: ["incident"] });
 		qc.invalidateQueries({ queryKey: ["device-all"] });
@@ -394,7 +395,12 @@ function ImagesCard({
 }) {
 	const { t } = useTranslation();
 	const [urls, setUrls] = useState<Record<number, string>>({});
-	const images = incident.images ?? [];
+	const imageList = useQuery({
+		queryKey: ["incident-images", incident.id],
+		queryFn: () => incidentService.images(incident.id),
+		refetchInterval: 15_000,
+	});
+	const images = imageList.data ?? [];
 	const ids = images.map((i) => i.id).join(",");
 
 	// Ảnh lấy kèm token → blob URL; thu hồi URL khi rời trang.
@@ -441,7 +447,7 @@ function ImagesCard({
 				{images.length === 0 ? (
 					<EmptyState text={t("incident.noImages")} icon="solar:gallery-bold-duotone" />
 				) : (
-					<Image.PreviewGroup>
+					<Image.PreviewGroup preview={{ zIndex: 2000 /* phủ lên cả bản đồ Leaflet (z-index tới 1000) */ }}>
 						<div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
 							{images.map((img) => (
 								<div key={img.id} className="group relative overflow-hidden rounded-xl border">

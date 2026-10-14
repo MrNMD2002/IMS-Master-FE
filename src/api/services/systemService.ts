@@ -35,7 +35,8 @@ const auditExport = async (params: AuditQuery) => {
 
 // ── Tổng quan / cài đặt ─────────────────────────────────────────────────────
 
-const dashboardStats = () => apiClient.get<DashboardStats>({ url: "/dashboard/stats" });
+const dashboardStats = (tenant_id?: number) =>
+	apiClient.get<DashboardStats>({ url: "/dashboard/stats", params: { tenant_id } });
 
 export interface GpsRetention {
 	enable_gps_cleanup: boolean;

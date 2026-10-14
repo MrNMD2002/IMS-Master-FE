@@ -1,6 +1,6 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Marker } from "react-leaflet";
 import { useNavigate } from "react-router";
@@ -13,6 +13,7 @@ import EmptyState from "@/components/ims/empty-state";
 import BaseMap from "@/components/ims/map/base-map";
 import FitBounds from "@/components/ims/map/fit-bounds";
 import { vehicleIcon } from "@/components/ims/map/markers";
+import OrgUnitFilter from "@/components/ims/org-unit-filter";
 import StatCard from "@/components/ims/stat-card";
 import { INCIDENT_STATUS_COLOR, IncidentStatusBadge } from "@/components/ims/status";
 import { INCIDENT_READ_GATE, P } from "@/constants/permission";
@@ -26,33 +27,35 @@ export default function DashboardPage() {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const can = useCan();
+	// Lọc theo Tổ chức → Đơn vị (cấp nền tảng thấy nhiều tổ chức).
+	const [tenantId, setTenantId] = useState<number | undefined>();
 	const { full_name, username, tenant_name } = useUserInfo();
 	const canIncident = can(...INCIDENT_READ_GATE);
 	const canGps = can(P.GPS_READ);
 
 	const stats = useQuery({
-		queryKey: ["dashboard-stats"],
-		queryFn: systemService.dashboardStats,
+		queryKey: ["dashboard-stats", tenantId],
+		queryFn: () => systemService.dashboardStats(tenantId),
 		refetchInterval: 30_000,
 	});
 
 	const statusCounts = useQueries({
 		queries: INCIDENT_STATUSES.map((status) => ({
-			queryKey: ["incident-count", status],
-			queryFn: () => incidentService.list({ status, page_size: 1 }),
+			queryKey: ["incident-count", status, tenantId],
+			queryFn: () => incidentService.list({ status, page_size: 1, tenant_id: tenantId }),
 			enabled: canIncident,
 			refetchInterval: 30_000,
 		})),
 	});
 
 	const recent = useQuery({
-		queryKey: ["incident-recent"],
-		queryFn: () => incidentService.list({ page_size: 6, sort_by: "created_at", order: "desc" }),
+		queryKey: ["incident-recent", tenantId],
+		queryFn: () => incidentService.list({ page_size: 6, sort_by: "created_at", order: "desc", tenant_id: tenantId }),
 		enabled: canIncident,
 		refetchInterval: 30_000,
 	});
 
-	const { vehicles, isLoading: loadingVehicles } = useLiveVehicles({}, canGps);
+	const { vehicles, isLoading: loadingVehicles } = useLiveVehicles({ tenant_id: tenantId }, canGps);
 	const online = vehicles.filter((v) => v.is_active).length;
 	const mobilized = vehicles.filter((v) => v.state === "mobilized").length;
 
@@ -99,7 +102,8 @@ export default function DashboardPage() {
 							</p>
 						)}
 					</div>
-					<div className="flex flex-wrap gap-2">
+					<div className="flex flex-wrap items-center gap-2">
+						<OrgUnitFilter value={tenantId} onChange={setTenantId} />
 						{can(P.INCIDENT_MANAGE) && (
 							<Button onClick={() => navigate("/monitoring?create=1")}>
 								<Icon icon="solar:add-circle-bold" size={18} />

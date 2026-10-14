@@ -1,6 +1,6 @@
 import type { AxiosResponse } from "axios";
 import type { Paged, PageQuery } from "#/api";
-import type { Incident, IncidentLog, IncidentQuery, IncidentReq } from "#/ims";
+import type { Incident, IncidentImage, IncidentLog, IncidentQuery, IncidentReq } from "#/ims";
 import apiClient from "../apiClient";
 
 const list = (params: PageQuery & IncidentQuery) => apiClient.get<Paged<Incident>>({ url: "/incident/list", params });
@@ -29,6 +29,9 @@ const completeDevice = (id: number, device_id: number, note?: string) => {
 	});
 };
 
+/** Danh sách ảnh hiện trường (chi tiết sự vụ KHÔNG kèm ảnh — trường `images` luôn rỗng). */
+const images = (id: number) => apiClient.get<IncidentImage[]>({ url: `/incident/${id}/images` });
+
 const deleteImage = (id: number, imageId: number) =>
 	apiClient.post({ url: `/incident/${id}/images/${imageId}/delete` });
 
@@ -55,6 +58,7 @@ export default {
 	dispatch,
 	recall,
 	completeDevice,
+	images,
 	deleteImage,
 	imageBlobUrl,
 };
