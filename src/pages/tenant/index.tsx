@@ -147,10 +147,8 @@ export default function TenantPage() {
 						</Button>
 					)
 				}
-			/>
-			<Card className="gap-0 py-5">
-				<CardContent className="px-4 sm:px-6">
-					<div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+				toolbar={
+					<>
 						<Input
 							allowClear
 							className="max-w-xs"
@@ -159,8 +157,12 @@ export default function TenantPage() {
 							value={search}
 							onChange={(e) => setSearch(e.target.value)}
 						/>
-						<span className="text-sm text-text-secondary">{t("tenant.count", { count: all.length })}</span>
-					</div>
+						<span className="ml-auto text-sm text-text-secondary">{t("tenant.count", { count: all.length })}</span>
+					</>
+				}
+			/>
+			<Card className="gap-0 py-5">
+				<CardContent className="px-4 sm:px-6">
 					<Table
 						rowKey="id"
 						size="middle"

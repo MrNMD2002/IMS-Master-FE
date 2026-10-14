@@ -210,10 +210,8 @@ export default function UserPage() {
 						</Button>
 					)
 				}
-			/>
-			<Card className="gap-0 py-5">
-				<CardContent className="px-4 sm:px-6">
-					<div className="mb-4 flex flex-wrap gap-2">
+				toolbar={
+					<>
 						<Input.Search
 							allowClear
 							className="max-w-xs"
@@ -245,7 +243,11 @@ export default function UserPage() {
 								{ value: false, label: t("common.lockedText") },
 							]}
 						/>
-					</div>
+					</>
+				}
+			/>
+			<Card className="gap-0 py-5">
+				<CardContent className="px-4 sm:px-6">
 					<Table
 						rowKey="id"
 						size="middle"

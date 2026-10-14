@@ -105,7 +105,7 @@ export default function BreadCrumb({ maxItems = 3 }: BreadCrumbProps) {
 		return (
 			<BreadcrumbItem>
 				{isLast ? (
-					<BreadcrumbPage>{item.label}</BreadcrumbPage>
+					<BreadcrumbPage className="text-base font-semibold">{item.label}</BreadcrumbPage>
 				) : (
 					<BreadcrumbLink asChild>
 						<Link to={item.key}>{item.label}</Link>
