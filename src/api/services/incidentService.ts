@@ -9,13 +9,15 @@ const logs = (id: number) => apiClient.get<IncidentLog[]>({ url: `/incident/${id
 const create = (data: IncidentReq) => apiClient.post<Incident>({ url: "/incident/create", data });
 const update = (id: number, data: IncidentReq) => apiClient.post<Incident>({ url: `/incident/update/${id}`, data });
 const remove = (id: number) => apiClient.post({ url: `/incident/delete/${id}` });
-const setStatus = (id: number, status: "PENDING_APPROVAL" | "COMPLETED") =>
-	apiClient.post<Incident>({ url: `/incident/${id}/status`, data: { status } });
+/** `note` được gửi xuống App các xe còn làm nhiệm vụ khi đóng sự vụ. */
+const setStatus = (id: number, status: "PENDING_APPROVAL" | "COMPLETED", note?: string) =>
+	apiClient.post<Incident>({ url: `/incident/${id}/status`, data: { status, note: note || undefined } });
 const close = (id: number) => apiClient.post<Incident>({ url: `/incident/${id}/close` });
-const dispatch = (id: number, device_ids: number[]) =>
-	apiClient.post<Incident>({ url: `/incident/${id}/dispatch-devices`, data: { device_ids } });
-const recall = (id: number, device_ids: number[]) =>
-	apiClient.post<Incident>({ url: `/incident/${id}/recall-devices`, data: { device_ids } });
+const dispatch = (id: number, device_ids: number[], note?: string) =>
+	apiClient.post<Incident>({ url: `/incident/${id}/dispatch-devices`, data: { device_ids, note: note || undefined } });
+/** `note` = lý do rút, gửi kèm lệnh rút xuống App của xe. */
+const recall = (id: number, device_ids: number[], note?: string) =>
+	apiClient.post<Incident>({ url: `/incident/${id}/recall-devices`, data: { device_ids, note: note || undefined } });
 
 /** Báo kết thúc thay cho một xe (quản trị — ảnh tuỳ chọn). */
 const completeDevice = (id: number, device_id: number, note?: string) => {

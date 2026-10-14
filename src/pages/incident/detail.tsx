@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Marker, Popup } from "react-leaflet";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
-import type { DispatchedDevice, Incident, IncidentImage } from "#/ims";
+import { type DispatchedDevice, dutyCount, type Incident, type IncidentImage, isOnDuty, isRecalled } from "#/ims";
 import incidentService from "@/api/services/incidentService";
 import { Icon } from "@/components/icon";
 import DispatchDialog from "@/components/ims/dispatch-dialog";
@@ -67,10 +67,14 @@ export default function IncidentDetailPage() {
 		qc.invalidateQueries({ queryKey: ["device-all"] });
 	};
 
+	const [recallFor, setRecallFor] = useState<DispatchedDevice | null>(null);
+	const [finishOpen, setFinishOpen] = useState(false);
+
 	const finish = useMutation({
-		mutationFn: () => incidentService.setStatus(id, "COMPLETED"),
+		mutationFn: (note: string) => incidentService.setStatus(id, "COMPLETED", note),
 		onSuccess: () => {
 			toast.success(t("incident.finished"));
+			setFinishOpen(false);
 			refresh();
 		},
 	});
@@ -83,9 +87,11 @@ export default function IncidentDetailPage() {
 		},
 	});
 	const recall = useMutation({
-		mutationFn: (deviceId: number) => incidentService.recall(id, [deviceId]),
+		mutationFn: ({ deviceId, note }: { deviceId: number; note: string }) =>
+			incidentService.recall(id, [deviceId], note),
 		onSuccess: () => {
 			toast.success(t("dispatch.recalled"));
+			setRecallFor(null);
 			refresh();
 		},
 	});
@@ -94,16 +100,8 @@ export default function IncidentDetailPage() {
 	if (!incident) return <EmptyState text={t("incident.notFound")} />;
 
 	const done = incident.status === "COMPLETED";
-	const activeCount = incident.dispatched_devices.filter((d) => !d.completed).length;
-
-	const confirmFinish = () =>
-		Modal.confirm({
-			title: incident.status === "PENDING_APPROVAL" ? t("incident.approveTitle") : t("incident.finishTitle"),
-			content: activeCount > 0 ? t("incident.finishWarn", { count: activeCount }) : t("incident.finishDesc"),
-			okText: t("common.confirmText"),
-			cancelText: t("common.cancelText"),
-			onOk: () => finish.mutateAsync(),
-		});
+	const activeCount = done ? 0 : incident.dispatched_devices.filter(isOnDuty).length;
+	const confirmFinish = () => setFinishOpen(true);
 
 	const deviceColumns: ColumnsType<DispatchedDevice> = [
 		{
@@ -125,7 +123,12 @@ export default function IncidentDetailPage() {
 			title: t("common.statusLabel"),
 			key: "status",
 			render: (_, d) =>
-				d.completed ? (
+				isRecalled(d) ? (
+					<Badge variant="secondary">{t("incident.deviceRecalled")}</Badge>
+				) : done && !d.completed ? (
+					// Sự vụ đóng khi xe còn làm nhiệm vụ → xe được giải phóng theo sự vụ.
+					<Badge variant="secondary">{t("incident.deviceReleased")}</Badge>
+				) : d.completed ? (
 					<Tooltip title={fmtDateTime(d.completed_at)}>
 						<Badge variant="success">{t("incident.deviceDone")}</Badge>
 					</Tooltip>
@@ -142,24 +145,16 @@ export default function IncidentDetailPage() {
 						key: "actions",
 						align: "right" as const,
 						render: (_: unknown, d: DispatchedDevice) =>
-							!d.completed && (
+							isOnDuty(d) && (
 								<div className="flex justify-end gap-1">
 									<Button size="sm" variant="outline" onClick={() => setCompleteFor(d)}>
 										<Icon icon="solar:check-circle-linear" size={16} />
 										{t("incident.completeDevice")}
 									</Button>
-									<Popconfirm
-										title={t("dispatch.recallConfirm", { name: d.device_name || d.imei })}
-										okText={t("dispatch.recall")}
-										cancelText={t("common.cancelText")}
-										okButtonProps={{ danger: true }}
-										onConfirm={() => recall.mutateAsync(d.device_id)}
-									>
-										<Button size="sm" variant="ghost" className="text-error">
-											<Icon icon="solar:undo-left-linear" size={16} />
-											{t("dispatch.recall")}
-										</Button>
-									</Popconfirm>
+									<Button size="sm" variant="ghost" className="text-error" onClick={() => setRecallFor(d)}>
+										<Icon icon="solar:undo-left-linear" size={16} />
+										{t("dispatch.recall")}
+									</Button>
 								</div>
 							),
 					},
@@ -270,7 +265,7 @@ export default function IncidentDetailPage() {
 					<Card className="gap-3">
 						<CardHeader className="flex flex-row items-center justify-between">
 							<CardTitle>
-								{t("incident.dispatchedVehicles")} ({activeCount}/{incident.dispatched_devices.length})
+								{t("incident.dispatchedVehicles")} ({dutyCount(incident.dispatched_devices, done)})
 							</CardTitle>
 						</CardHeader>
 						<CardContent className="px-2 sm:px-6">
@@ -333,6 +328,27 @@ export default function IncidentDetailPage() {
 			<IncidentFormDrawer open={editOpen} onClose={() => setEditOpen(false)} incident={incident} />
 			<DispatchDialog incident={incident} open={dispatchOpen} onClose={() => setDispatchOpen(false)} />
 			<CompleteDeviceModal incidentId={id} device={completeFor} onClose={() => setCompleteFor(null)} onDone={refresh} />
+			<NoteModal
+				open={!!recallFor}
+				title={t("dispatch.recallConfirm", { name: recallFor?.device_name || recallFor?.imei })}
+				description={t("dispatch.recallDesc")}
+				placeholder={t("dispatch.recallReason")}
+				okText={t("dispatch.recall")}
+				danger
+				loading={recall.isPending}
+				onClose={() => setRecallFor(null)}
+				onOk={(note) => recallFor && recall.mutate({ deviceId: recallFor.device_id, note })}
+			/>
+			<NoteModal
+				open={finishOpen}
+				title={incident.status === "PENDING_APPROVAL" ? t("incident.approveTitle") : t("incident.finishTitle")}
+				description={activeCount > 0 ? t("incident.finishWarn", { count: activeCount }) : t("incident.finishDesc")}
+				placeholder={activeCount > 0 ? t("incident.finishNoteApp") : t("incident.field.note")}
+				okText={t("common.confirmText")}
+				loading={finish.isPending}
+				onClose={() => setFinishOpen(false)}
+				onOk={(note) => finish.mutate(note)}
+			/>
 		</div>
 	);
 }
@@ -354,7 +370,10 @@ function IncidentMap({ incident }: { incident: Incident }) {
 	const { t } = useTranslation();
 	const can = useCan();
 	const { vehicles } = useLiveVehicles({}, can(P.GPS_READ));
-	const activeIds = new Set(incident.dispatched_devices.filter((d) => !d.completed).map((d) => d.device_id));
+	// Sự vụ đã đóng → mọi xe đã được giải phóng, không vẽ xe nào là "đang làm nhiệm vụ".
+	const activeIds = new Set(
+		incident.status === "COMPLETED" ? [] : incident.dispatched_devices.filter(isOnDuty).map((d) => d.device_id),
+	);
 	const onDuty = vehicles.filter((v) => activeIds.has(v.id));
 	const hasPos = !!(incident.lat && incident.lng);
 	const points = useMemo<[number, number][]>(
@@ -533,6 +552,58 @@ function CompleteDeviceModal({
 				onChange={(e) => setNote(e.target.value)}
 				placeholder={t("incident.field.note")}
 				autoSize={{ minRows: 2 }}
+			/>
+		</Modal>
+	);
+}
+
+/** Hộp xác nhận kèm ô ghi chú — ghi chú được lưu vào nhật ký và gửi xuống App của xe. */
+function NoteModal({
+	open,
+	title,
+	description,
+	placeholder,
+	okText,
+	danger,
+	loading,
+	onOk,
+	onClose,
+}: {
+	open: boolean;
+	title: string;
+	description: string;
+	placeholder: string;
+	okText: string;
+	danger?: boolean;
+	loading?: boolean;
+	onOk: (note: string) => void;
+	onClose: () => void;
+}) {
+	const { t } = useTranslation();
+	const [note, setNote] = useState("");
+	useEffect(() => {
+		if (open) setNote("");
+	}, [open]);
+	return (
+		<Modal
+			open={open}
+			onCancel={onClose}
+			title={title}
+			okText={okText}
+			cancelText={t("common.cancelText")}
+			okButtonProps={{ danger, loading }}
+			onOk={() => onOk(note.trim())}
+			destroyOnHidden
+		>
+			<p className="mb-3 text-sm text-text-secondary">{description}</p>
+			<Input.TextArea
+				value={note}
+				onChange={(e) => setNote(e.target.value)}
+				maxLength={500}
+				showCount
+				style={{ marginBottom: 20 }}
+				autoSize={{ minRows: 2, maxRows: 5 }}
+				placeholder={placeholder}
 			/>
 		</Modal>
 	);
