@@ -14,6 +14,7 @@ const pages: RouteObject[] = [
 	{ path: "organization", element: Component("/pages/tenant") },
 	{ path: "users", element: Component("/pages/user") },
 	{ path: "roles", element: Component("/pages/role") },
+	{ path: "permission-guide", element: Component("/pages/permission-guide") },
 	{ path: "audit-log", element: Component("/pages/audit") },
 	{ path: "settings", element: Component("/pages/settings") },
 	{ path: "profile", element: Component("/pages/profile") },

@@ -60,6 +60,12 @@ export const frontendNavData: NavProps["data"] = [
 				icon: <Icon icon="solar:shield-user-bold-duotone" size="24" />,
 				auth: [P.ROLE_READ],
 			},
+			{
+				title: "sys.nav.permGuide",
+				path: "/permission-guide",
+				icon: <Icon icon="solar:book-bookmark-bold-duotone" size="24" />,
+				auth: [P.USER_PERMISSION_GRANT],
+			},
 		],
 	},
 	{
