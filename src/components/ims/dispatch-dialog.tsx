@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Modal } from "antd";
+import { Input, Modal } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import type { Incident } from "#/ims";
+import { type Incident, isOnDuty } from "#/ims";
 import incidentService from "@/api/services/incidentService";
 import { Icon } from "@/components/icon";
 import NearbyVehicles from "./nearby-vehicles";
@@ -21,13 +21,17 @@ export default function DispatchDialog({
 	const { t } = useTranslation();
 	const qc = useQueryClient();
 	const [ids, setIds] = useState<number[]>([]);
+	const [note, setNote] = useState("");
 
 	useEffect(() => {
-		if (open) setIds([]);
+		if (open) {
+			setIds([]);
+			setNote("");
+		}
 	}, [open]);
 
 	const dispatch = useMutation({
-		mutationFn: () => incidentService.dispatch(incident?.id as number, ids),
+		mutationFn: () => incidentService.dispatch(incident?.id as number, ids, note.trim()),
 		onSuccess: () => {
 			toast.success(t("dispatch.done", { count: ids.length }));
 			qc.invalidateQueries({ queryKey: ["incident"] });
@@ -68,7 +72,14 @@ export default function DispatchDialog({
 						tenantId={incident.tenant_id}
 						value={ids}
 						onChange={setIds}
-						excludeIds={incident.dispatched_devices.filter((d) => !d.completed).map((d) => d.device_id)}
+						excludeIds={incident.dispatched_devices.filter(isOnDuty).map((d) => d.device_id)}
+					/>
+					<Input.TextArea
+						value={note}
+						onChange={(e) => setNote(e.target.value)}
+						maxLength={500}
+						autoSize={{ minRows: 2, maxRows: 4 }}
+						placeholder={t("dispatch.notePlaceholder")}
 					/>
 				</div>
 			)}
