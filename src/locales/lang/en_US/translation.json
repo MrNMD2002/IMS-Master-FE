@@ -142,44 +142,89 @@
 		"noIncident": "No incidents yet",
 		"quotes": [
 			{
-				"text": "Nothing is difficult; the only fear is that the heart is not steadfast.",
-				"author": "Ho Chi Minh"
+				"text": "Nothing is difficult; the only fear is a wavering heart. Dig mountains, fill seas — with resolve, it will be done.",
+				"author": "President Ho Chi Minh",
+				"source": "To the Youth Volunteers (1951)"
 			},
 			{
-				"text": "The only way to do great work is to love what you do.",
-				"author": "Steve Jobs"
+				"text": "Towards yourself: be diligent, thrifty, honest and upright.",
+				"author": "President Ho Chi Minh",
+				"source": "Six teachings to the People's Public Security (1948)"
 			},
 			{
-				"text": "Alone we can do so little; together we can do so much.",
-				"author": "Helen Keller"
+				"text": "Towards colleagues: be caring and helpful.",
+				"author": "President Ho Chi Minh",
+				"source": "Six teachings to the People's Public Security (1948)"
 			},
 			{
-				"text": "Do what you can, with what you have, where you are.",
-				"author": "Theodore Roosevelt"
+				"text": "Towards the Government: be absolutely loyal.",
+				"author": "President Ho Chi Minh",
+				"source": "Six teachings to the People's Public Security (1948)"
 			},
 			{
-				"text": "Discipline is the bridge between goals and accomplishment.",
-				"author": "Jim Rohn"
+				"text": "Towards the people: be respectful and courteous.",
+				"author": "President Ho Chi Minh",
+				"source": "Six teachings to the People's Public Security (1948)"
 			},
 			{
-				"text": "Fast is fine, but accuracy is everything.",
-				"author": "Wyatt Earp"
+				"text": "Towards your work: be devoted.",
+				"author": "President Ho Chi Minh",
+				"source": "Six teachings to the People's Public Security (1948)"
+			},
+			{
+				"text": "Towards the enemy: be resolute and shrewd.",
+				"author": "President Ho Chi Minh",
+				"source": "Six teachings to the People's Public Security (1948)"
+			},
+			{
+				"text": "Whatever benefits the people, we must do with all our strength. Whatever harms the people, we must avoid with all our strength.",
+				"author": "President Ho Chi Minh",
+				"source": "Letter to the People's Committees (1945)"
 			},
 			{
 				"text": "Unity, unity, great unity. Success, success, great success.",
-				"author": "Ho Chi Minh"
+				"author": "President Ho Chi Minh",
+				"source": ""
 			},
 			{
-				"text": "Talent wins games, but teamwork and intelligence win championships.",
-				"author": "Michael Jordan"
+				"text": "For ten years' benefit, plant trees; for a hundred years' benefit, cultivate people.",
+				"author": "President Ho Chi Minh",
+				"source": "1958"
 			},
 			{
-				"text": "An ounce of prevention is worth a pound of cure.",
-				"author": "Benjamin Franklin"
+				"text": "Nothing is more precious than independence and freedom.",
+				"author": "President Ho Chi Minh",
+				"source": "Appeal to the nation (1966)"
 			},
 			{
-				"text": "Never put off till tomorrow what you can do today.",
-				"author": "Proverb"
+				"text": "Forget oneself for the country, serve the people.",
+				"author": "Vietnam People's Public Security",
+				"source": "Motto"
+			},
+			{
+				"text": "The essence of humanity and righteousness is to keep the people at peace.",
+				"author": "Nguyen Trai",
+				"source": "Great Proclamation upon the Pacification of the Wu (1428)"
+			},
+			{
+				"text": "Strike surely, advance surely.",
+				"author": "General Vo Nguyen Giap",
+				"source": "Dien Bien Phu campaign (1954)"
+			},
+			{
+				"text": "Lightning speed, still faster; boldness, still bolder; make use of every hour, every minute.",
+				"author": "General Vo Nguyen Giap",
+				"source": "Telegram of 7 April 1975"
+			},
+			{
+				"text": "Our country has never had the foundation, potential, position and international prestige it has today.",
+				"author": "General Secretary Nguyen Phu Trong",
+				"source": "Documents of the 13th Party Congress (2021)"
+			},
+			{
+				"text": "Bring the country into a new era — the era of the Vietnamese nation's rise.",
+				"author": "General Secretary To Lam",
+				"source": "2024"
 			}
 		],
 		"nextQuote": "Another quote"
