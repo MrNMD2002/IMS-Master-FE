@@ -45,6 +45,7 @@
 			"tenant": "Organizations",
 			"user": "Accounts",
 			"role": "Roles & permissions",
+			"permGuide": "Permission guide",
 			"audit": "Audit log",
 			"settings": "Settings",
 			"profile": "My profile"
@@ -499,6 +500,38 @@
 	"permission": {
 		"fromRole": "Comes from the role, cannot be removed individually",
 		"notGrantable": "You do not hold this permission, so you cannot grant it",
+		"guide": {
+			"audit.read": "Open the Audit log: who did what, when and with what result; export to Excel. Only actions by people within your organization / unit.",
+			"dashboard.access": "Ticket to the admin website. Without it the account cannot sign in to the web (mobile app only), whatever else it has. Opens the Overview.",
+			"device.read": "View vehicles, their details, assigned officers and the vehicle type catalog within scope.",
+			"device.manage": "Add / edit / delete vehicles, assign or remove App officers, rotate the device connection key (MQTT).",
+			"device_activity.read": "Open Route history: replay a vehicle's GPS track (up to 24 hours at a time), distance and speed.",
+			"device_activity.manage": "Manage vehicle activity data (reserved for editing / deleting track data).",
+			"gps.read": "Open Live monitoring: real-time vehicle positions on the map, find vehicles near a point.",
+			"incident.read": "View incidents your unit created or has vehicles dispatched to: details, scene photos, handling log.",
+			"incident.read.all": "View ALL incidents in the organization subtree, even those not involving your vehicles — for duty officers / commanders.",
+			"incident.manage": "Create / edit / delete incidents, dispatch and recall vehicles, change status, approve completion and close.",
+			"menu.read": "View the system menu configuration (platform admin feature, not used on the web yet).",
+			"menu.manage": "Edit the menu configuration shared by all organizations (platform admins only).",
+			"permission.read": "View the permission catalog (needed for the permission / role screens).",
+			"permission.manage": "Edit the shared permission catalog (names, descriptions, grantable flag) — affects every organization.",
+			"platform.bypass": "Full system access: view and change data of EVERY organization, grant any permission. System administrators only.",
+			"platform.read": "Read data of every organization without changing it. Only activated temporarily, never assigned permanently.",
+			"privilege.elevate": "Allows self-elevation to temporary-only permissions (such as “Read whole system”). Root organization only.",
+			"role.read": "View roles and their permission bundles; needed to pick a role when creating / editing accounts.",
+			"role.manage": "Create your organization's own roles, edit bundles, delete unused roles. Only permissions you hold can go into a role.",
+			"scope.device": "Marks an officer's App account: only sees and acts on assigned vehicles. Adds no extra capability.",
+			"setting.read": "View system settings: GPS history retention, audit log retention.",
+			"setting.manage": "Change system settings: GPS retention, audit log auto-cleanup, clean now, export expired data; edit vehicle types.",
+			"tenant.read": "Open Organizations at system level (still limited to your own scope).",
+			"tenant.manage": "Create / edit / delete ANY organization, including the root (platform admins only).",
+			"tenant.self_config": "Edit your own unit's details (name, address, contacts…).",
+			"tenant.subtree_read": "View your unit and all sub-units with their data (vehicles, incidents, accounts…).",
+			"tenant.subtree_manage": "Add / edit / delete sub-units and act on data across the whole subtree.",
+			"user.read": "View accounts within scope (name, role, unit, last sign-in).",
+			"user.manage": "Create / edit / lock / delete accounts, reset passwords, change role and unit — only for accounts not more powerful than you.",
+			"user.permission.grant": "Grant / revoke individual permissions to other accounts (only ones you hold). Opens the Permission guide."
+		},
 		"module": {
 			"audit": "Audit",
 			"dashboard": "Dashboard",
@@ -515,6 +548,30 @@
 			"tenant": "Organizations",
 			"user": "Accounts",
 			"other": "Other"
+		}
+	},
+	"permGuide": {
+		"title": "Permission guide",
+		"description": "Permissions you can grant to accounts below you, what each one does and which roles already include it",
+		"search": "Search by name, code or meaning",
+		"permission": "Permission",
+		"meaning": "What it allows",
+		"matrixHint": "You can grant the {{count}} permissions below. ✓ = the role already includes it (no individual grant needed).",
+		"empty": "No permissions you can grant",
+		"guideLink": "What each permission does",
+		"rulesTitle": "Rules",
+		"rules": {
+			"effective": "An account's permissions = its role's bundle + individually granted extras. Changing a role's bundle applies immediately to everyone holding that role.",
+			"onlyOwn": "You can only grant permissions you hold yourself — the table lists exactly those. You cannot grant to, revoke from or edit accounts with more power than you.",
+			"scope": "Every permission applies only within the account's organization / unit (and sub-units with a “subtree” permission). None reveals another organization's data, except platform permissions.",
+			"web": "Signing in to the web requires “Access admin site”. The “Custom” role is empty — grant it if the account needs the web.",
+			"app": "App accounts (officers in vehicles) use the mobile app only and only see / act on their assigned vehicles.",
+			"platform": "“Platform” permissions can only be granted by system administrators; “Root org only” ones only to people in the root (operator) organization."
+		},
+		"tag": {
+			"platform": "Platform",
+			"rootOnly": "Root org only",
+			"flag": "System flag"
 		}
 	},
 	"audit": {

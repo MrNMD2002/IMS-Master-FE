@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Alert, Drawer, Skeleton } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
 import { toast } from "sonner";
 import type { UserInfo } from "#/ims";
 import userService from "@/api/services/userService";
@@ -77,7 +78,12 @@ export default function PermissionDrawer({ user, onClose }: { user: UserInfo | n
 					</div>
 				</div>
 			)}
-			<p className="mb-3 text-sm text-text-secondary">{t("user.permissionHint")}</p>
+			<p className="mb-3 text-sm text-text-secondary">
+				{t("user.permissionHint")}{" "}
+				<Link to="/permission-guide" className="text-primary hover:underline" onClick={onClose}>
+					{t("permGuide.guideLink")}
+				</Link>
+			</p>
 			{detail.data && !webAccess && user?.role !== "gps_user" && (
 				<Alert
 					className="mb-3"
