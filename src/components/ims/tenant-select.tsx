@@ -12,7 +12,8 @@ export default function TenantSelect(props: Props) {
 		<TreeSelect<number>
 			showSearch
 			allowClear
-			treeDefaultExpandAll
+			// Nhiều tổ chức (cấp nền tảng): thu gọn theo tổ chức, mở ra mới thấy đơn vị con.
+			treeDefaultExpandAll={tree.length <= 1}
 			loading={isLoading}
 			placeholder={t("tenant.select")}
 			treeNodeFilterProp="title"

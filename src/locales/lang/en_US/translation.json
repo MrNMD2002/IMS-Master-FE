@@ -312,6 +312,8 @@
 	"tenant": {
 		"description": "Organization → unit → sub-unit tree",
 		"select": "Choose a unit",
+		"allOrgs": "All organizations",
+		"allUnits": "All units",
 		"searchPlaceholder": "Search by name or code",
 		"count": "{{count}} units",
 		"createRoot": "Add organization",

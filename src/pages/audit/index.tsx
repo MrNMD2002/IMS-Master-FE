@@ -7,8 +7,8 @@ import { useTranslation } from "react-i18next";
 import type { AuditLog, AuditQuery } from "#/ims";
 import systemService from "@/api/services/systemService";
 import { Icon } from "@/components/icon";
+import OrgUnitFilter from "@/components/ims/org-unit-filter";
 import PageHeader from "@/components/ims/page-header";
-import TenantSelect from "@/components/ims/tenant-select";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
@@ -122,7 +122,7 @@ export default function AuditPage() {
 							onChange={(e) => setSearch(e.target.value)}
 							onSearch={(v) => setFilter({ search: v.trim() || undefined })}
 						/>
-						<TenantSelect value={filters.tenant_id} onChange={(v) => setFilter({ tenant_id: v })} />
+						<OrgUnitFilter value={filters.tenant_id} onChange={(v) => setFilter({ tenant_id: v })} />
 						<Select
 							allowClear
 							showSearch

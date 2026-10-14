@@ -8,9 +8,9 @@ import { toast } from "sonner";
 import { DEVICE_STATUSES, type Device } from "#/ims";
 import deviceService from "@/api/services/deviceService";
 import { Icon } from "@/components/icon";
+import OrgUnitFilter from "@/components/ims/org-unit-filter";
 import PageHeader from "@/components/ims/page-header";
 import { DeviceStatusBadge, MobilizedBadge } from "@/components/ims/status";
-import TenantSelect from "@/components/ims/tenant-select";
 import { P } from "@/constants/permission";
 import { useDeviceTypes } from "@/hooks/use-ims-options";
 import { useCan } from "@/store/userStore";
@@ -192,7 +192,7 @@ export default function DevicePage() {
 								setPage(1);
 							}}
 						/>
-						<TenantSelect value={tenantId} onChange={resetPage(setTenantId)} />
+						<OrgUnitFilter value={tenantId} onChange={resetPage(setTenantId)} />
 						<Select
 							allowClear
 							style={{ minWidth: 150 }}

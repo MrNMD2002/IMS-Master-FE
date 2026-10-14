@@ -7,9 +7,9 @@ import { toast } from "sonner";
 import type { UserInfo } from "#/ims";
 import userService from "@/api/services/userService";
 import { Icon } from "@/components/icon";
+import OrgUnitFilter from "@/components/ims/org-unit-filter";
 import PageHeader from "@/components/ims/page-header";
 import { ActiveBadge } from "@/components/ims/status";
-import TenantSelect from "@/components/ims/tenant-select";
 import UserAvatar from "@/components/user-avatar";
 import { P } from "@/constants/permission";
 import { useRoles } from "@/hooks/use-ims-options";
@@ -225,7 +225,7 @@ export default function UserPage() {
 								setPage(1);
 							}}
 						/>
-						<TenantSelect value={tenantId} onChange={resetPage(setTenantId)} />
+						<OrgUnitFilter value={tenantId} onChange={resetPage(setTenantId)} />
 						<Select
 							allowClear
 							style={{ minWidth: 160 }}

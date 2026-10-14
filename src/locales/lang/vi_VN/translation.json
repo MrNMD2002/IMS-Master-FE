@@ -312,6 +312,8 @@
 	"tenant": {
 		"description": "Cây tổ chức → đơn vị → đơn vị con",
 		"select": "Chọn đơn vị",
+		"allOrgs": "Tất cả tổ chức",
+		"allUnits": "Tất cả đơn vị",
 		"searchPlaceholder": "Tìm theo tên hoặc mã",
 		"count": "{{count}} đơn vị",
 		"createRoot": "Thêm tổ chức",

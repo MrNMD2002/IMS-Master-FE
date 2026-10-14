@@ -8,9 +8,9 @@ import { INCIDENT_STATUSES, type Incident } from "#/ims";
 import incidentService from "@/api/services/incidentService";
 import { Icon } from "@/components/icon";
 import IncidentFormDrawer from "@/components/ims/incident-form-drawer";
+import OrgUnitFilter from "@/components/ims/org-unit-filter";
 import PageHeader from "@/components/ims/page-header";
 import { IncidentStatusBadge } from "@/components/ims/status";
-import TenantSelect from "@/components/ims/tenant-select";
 import { P } from "@/constants/permission";
 import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
@@ -156,7 +156,7 @@ export default function IncidentListPage() {
 								setPage(1);
 							}}
 						/>
-						<TenantSelect
+						<OrgUnitFilter
 							value={tenantId}
 							onChange={(v) => {
 								setTenantId(v);

@@ -15,8 +15,8 @@ import IncidentFormDrawer from "@/components/ims/incident-form-drawer";
 import BaseMap from "@/components/ims/map/base-map";
 import MapControls from "@/components/ims/map/map-controls";
 import { incidentIcon, pickIcon, VEHICLE_COLOR, type VehicleState, vehicleIcon } from "@/components/ims/map/markers";
+import OrgUnitFilter from "@/components/ims/org-unit-filter";
 import { IncidentStatusBadge } from "@/components/ims/status";
-import TenantSelect from "@/components/ims/tenant-select";
 import { INCIDENT_READ_GATE, P } from "@/constants/permission";
 import { useDeviceTypes } from "@/hooks/use-ims-options";
 import { type LiveVehicle, useLiveVehicles } from "@/hooks/use-live-vehicles";
@@ -258,8 +258,8 @@ export default function MonitoringPage() {
 								prefix={<Icon icon="solar:magnifer-linear" size={16} />}
 								placeholder={t("monitor.searchVehicle")}
 							/>
-							<div className="grid grid-cols-2 gap-2">
-								<TenantSelect size="small" value={tenantId} onChange={setTenantId} style={{ width: "100%" }} />
+							<OrgUnitFilter size="small" value={tenantId} onChange={setTenantId} className="w-full [&>*]:flex-1" />
+							<div className="grid grid-cols-1 gap-2">
 								<Select
 									size="small"
 									mode="multiple"
