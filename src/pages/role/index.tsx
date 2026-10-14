@@ -71,8 +71,9 @@ export default function RolePage() {
 					)
 				}
 			/>
-			<div className="grid grid-cols-1 gap-4 lg:grid-cols-[320px_1fr]">
-				<Card className="gap-2 py-4 h-fit">
+			<div className="grid grid-cols-1 gap-4 lg:grid-cols-[320px_1fr] lg:items-start">
+				{/* Danh sách vai ghim dưới khối tiêu đề (cao = --page-bar-h) khi cuộn danh sách quyền. */}
+				<Card className="gap-2 py-4 h-fit lg:sticky lg:top-[calc(var(--layout-header-height)+var(--page-bar-h,0px)+8px)] lg:max-h-[calc(100vh-var(--layout-header-height)-var(--page-bar-h,0px)-24px)] lg:overflow-y-auto">
 					<CardContent className="flex flex-col gap-1 px-2">
 						{!isLoading && roles.length === 0 && <Empty />}
 						{roles.map((r) => (

@@ -1,5 +1,4 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
-import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Marker } from "react-leaflet";
@@ -16,6 +15,7 @@ import { vehicleIcon } from "@/components/ims/map/markers";
 import OrgUnitFilter from "@/components/ims/org-unit-filter";
 import StatCard from "@/components/ims/stat-card";
 import { INCIDENT_STATUS_COLOR, IncidentStatusBadge } from "@/components/ims/status";
+import { LiveClock, WorkQuote } from "@/components/ims/work-hero";
 import { INCIDENT_READ_GATE, P } from "@/constants/permission";
 import { useLiveVehicles } from "@/hooks/use-live-vehicles";
 import { useCan, useUserInfo } from "@/store/userStore";
@@ -82,26 +82,28 @@ export default function DashboardPage() {
 	// Khung lại khi danh sách xe đổi, không phải mỗi lần xe nhích vị trí.
 	const fitKey = vehicles.map((v) => v.id).join(",");
 
-	const hour = dayjs().hour();
-	const greet = hour < 11 ? "morning" : hour < 14 ? "noon" : hour < 18 ? "afternoon" : "evening";
-
 	return (
 		<div className="flex flex-col gap-5">
-			{/* Lời chào */}
-			<Card className="relative overflow-hidden border-0 bg-gradient-to-r from-primary/15 via-primary/5 to-transparent py-6 px-6">
-				<div className="flex flex-wrap items-center justify-between gap-4">
-					<div>
-						<p className="text-sm text-text-secondary">{dayjs().format("dddd, DD/MM/YYYY")}</p>
-						<h1 className="mt-1 text-2xl font-bold">
-							{t(`dashboard.greet.${greet}`)}, {full_name || username} 👋
-						</h1>
+			{/* Câu trích dẫn + đồng hồ */}
+			<Card className="relative gap-5 overflow-hidden border-0 bg-gradient-to-r from-primary/15 via-primary/5 to-transparent px-6 py-6">
+				<div className="flex flex-wrap items-start justify-between gap-4">
+					<div className="min-w-0 flex-1 basis-[420px]">
+						<WorkQuote />
+					</div>
+					<LiveClock />
+				</div>
+				<div className="flex flex-wrap items-center justify-between gap-3">
+					<p className="flex items-center gap-2 text-sm text-text-secondary">
+						<Icon icon="solar:user-circle-bold-duotone" size={18} />
+						<span className="font-medium text-text-primary">{full_name || username}</span>
 						{tenant_name && (
-							<p className="mt-1 flex items-center gap-1 text-sm text-text-secondary">
+							<>
+								<span>·</span>
 								<Icon icon="solar:buildings-2-bold-duotone" size={16} />
 								{tenant_name}
-							</p>
+							</>
 						)}
-					</div>
+					</p>
 					<div className="flex flex-wrap items-center gap-2">
 						<OrgUnitFilter value={tenantId} onChange={setTenantId} />
 						{can(P.INCIDENT_MANAGE) && (

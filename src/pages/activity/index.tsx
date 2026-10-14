@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { DatePicker, Segmented, Select, Slider } from "antd";
+import { DatePicker, Radio, Segmented, Select, Slider } from "antd";
 import dayjs, { type Dayjs } from "dayjs";
 import L from "leaflet";
 import { useEffect, useMemo, useState } from "react";
@@ -48,7 +48,9 @@ export default function ActivityPage() {
 		params.get("device") ? Number(params.get("device")) : undefined,
 	);
 	const [deviceSearch, setDeviceSearch] = useState("");
-	const [range, setRange] = useState<[Dayjs, Dayjs]>([dayjs().subtract(2, "hour"), dayjs()]);
+	const [range, setRange] = useState<[Dayjs, Dayjs]>([dayjs().subtract(6, "hour"), dayjs()]);
+	// Nút khoảng nhanh đang chọn (null = khoảng tự chọn trên lịch).
+	const [quickHours, setQuickHours] = useState<number | null>(6);
 	const [query, setQuery] = useState<{ device_id: number; start: string; end: string } | null>(null);
 	const [index, setIndex] = useState(0);
 	const [playing, setPlaying] = useState(false);
@@ -130,6 +132,7 @@ export default function ActivityPage() {
 	const quick = (hours: number) => {
 		const r: [Dayjs, Dayjs] = [dayjs().subtract(hours, "hour"), dayjs()];
 		setRange(r);
+		setQuickHours(hours);
 		run(deviceId, r);
 	};
 
@@ -139,17 +142,14 @@ export default function ActivityPage() {
 				icon="solar:route-bold-duotone"
 				title={t("sys.nav.activity")}
 				description={t("activity.description")}
-			/>
-
-			<Card className="mb-4 gap-0 py-4">
-				<div className="flex flex-wrap items-end gap-3 px-4 sm:px-6">
-					<div className="flex flex-col gap-1">
-						<span className="text-xs text-text-secondary">{t("activity.vehicle")}</span>
+				toolbar={
+					<>
 						<Select
 							showSearch
 							filterOption={false}
 							onSearch={setDeviceSearch}
-							style={{ width: 280 }}
+							style={{ width: 300 }}
+							prefix={<Icon icon="solar:bus-linear" size={16} className="text-text-secondary" />}
 							placeholder={t("activity.pickVehicle")}
 							value={deviceId}
 							onChange={(id) => {
@@ -159,31 +159,34 @@ export default function ActivityPage() {
 							options={deviceOptions}
 							loading={devices.isFetching}
 						/>
-					</div>
-					<div className="flex flex-col gap-1">
-						<span className="text-xs text-text-secondary">{t("activity.timeRange")}</span>
 						<RangePicker
 							showTime={{ format: "HH:mm" }}
 							format="DD/MM/YYYY HH:mm"
 							value={range}
-							onChange={(v) => v?.[0] && v[1] && setRange([v[0], v[1]])}
+							onChange={(v) => {
+								if (v?.[0] && v[1]) {
+									setRange([v[0], v[1]]);
+									setQuickHours(null);
+								}
+							}}
 							status={tooLong ? "error" : undefined}
 						/>
-					</div>
-					<div className="flex gap-1">
-						{[1, 6, 12, 24].map((h) => (
-							<Button key={h} size="sm" variant="outline" onClick={() => quick(h)}>
-								{h}h
-							</Button>
-						))}
-					</div>
-					<Button onClick={() => run()} disabled={!deviceId || tooLong || history.isFetching}>
-						<Icon icon={history.isFetching ? "svg-spinners:180-ring" : "solar:play-circle-bold"} size={18} />
-						{t("activity.view")}
-					</Button>
-				</div>
-				{tooLong && <p className="px-6 pt-2 text-xs text-error">{t("activity.max24h")}</p>}
-			</Card>
+						{/* Khoảng nhanh: một nhóm nút liền, cùng chiều cao với các ô bên cạnh. */}
+						<Radio.Group
+							optionType="button"
+							buttonStyle="solid"
+							value={quickHours}
+							onChange={(e) => quick(e.target.value)}
+							options={[1, 6, 12, 24].map((h) => ({ value: h, label: `${h}h` }))}
+						/>
+						<Button onClick={() => run()} disabled={!deviceId || tooLong || history.isFetching}>
+							<Icon icon={history.isFetching ? "svg-spinners:180-ring" : "solar:play-circle-bold"} size={18} />
+							{t("activity.view")}
+						</Button>
+						{tooLong && <p className="w-full text-xs text-error">{t("activity.max24h")}</p>}
+					</>
+				}
+			/>
 
 			{points.length > 0 && (
 				<div className="mb-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -215,7 +218,7 @@ export default function ActivityPage() {
 			)}
 
 			<Card className="relative gap-0 overflow-hidden py-0">
-				<div className="h-[calc(100vh-380px)] min-h-[420px]">
+				<div className="h-[calc(100vh-420px)] min-h-[420px]">
 					<BaseMap zoom={12}>
 						{path.length > 1 && (
 							<>
