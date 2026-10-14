@@ -21,7 +21,7 @@ import { Card } from "@/ui/card";
 import { fmtNumber } from "@/utils/format";
 
 const { RangePicker } = DatePicker;
-const SPEEDS = [1, 4, 16, 64];
+const SPEEDS = [0.5, 1, 4, 16, 64];
 
 function haversineKm(a: GpsPoint, b: GpsPoint) {
 	const R = 6371;
@@ -79,18 +79,19 @@ export default function ActivityPage() {
 		setPlaying(false);
 	}, [history.data]);
 
-	// Phát lại: mỗi 200ms tiến `speed` điểm.
+	// Phát lại: mỗi 200ms tiến `speed` điểm; dưới 1x thì giãn nhịp (0.5x = 1 điểm / 400ms).
 	useEffect(() => {
 		if (!playing) return;
+		const step = Math.max(1, speed);
 		const timer = setInterval(() => {
 			setIndex((i) => {
 				if (i >= points.length - 1) {
 					setPlaying(false);
 					return i;
 				}
-				return Math.min(i + speed, points.length - 1);
+				return Math.min(i + step, points.length - 1);
 			});
-		}, 200);
+		}, 200 / Math.min(1, speed));
 		return () => clearInterval(timer);
 	}, [playing, speed, points.length]);
 
@@ -104,6 +105,11 @@ export default function ActivityPage() {
 	}, [points]);
 
 	const tooLong = range[1].diff(range[0], "hour", true) > 24;
+	// Dữ liệu bắt đầu muộn hơn khoảng đã chọn (xe mới chạy / mới bật) → nói rõ, tránh tưởng 6h, 12h, 24h lọc sai.
+	const dataStartsLate =
+		!!query && points.length > 0 && points[0].ts - dayjs(query.start).unix() > 10 * 60
+			? dayjs.unix(points[0].ts).format("HH:mm DD/MM")
+			: null;
 
 	const run = (id = deviceId, r = range) => {
 		if (!id || r[1].diff(r[0], "hour", true) > 24) return;
@@ -184,6 +190,9 @@ export default function ActivityPage() {
 							{t("activity.view")}
 						</Button>
 						{tooLong && <p className="w-full text-xs text-error">{t("activity.max24h")}</p>}
+						{!tooLong && dataStartsLate && (
+							<p className="w-full text-xs text-text-secondary">{t("activity.dataFrom", { time: dataStartsLate })}</p>
+						)}
 					</>
 				}
 			/>
@@ -222,19 +231,22 @@ export default function ActivityPage() {
 					<BaseMap zoom={12}>
 						{path.length > 1 && (
 							<>
-								<Polyline positions={path} pathOptions={{ color: "#919EAB", weight: 4, opacity: 0.6 }} />
-								<Polyline positions={played} pathOptions={{ color: "#078DEE", weight: 5 }} />
+								{/* Viền trắng + màu tím đậm: tách hẳn khỏi đường phố cam / vàng của nền bản đồ. */}
+								<Polyline positions={path} pathOptions={{ color: "#fff", weight: 10, opacity: 0.9 }} />
+								<Polyline positions={path} pathOptions={{ color: "#6D28D9", weight: 5, opacity: 0.9 }} />
+								<Polyline positions={played} pathOptions={{ color: "#fff", weight: 11, opacity: 1 }} />
+								<Polyline positions={played} pathOptions={{ color: "#0369A1", weight: 6, opacity: 1 }} />
 								<CircleMarker
 									center={path[0]}
-									radius={8}
-									pathOptions={{ color: "#fff", fillColor: "#22C55E", fillOpacity: 1, weight: 3 }}
+									radius={10}
+									pathOptions={{ color: "#fff", fillColor: "#16A34A", fillOpacity: 1, weight: 4 }}
 								>
 									<Tooltip>{t("activity.start")}</Tooltip>
 								</CircleMarker>
 								<CircleMarker
 									center={path[path.length - 1]}
-									radius={8}
-									pathOptions={{ color: "#fff", fillColor: "#FF5630", fillOpacity: 1, weight: 3 }}
+									radius={10}
+									pathOptions={{ color: "#fff", fillColor: "#DC2626", fillOpacity: 1, weight: 4 }}
 								>
 									<Tooltip>{t("activity.end")}</Tooltip>
 								</CircleMarker>
