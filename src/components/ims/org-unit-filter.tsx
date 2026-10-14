@@ -44,7 +44,7 @@ export default function OrgUnitFilter({ value, onChange, size = "middle", classN
 			placeholder={multiOrg ? t("tenant.allUnits") : t("tenant.select")}
 			treeNodeFilterProp="title"
 			popupMatchSelectWidth={false}
-			style={{ minWidth: multiOrg ? 170 : 200 }}
+			style={{ minWidth: size === "small" ? 0 : multiOrg ? 170 : 200 }}
 			className={multiOrg ? undefined : className}
 			value={multiOrg ? unit : value}
 			onChange={(v) => onChange(v ?? (multiOrg ? org?.value : undefined))}
@@ -64,7 +64,7 @@ export default function OrgUnitFilter({ value, onChange, size = "middle", classN
 				placeholder={t("tenant.allOrgs")}
 				optionFilterProp="label"
 				popupMatchSelectWidth={false}
-				style={{ minWidth: 170 }}
+				style={{ minWidth: size === "small" ? 0 : 170 }}
 				value={org?.value}
 				onChange={(v) => onChange(v)}
 				options={tree.map((n) => ({ value: n.value, label: n.title }))}
