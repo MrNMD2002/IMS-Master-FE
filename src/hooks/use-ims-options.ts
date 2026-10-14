@@ -5,7 +5,8 @@ import deviceService from "@/api/services/deviceService";
 import systemService from "@/api/services/systemService";
 import tenantService from "@/api/services/tenantService";
 import { P } from "@/constants/permission";
-import { useCan } from "@/store/userStore";
+import { useCan, useUserInfo } from "@/store/userStore";
+import { homePath, tenantComparator } from "@/utils/tenant-order";
 
 export interface TenantTreeNode {
 	title: string;
@@ -17,7 +18,8 @@ export interface TenantTreeNode {
 }
 
 /** Dựng cây từ danh sách phẳng. Node có cha ngoài phạm vi → thành gốc. */
-export function buildTenantTree(options: TenantOption[]): TenantTreeNode[] {
+export function buildTenantTree(options: TenantOption[], homeId?: number | null): TenantTreeNode[] {
+	const compare = tenantComparator(homePath(options, homeId));
 	const ids = new Set(options.map((o) => o.id));
 	const byParent = new Map<number | null, TenantOption[]>();
 	for (const o of options) {
@@ -25,18 +27,16 @@ export function buildTenantTree(options: TenantOption[]): TenantTreeNode[] {
 		byParent.set(parent, [...(byParent.get(parent) ?? []), o]);
 	}
 	const build = (parent: number | null): TenantTreeNode[] =>
-		(byParent.get(parent) ?? [])
-			.sort((a, b) => a.name.localeCompare(b.name))
-			.map((o) => {
-				const children = build(o.id);
-				return {
-					title: o.name,
-					value: o.id,
-					key: o.id,
-					code: o.code,
-					children: children.length ? children : undefined,
-				};
-			});
+		(byParent.get(parent) ?? []).sort(compare).map((o) => {
+			const children = build(o.id);
+			return {
+				title: o.name,
+				value: o.id,
+				key: o.id,
+				code: o.code,
+				children: children.length ? children : undefined,
+			};
+		});
 	return build(null);
 }
 
@@ -44,7 +44,8 @@ export function buildTenantTree(options: TenantOption[]): TenantTreeNode[] {
 export function useTenantOptions() {
 	const query = useQuery({ queryKey: ["tenant-options"], queryFn: tenantService.options, staleTime: 60_000 });
 	const options = query.data ?? [];
-	const tree = useMemo(() => buildTenantTree(options), [options]);
+	const { tenant_id: homeId } = useUserInfo();
+	const tree = useMemo(() => buildTenantTree(options, homeId), [options, homeId]);
 	const nameOf = useMemo(() => {
 		const m = new Map(options.map((o) => [o.id, o.name]));
 		return (id?: number | null) => (id ? (m.get(id) ?? `#${id}`) : "—");
