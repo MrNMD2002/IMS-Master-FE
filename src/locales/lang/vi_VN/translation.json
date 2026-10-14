@@ -142,44 +142,94 @@
 		"noIncident": "Chưa có sự vụ nào",
 		"quotes": [
 			{
-				"text": "Không có việc gì khó, chỉ sợ lòng không bền.",
-				"author": "Hồ Chí Minh"
+				"text": "Không có việc gì khó, chỉ sợ lòng không bền. Đào núi và lấp biển, quyết chí ắt làm nên.",
+				"author": "Chủ tịch Hồ Chí Minh",
+				"source": "Tặng thanh niên xung phong (1951)"
 			},
 			{
-				"text": "Cách duy nhất để làm nên công việc vĩ đại là yêu những gì bạn làm.",
-				"author": "Steve Jobs"
+				"text": "Đối với tự mình phải cần, kiệm, liêm, chính.",
+				"author": "Chủ tịch Hồ Chí Minh",
+				"source": "Sáu điều Bác Hồ dạy Công an nhân dân (1948)"
 			},
 			{
-				"text": "Một mình chúng ta làm được rất ít; cùng nhau, chúng ta làm được rất nhiều.",
-				"author": "Helen Keller"
+				"text": "Đối với đồng sự phải thân ái giúp đỡ.",
+				"author": "Chủ tịch Hồ Chí Minh",
+				"source": "Sáu điều Bác Hồ dạy Công an nhân dân (1948)"
 			},
 			{
-				"text": "Hãy làm những gì bạn có thể, với những gì bạn có, ở nơi bạn đang đứng.",
-				"author": "Theodore Roosevelt"
+				"text": "Đối với Chính phủ phải tuyệt đối trung thành.",
+				"author": "Chủ tịch Hồ Chí Minh",
+				"source": "Sáu điều Bác Hồ dạy Công an nhân dân (1948)"
 			},
 			{
-				"text": "Kỷ luật là cầu nối giữa mục tiêu và thành tựu.",
-				"author": "Jim Rohn"
+				"text": "Đối với nhân dân phải kính trọng lễ phép.",
+				"author": "Chủ tịch Hồ Chí Minh",
+				"source": "Sáu điều Bác Hồ dạy Công an nhân dân (1948)"
 			},
 			{
-				"text": "Nhanh là tốt, nhưng chính xác mới là tất cả.",
-				"author": "Wyatt Earp"
+				"text": "Đối với công việc phải tận tụy.",
+				"author": "Chủ tịch Hồ Chí Minh",
+				"source": "Sáu điều Bác Hồ dạy Công an nhân dân (1948)"
+			},
+			{
+				"text": "Đối với địch phải cương quyết, khôn khéo.",
+				"author": "Chủ tịch Hồ Chí Minh",
+				"source": "Sáu điều Bác Hồ dạy Công an nhân dân (1948)"
+			},
+			{
+				"text": "Việc gì có lợi cho dân, ta phải hết sức làm. Việc gì có hại đến dân, ta phải hết sức tránh.",
+				"author": "Chủ tịch Hồ Chí Minh",
+				"source": "Thư gửi Uỷ ban nhân dân các kỳ, tỉnh, huyện và làng (1945)"
 			},
 			{
 				"text": "Đoàn kết, đoàn kết, đại đoàn kết. Thành công, thành công, đại thành công.",
-				"author": "Hồ Chí Minh"
+				"author": "Chủ tịch Hồ Chí Minh",
+				"source": ""
 			},
 			{
-				"text": "Tài năng thắng trận đấu, nhưng tinh thần đồng đội và trí tuệ mới thắng chức vô địch.",
-				"author": "Michael Jordan"
+				"text": "Vì lợi ích mười năm thì phải trồng cây, vì lợi ích trăm năm thì phải trồng người.",
+				"author": "Chủ tịch Hồ Chí Minh",
+				"source": "1958"
 			},
 			{
-				"text": "Phòng bệnh hơn chữa bệnh.",
-				"author": "Tục ngữ"
+				"text": "Không có gì quý hơn độc lập, tự do.",
+				"author": "Chủ tịch Hồ Chí Minh",
+				"source": "Lời kêu gọi đồng bào và chiến sĩ cả nước (1966)"
 			},
 			{
-				"text": "Việc hôm nay chớ để ngày mai.",
-				"author": "Tục ngữ"
+				"text": "Vì nước quên thân, vì dân phục vụ.",
+				"author": "Công an nhân dân Việt Nam",
+				"source": "Phương châm hành động"
+			},
+			{
+				"text": "Ta thường tới bữa quên ăn, nửa đêm vỗ gối; ruột đau như cắt, nước mắt đầm đìa.",
+				"author": "Hưng Đạo Đại Vương Trần Quốc Tuấn",
+				"source": "Hịch tướng sĩ"
+			},
+			{
+				"text": "Việc nhân nghĩa cốt ở yên dân.",
+				"author": "Nguyễn Trãi",
+				"source": "Bình Ngô đại cáo (1428)"
+			},
+			{
+				"text": "Đánh chắc, tiến chắc.",
+				"author": "Đại tướng Võ Nguyên Giáp",
+				"source": "Chiến dịch Điện Biên Phủ (1954)"
+			},
+			{
+				"text": "Thần tốc, thần tốc hơn nữa, táo bạo, táo bạo hơn nữa, tranh thủ từng giờ, từng phút.",
+				"author": "Đại tướng Võ Nguyên Giáp",
+				"source": "Điện ngày 7/4/1975"
+			},
+			{
+				"text": "Đất nước ta chưa bao giờ có được cơ đồ, tiềm lực, vị thế và uy tín quốc tế như ngày nay.",
+				"author": "Tổng Bí thư Nguyễn Phú Trọng",
+				"source": "Văn kiện Đại hội XIII (2021)"
+			},
+			{
+				"text": "Đưa đất nước bước vào kỷ nguyên mới — kỷ nguyên vươn mình của dân tộc Việt Nam.",
+				"author": "Tổng Bí thư Tô Lâm",
+				"source": "2024"
 			}
 		],
 		"nextQuote": "Câu khác"
