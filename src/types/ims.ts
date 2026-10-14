@@ -358,6 +358,8 @@ export interface AuditLog {
 	ip?: string | null;
 	user_agent?: string | null;
 	request_id?: string | null;
+	/** Chi tiết do thao tác tự gắn (vd cấu hình trước / sau, số dòng đã dọn). */
+	meta?: Record<string, unknown> | null;
 }
 
 export interface AuditQuery {

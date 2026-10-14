@@ -522,6 +522,7 @@
 		"result": "Kết quả",
 		"success": "Thành công",
 		"failure": "Thất bại",
+		"meta": "Chi tiết",
 		"detail": "Chi tiết nhật ký",
 		"actions": {
 			"login.login_access_token": "Đăng nhập"
@@ -551,7 +552,24 @@
 		"notSyncedDesc": "Lịch sử GPS tạm thời vẫn chạy theo cấu hình cũ.",
 		"cleanupNow": "Dọn ngay",
 		"cleanupConfirm": "Xoá ngay lịch sử GPS quá hạn?",
-		"cleanupDone": "Đã xoá {{count}} bản ghi"
+		"cleanupDone": "Đã xoá {{count}} bản ghi",
+		"auditRetention": {
+			"title": "Lưu trữ nhật ký thao tác",
+			"policy": "Nhật ký thao tác là bằng chứng ai đã làm gì nên chỉ được dọn theo tuổi (các dòng cũ hơn hạn), tối thiểu giữ {{min}} ngày. Không có chức năng xoá từng dòng hay xoá theo người. Mọi lần đổi cấu hình và mọi lần dọn đều được ghi lại vào chính nhật ký.",
+			"total": "Tổng số dòng",
+			"expired": "Dòng quá hạn",
+			"oldest": "Dòng cũ nhất",
+			"cutoff": "Mốc quá hạn",
+			"enable": "Tự động dọn nhật ký quá hạn (02:30 hằng đêm)",
+			"enableHint": "Tắt = giữ toàn bộ nhật ký vô thời hạn",
+			"daysHint": "Từ {{min}} đến {{max}} ngày",
+			"range": "Số ngày phải từ {{min}} đến {{max}}",
+			"saved": "Đã lưu cấu hình lưu trữ nhật ký thao tác",
+			"export": "Xuất Excel dòng quá hạn ({{count}})",
+			"nothingExpired": "Chưa có dòng nào quá hạn",
+			"cleanupConfirm": "Dọn ngay {{count}} dòng nhật ký quá hạn?",
+			"cleanupDesc": "Không khôi phục được. Nên xuất Excel để lưu trữ trước khi dọn."
+		}
 	},
 	"profile": {
 		"description": "Thông tin tài khoản và mật khẩu của bạn",
