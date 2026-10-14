@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Empty, Form, Input, Modal, Popconfirm } from "antd";
+import { Alert, Empty, Form, Input, Modal, Popconfirm } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -132,6 +132,9 @@ export default function RolePage() {
 							)}
 						</CardHeader>
 						<CardContent className="flex flex-col gap-4">
+							{selected.code !== "gps_user" && !perms.includes(P.DASHBOARD_ACCESS) && (
+								<Alert type="warning" showIcon message={t("role.noWebAccessWarn")} />
+							)}
 							<PermissionChecklist value={perms} onChange={setPerms} disabled={!canManage} />
 							{canManage && (
 								<div className="sticky bottom-0 flex justify-end gap-2 border-t bg-card pt-3">
