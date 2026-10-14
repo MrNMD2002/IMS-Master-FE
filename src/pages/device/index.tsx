@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Dropdown, Input, Popconfirm, Select, Table } from "antd";
+import { App, Dropdown, Input, Select, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -21,6 +21,7 @@ import DeviceModal from "./device-modal";
 
 export default function DevicePage() {
 	const { t } = useTranslation();
+	const { modal } = App.useApp();
 	const navigate = useNavigate();
 	const qc = useQueryClient();
 	const can = useCan();
@@ -138,17 +139,16 @@ export default function DevicePage() {
 											key: "delete",
 											danger: true,
 											icon: <Icon icon="solar:trash-bin-trash-linear" size={16} />,
-											label: (
-												<Popconfirm
-													title={t("device.deleteConfirm", { name: d.name })}
-													okText={t("common.delText")}
-													cancelText={t("common.cancelText")}
-													okButtonProps={{ danger: true }}
-													onConfirm={() => remove.mutateAsync(d.id)}
-												>
-													<span onClick={(e) => e.stopPropagation()}>{t("common.delText")}</span>
-												</Popconfirm>
-											),
+											label: t("common.delText"),
+											// Hộp xác nhận riêng: Popconfirm đặt trong menu Dropdown bị đóng theo menu nên không xoá được.
+											onClick: () =>
+												modal.confirm({
+													title: t("device.deleteConfirm", { name: d.name }),
+													okText: t("common.delText"),
+													cancelText: t("common.cancelText"),
+													okButtonProps: { danger: true },
+													onOk: () => remove.mutateAsync(d.id),
+												}),
 										},
 									]
 								: []),

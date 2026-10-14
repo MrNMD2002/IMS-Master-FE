@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import type { UserCreateReq, UserInfo } from "#/ims";
 import userService from "@/api/services/userService";
 import TenantSelect from "@/components/ims/tenant-select";
+import { P } from "@/constants/permission";
 import { useRoles } from "@/hooks/use-ims-options";
 import { useUserInfo } from "@/store/userStore";
 
@@ -26,6 +27,10 @@ export default function UserModal({ user, onClose }: { user: UserInfo | null | u
 	const [form] = Form.useForm<UserCreateReq>();
 	const open = user !== undefined;
 	const isEdit = !!user;
+	const roleCode = Form.useWatch("role", form);
+	// Vai không có thẻ vào web (vd "Tuỳ chỉnh" rỗng) → báo trước, tránh tưởng tài khoản hỏng khi không đăng nhập được.
+	const roleNoWeb =
+		roleCode !== "gps_user" && !roles.find((r) => r.code === roleCode)?.permissions.includes(P.DASHBOARD_ACCESS);
 
 	useEffect(() => {
 		if (!open) return;
@@ -107,6 +112,7 @@ export default function UserModal({ user, onClose }: { user: UserInfo | null | u
 					</Form.Item>
 				</div>
 				<p className="mb-3 -mt-2 text-xs text-text-secondary">{t("user.roleHint")}</p>
+				{roleCode && roleNoWeb && <p className="mb-3 -mt-2 text-xs text-warning">{t("user.roleNoWebHint")}</p>}
 				<Form.Item name="is_active" label={t("common.statusLabel")} valuePropName="checked">
 					<Switch
 						disabled={user?.is_system_root}
