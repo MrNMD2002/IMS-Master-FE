@@ -209,6 +209,13 @@ export default function AuditPage() {
 								{viewing.request_id || "—"}
 							</Typography.Text>
 						</Descriptions.Item>
+						{viewing.meta && (
+							<Descriptions.Item label={t("audit.meta")}>
+								<pre className="m-0 whitespace-pre-wrap break-all font-mono text-xs">
+									{JSON.stringify(viewing.meta, null, 2)}
+								</pre>
+							</Descriptions.Item>
+						)}
 					</Descriptions>
 				)}
 			</Drawer>

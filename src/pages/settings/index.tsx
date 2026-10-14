@@ -15,7 +15,7 @@ import { useDeviceTypes } from "@/hooks/use-ims-options";
 import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
-import { fmtDateTime } from "@/utils/format";
+import { downloadBlob, fmtDateTime, fmtNumber } from "@/utils/format";
 
 export default function SettingsPage() {
 	const { t } = useTranslation();
@@ -23,6 +23,9 @@ export default function SettingsPage() {
 	const items = [
 		...(can(P.DEVICE_READ) ? [{ key: "types", label: t("settings.deviceTypes"), children: <DeviceTypesTab /> }] : []),
 		...(can(P.SETTING_READ) ? [{ key: "gps", label: t("settings.gpsRetention"), children: <GpsRetentionTab /> }] : []),
+		...(can(P.SETTING_READ)
+			? [{ key: "audit", label: t("settings.auditRetention.title"), children: <AuditRetentionTab /> }]
+			: []),
 	];
 	return (
 		<>
@@ -265,6 +268,138 @@ function GpsRetentionTab() {
 					</div>
 				)}
 			</Form>
+		</div>
+	);
+}
+
+/**
+ * Lưu trữ nhật ký thao tác — tương tự lịch sử GPS nhưng có MỨC TỐI THIỂU (365 ngày) và chỉ
+ * dọn theo tuổi: nhật ký là bằng chứng ai làm gì nên không có xoá từng dòng / theo người.
+ * Mọi lần đổi cấu hình / dọn đều được backend ghi lại vào chính nhật ký.
+ */
+function AuditRetentionTab() {
+	const { t } = useTranslation();
+	const qc = useQueryClient();
+	const can = useCan();
+	const canManage = can(P.SETTING_MANAGE);
+	const [form] = Form.useForm<{ enable_audit_cleanup: boolean; audit_retention_days: number }>();
+	const { data, isLoading } = useQuery({ queryKey: ["audit-retention"], queryFn: systemService.auditRetention });
+	const min = data?.min_days ?? 365;
+	const max = data?.max_days ?? 3650;
+
+	useEffect(() => {
+		if (data) form.setFieldsValue(data);
+	}, [data, form]);
+
+	const refresh = () => qc.invalidateQueries({ queryKey: ["audit-retention"] });
+	const save = useMutation({
+		mutationFn: (v: { enable_audit_cleanup: boolean; audit_retention_days: number }) =>
+			systemService.updateAuditRetention(v),
+		onSuccess: () => {
+			toast.success(t("settings.auditRetention.saved"));
+			refresh();
+		},
+	});
+	const exportXlsx = useMutation({
+		mutationFn: systemService.exportExpiredAudit,
+		onSuccess: ({ blob, filename }) => downloadBlob(blob, filename),
+	});
+	const trigger = useMutation({
+		mutationFn: systemService.triggerAuditCleanup,
+		onSuccess: (r) => {
+			toast.success(t("settings.cleanupDone", { count: r.deleted }));
+			refresh();
+		},
+	});
+
+	const expired = data?.expired_rows ?? 0;
+
+	return (
+		<div className="max-w-2xl pb-4">
+			<Alert className="mb-4" type="info" showIcon message={t("settings.auditRetention.policy", { min })} />
+			{data && (
+				<div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+					<Stat label={t("settings.auditRetention.total")} value={fmtNumber(data.total_rows)} />
+					<Stat
+						label={t("settings.auditRetention.expired")}
+						value={fmtNumber(expired)}
+						tone={expired > 0 ? "text-warning-dark dark:text-warning" : undefined}
+					/>
+					<Stat label={t("settings.auditRetention.oldest")} value={fmtDateTime(data.oldest_at, "DD/MM/YYYY")} />
+					<Stat label={t("settings.auditRetention.cutoff")} value={fmtDateTime(data.cutoff, "DD/MM/YYYY")} />
+				</div>
+			)}
+			<Form form={form} layout="vertical" disabled={!canManage || isLoading} onFinish={(v) => save.mutate(v)}>
+				<Form.Item
+					name="enable_audit_cleanup"
+					label={t("settings.auditRetention.enable")}
+					valuePropName="checked"
+					extra={t("settings.auditRetention.enableHint")}
+				>
+					<Switch />
+				</Form.Item>
+				<Form.Item
+					name="audit_retention_days"
+					label={t("settings.retentionDays")}
+					extra={t("settings.auditRetention.daysHint", { min, max })}
+					rules={[
+						{
+							required: true,
+							type: "number",
+							min,
+							max,
+							message: t("settings.auditRetention.range", { min, max }),
+						},
+					]}
+				>
+					<InputNumber min={min} max={max} addonAfter={t("settings.days")} style={{ width: 220 }} />
+				</Form.Item>
+				{data && (
+					<p className="mb-4 text-xs text-text-secondary">
+						{t("common.updatedAt")}: {fmtDateTime(data.updated_at)}
+					</p>
+				)}
+				{canManage && (
+					<div className="flex flex-wrap gap-2">
+						<Button type="submit" disabled={save.isPending}>
+							<Icon icon="solar:check-circle-bold" size={18} />
+							{t("common.saveText")}
+						</Button>
+						<Button
+							type="button"
+							variant="outline"
+							disabled={exportXlsx.isPending || expired === 0}
+							onClick={() => exportXlsx.mutate()}
+							title={expired === 0 ? t("settings.auditRetention.nothingExpired") : undefined}
+						>
+							<Icon icon={exportXlsx.isPending ? "svg-spinners:180-ring" : "solar:file-download-bold"} size={18} />
+							{t("settings.auditRetention.export", { count: expired })}
+						</Button>
+						<Popconfirm
+							title={t("settings.auditRetention.cleanupConfirm", { count: expired })}
+							description={t("settings.auditRetention.cleanupDesc")}
+							okText={t("settings.cleanupNow")}
+							okButtonProps={{ danger: true }}
+							cancelText={t("common.cancelText")}
+							onConfirm={() => trigger.mutateAsync()}
+						>
+							<Button type="button" variant="outline" disabled={trigger.isPending || expired === 0}>
+								<Icon icon="solar:broom-linear" size={18} />
+								{t("settings.cleanupNow")}
+							</Button>
+						</Popconfirm>
+					</div>
+				)}
+			</Form>
+		</div>
+	);
+}
+
+function Stat({ label, value, tone }: { label: string; value: string; tone?: string }) {
+	return (
+		<div className="rounded-xl border px-3 py-2.5">
+			<p className="text-xs text-text-secondary">{label}</p>
+			<p className={`text-lg font-bold ${tone ?? ""}`}>{value}</p>
 		</div>
 	);
 }
