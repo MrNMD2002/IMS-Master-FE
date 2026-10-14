@@ -1,0 +1,129 @@
+.ims-map {
+	background: var(--secondary);
+	font-family: inherit;
+	z-index: 0;
+}
+
+.ims-map .leaflet-control-attribution {
+	font-size: 10px;
+}
+
+[data-theme-mode="dark"] .ims-map .leaflet-control-attribution {
+	background: rgba(0, 0, 0, 0.6);
+	color: #919eab;
+}
+
+[data-theme-mode="dark"] .ims-map .leaflet-control-attribution a {
+	color: #c4cdd5;
+}
+
+.ims-map .leaflet-popup-content-wrapper,
+.ims-map .leaflet-popup-tip {
+	background: var(--popover);
+	color: var(--popover-foreground);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.ims-map .leaflet-popup-content-wrapper {
+	border-radius: 12px;
+}
+
+.ims-map .leaflet-popup-content {
+	margin: 12px 14px;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+/* Marker xe */
+.ims-vehicle {
+	background: transparent;
+	border: none;
+}
+
+.ims-vehicle__body {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	border: 3px solid #fff;
+	color: #fff;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+	transition: transform 0.15s ease;
+}
+
+.ims-vehicle--selected .ims-vehicle__body {
+	transform: scale(1.25);
+	box-shadow:
+		0 0 0 4px rgba(7, 141, 238, 0.45),
+		0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.ims-vehicle__pulse {
+	position: absolute;
+	inset: -6px;
+	border-radius: 50%;
+	border: 2px solid currentColor;
+	animation: ims-pulse 1.8s ease-out infinite;
+}
+
+.ims-vehicle__label {
+	position: absolute;
+	top: 38px;
+	left: 50%;
+	transform: translateX(-50%);
+	white-space: nowrap;
+	padding: 1px 6px;
+	border-radius: 6px;
+	font-size: 11px;
+	font-weight: 600;
+	background: rgba(20, 26, 33, 0.82);
+	color: #fff;
+	pointer-events: none;
+}
+
+/* Marker sự vụ */
+.ims-incident {
+	background: transparent;
+	border: none;
+}
+
+.ims-incident__pin {
+	position: relative;
+	width: 36px;
+	height: 36px;
+	border-radius: 50% 50% 50% 0;
+	transform: rotate(-45deg);
+	border: 3px solid #fff;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.ims-incident__pin > svg {
+	transform: rotate(45deg);
+	color: #fff;
+}
+
+.ims-incident--active .ims-incident__pin::after {
+	content: "";
+	position: absolute;
+	inset: -8px;
+	border-radius: 50% 50% 50% 0;
+	border: 2px solid currentColor;
+	animation: ims-pulse 1.8s ease-out infinite;
+}
+
+@keyframes ims-pulse {
+	from {
+		opacity: 0.9;
+		transform: scale(0.85);
+	}
+	to {
+		opacity: 0;
+		transform: scale(1.5);
+	}
+}

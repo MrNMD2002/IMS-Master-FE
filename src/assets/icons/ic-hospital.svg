@@ -1,0 +1,43 @@
+<svg width="55" height="60" viewBox="0 0 55 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_d_43_195)">
+<rect x="16.9167" y="21.5" width="11" height="18" rx="0.5" fill="#E6E6E6" stroke="black"/>
+<rect x="26.9167" y="21.5" width="11" height="18" rx="0.5" fill="#E6E6E6" stroke="black"/>
+<rect x="20.9167" y="16.5" width="13" height="23" rx="0.5" fill="white" stroke="black"/>
+<path d="M24.4167 29.5H30.4167C30.6929 29.5 30.9167 29.7239 30.9167 30V38.5H23.9167V30L23.9265 29.8994C23.973 29.6714 24.175 29.5 24.4167 29.5Z" fill="#43A4FF" stroke="black"/>
+<path d="M27.4167 29L27.4167 38" stroke="black"/>
+<rect x="15.4167" y="38" width="24" height="2.33333" rx="1.16667" fill="#11C900" stroke="black" stroke-width="0.833333"/>
+<path d="M15.4167 39.1667C15.4167 38.5223 15.9391 38 16.5834 38H29.4167V40.3333H16.5834C15.9391 40.3333 15.4167 39.811 15.4167 39.1667Z" fill="#11C900" stroke="black" stroke-width="0.833333"/>
+<rect x="23.4172" y="38" width="8" height="2.33333" fill="#04FF00" stroke="black" stroke-width="0.833333"/>
+<path d="M23.4167 23H24.4167" stroke="black" stroke-linecap="round"/>
+<path d="M26.4167 23L28.4167 23" stroke="black" stroke-linecap="round"/>
+<path d="M30.4167 23H31.4167" stroke="black" stroke-linecap="round"/>
+<path d="M23.4167 26H24.4167" stroke="black" stroke-linecap="round"/>
+<path d="M26.4167 26L28.4167 26" stroke="black" stroke-linecap="round"/>
+<path d="M30.4167 26H31.4167" stroke="black" stroke-linecap="round"/>
+<path d="M35.4167 24H36.4167" stroke="black" stroke-linecap="round"/>
+<path d="M35.4167 27H36.4167" stroke="black" stroke-linecap="round"/>
+<path d="M35.4167 30H36.4167" stroke="black" stroke-linecap="round"/>
+<path d="M35.4167 33H36.4167" stroke="black" stroke-linecap="round"/>
+<path d="M35.4167 36H36.4167" stroke="black" stroke-linecap="round"/>
+<path d="M18.4167 24H19.4167" stroke="black" stroke-linecap="round"/>
+<path d="M18.4167 27H19.4167" stroke="black" stroke-linecap="round"/>
+<path d="M18.4167 30H19.4167" stroke="black" stroke-linecap="round"/>
+<path d="M18.4167 33H19.4167" stroke="black" stroke-linecap="round"/>
+<path d="M18.4167 36H19.4167" stroke="black" stroke-linecap="round"/>
+<rect x="22.9167" y="11.5" width="9" height="9" rx="1.5" fill="white"/>
+<rect x="22.9167" y="11.5" width="9" height="9" rx="1.5" stroke="black"/>
+<path d="M28.0837 15.333H29.4167V16.667H28.0837V18H26.7498V16.667H25.4167V15.333H26.7498V14H28.0837V15.333Z" fill="#FF0000"/>
+</g>
+<defs>
+<filter id="filter0_d_43_195" x="0" y="0" width="54.8335" height="59.75" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="7.5"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_43_195"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_43_195" result="shape"/>
+</filter>
+</defs>
+</svg>
