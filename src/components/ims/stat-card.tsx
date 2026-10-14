@@ -22,28 +22,37 @@ interface Props {
 	hint?: ReactNode;
 	loading?: boolean;
 	onClick?: () => void;
+	/** Bản gọn khi khối số liệu đang ghim và trang đã cuộn. */
+	compact?: boolean;
 }
 
-export default function StatCard({ title, value, icon, tone = "primary", hint, loading, onClick }: Props) {
+export default function StatCard({ title, value, icon, tone = "primary", hint, loading, onClick, compact }: Props) {
 	return (
 		<Card
 			onClick={onClick}
 			className={cn(
-				"flex-row items-center gap-4 px-5 py-5",
+				"flex-row items-center transition-[padding] duration-200",
+				compact ? "gap-3 px-4 py-2.5" : "gap-4 px-5 py-5",
 				onClick && "cursor-pointer transition-shadow hover:shadow-md",
 			)}
 		>
-			<span className={cn("flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl", TONE[tone])}>
-				<Icon icon={icon} size={26} />
+			<span
+				className={cn(
+					"flex shrink-0 items-center justify-center rounded-2xl",
+					compact ? "h-9 w-9" : "h-12 w-12",
+					TONE[tone],
+				)}
+			>
+				<Icon icon={icon} size={compact ? 20 : 26} />
 			</span>
 			<div className="min-w-0 flex-1">
-				<p className="text-sm text-text-secondary truncate">{title}</p>
+				<p className={cn("text-text-secondary truncate", compact ? "text-xs" : "text-sm")}>{title}</p>
 				{loading ? (
 					<Skeleton className="mt-1 h-7 w-16" />
 				) : (
-					<p className="text-2xl font-bold leading-tight">{value ?? "—"}</p>
+					<p className={cn("font-bold leading-tight", compact ? "text-lg" : "text-2xl")}>{value ?? "—"}</p>
 				)}
-				{hint && <p className="mt-0.5 text-xs text-text-disabled truncate">{hint}</p>}
+				{hint && !compact && <p className="mt-0.5 text-xs text-text-disabled truncate">{hint}</p>}
 			</div>
 		</Card>
 	);

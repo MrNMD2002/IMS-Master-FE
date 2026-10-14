@@ -13,20 +13,24 @@ import BaseMap from "@/components/ims/map/base-map";
 import FitBounds from "@/components/ims/map/fit-bounds";
 import { vehicleIcon } from "@/components/ims/map/markers";
 import OrgUnitFilter from "@/components/ims/org-unit-filter";
+import { STICKY_PAGE_BAR } from "@/components/ims/page-header";
 import StatCard from "@/components/ims/stat-card";
 import { INCIDENT_STATUS_COLOR, IncidentStatusBadge } from "@/components/ims/status";
 import { LiveClock, WorkQuote } from "@/components/ims/work-hero";
 import { INCIDENT_READ_GATE, P } from "@/constants/permission";
 import { useLiveVehicles } from "@/hooks/use-live-vehicles";
+import { useScrolled } from "@/hooks/use-scrolled";
 import { useCan, useUserInfo } from "@/store/userStore";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
+import { cn } from "@/utils";
 import { fmtFromNow } from "@/utils/format";
 
 export default function DashboardPage() {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const can = useCan();
+	const compact = useScrolled();
 	// Lọc theo Tổ chức → Đơn vị (cấp nền tảng thấy nhiều tổ chức).
 	const [tenantId, setTenantId] = useState<number | undefined>();
 	const { full_name, username, tenant_name } = useUserInfo();
@@ -84,79 +88,91 @@ export default function DashboardPage() {
 
 	return (
 		<div className="flex flex-col gap-5">
-			{/* Câu trích dẫn + đồng hồ */}
-			<Card className="relative gap-5 overflow-hidden border-0 bg-gradient-to-r from-primary/15 via-primary/5 to-transparent px-6 py-6">
-				<div className="flex flex-wrap items-start justify-between gap-4">
-					<div className="min-w-0 flex-1 basis-[420px]">
-						<WorkQuote />
+			{/* Khối ghim: trích dẫn, đồng hồ, bộ lọc, số liệu tổng — thu gọn khi trang đã cuộn. */}
+			<div className={cn(STICKY_PAGE_BAR, "flex flex-col", compact ? "gap-2" : "gap-4")}>
+				{/* Câu trích dẫn + đồng hồ */}
+				<Card
+					className={cn(
+						"relative overflow-hidden border-0 bg-gradient-to-r from-primary/15 via-primary/5 to-transparent transition-[padding] duration-200",
+						compact ? "gap-2 px-5 py-3" : "gap-5 px-6 py-6",
+					)}
+				>
+					<div className="flex flex-wrap items-start justify-between gap-4">
+						<div className="min-w-0 flex-1 basis-[420px]">
+							<WorkQuote compact={compact} />
+						</div>
+						<LiveClock compact={compact} />
 					</div>
-					<LiveClock />
-				</div>
-				<div className="flex flex-wrap items-center justify-between gap-3">
-					<p className="flex items-center gap-2 text-sm text-text-secondary">
-						<Icon icon="solar:user-circle-bold-duotone" size={18} />
-						<span className="font-medium text-text-primary">{full_name || username}</span>
-						{tenant_name && (
-							<>
-								<span>·</span>
-								<Icon icon="solar:buildings-2-bold-duotone" size={16} />
-								{tenant_name}
-							</>
-						)}
-					</p>
-					<div className="flex flex-wrap items-center gap-2">
-						<OrgUnitFilter value={tenantId} onChange={setTenantId} />
-						{can(P.INCIDENT_MANAGE) && (
-							<Button onClick={() => navigate("/monitoring?create=1")}>
-								<Icon icon="solar:add-circle-bold" size={18} />
-								{t("incident.create")}
-							</Button>
-						)}
-						{canGps && (
-							<Button variant="outline" onClick={() => navigate("/monitoring")}>
-								<Icon icon="solar:map-point-wave-bold-duotone" size={18} />
-								{t("sys.nav.monitoring")}
-							</Button>
-						)}
+					<div className="flex flex-wrap items-center justify-between gap-3">
+						<p className="flex items-center gap-2 text-sm text-text-secondary">
+							<Icon icon="solar:user-circle-bold-duotone" size={18} />
+							<span className="font-medium text-text-primary">{full_name || username}</span>
+							{tenant_name && (
+								<>
+									<span>·</span>
+									<Icon icon="solar:buildings-2-bold-duotone" size={16} />
+									{tenant_name}
+								</>
+							)}
+						</p>
+						<div className="flex flex-wrap items-center gap-2">
+							<OrgUnitFilter value={tenantId} onChange={setTenantId} />
+							{can(P.INCIDENT_MANAGE) && (
+								<Button onClick={() => navigate("/monitoring?create=1")}>
+									<Icon icon="solar:add-circle-bold" size={18} />
+									{t("incident.create")}
+								</Button>
+							)}
+							{canGps && (
+								<Button variant="outline" onClick={() => navigate("/monitoring")}>
+									<Icon icon="solar:map-point-wave-bold-duotone" size={18} />
+									{t("sys.nav.monitoring")}
+								</Button>
+							)}
+						</div>
 					</div>
-				</div>
-			</Card>
+				</Card>
 
-			{/* Số liệu */}
-			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-				<StatCard
-					title={t("dashboard.totalDevices")}
-					value={stats.data?.total_devices}
-					loading={stats.isLoading}
-					icon="solar:bus-bold-duotone"
-					tone="primary"
-					onClick={can(P.DEVICE_READ) ? () => navigate("/devices") : undefined}
-				/>
-				<StatCard
-					title={t("dashboard.onlineDevices")}
-					value={canGps ? `${online}/${vehicles.length}` : "—"}
-					loading={canGps && loadingVehicles}
-					hint={canGps ? t("dashboard.mobilizedCount", { count: mobilized }) : undefined}
-					icon="solar:wi-fi-router-bold-duotone"
-					tone="success"
-					onClick={canGps ? () => navigate("/monitoring") : undefined}
-				/>
-				<StatCard
-					title={t("dashboard.processing")}
-					value={stats.data?.processing_incidents}
-					loading={stats.isLoading}
-					icon="solar:siren-rounded-bold-duotone"
-					tone="warning"
-					onClick={canIncident ? () => navigate("/incidents?status=PROCESSING") : undefined}
-				/>
-				<StatCard
-					title={t("dashboard.pendingApproval")}
-					value={canIncident ? counts[1] : "—"}
-					loading={canIncident && statusCounts[1].isLoading}
-					icon="solar:clipboard-check-bold-duotone"
-					tone="info"
-					onClick={canIncident ? () => navigate("/incidents?status=PENDING_APPROVAL") : undefined}
-				/>
+				{/* Số liệu */}
+				<div className={cn("grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4", compact ? "gap-3" : "gap-4")}>
+					<StatCard
+						compact={compact}
+						title={t("dashboard.totalDevices")}
+						value={stats.data?.total_devices}
+						loading={stats.isLoading}
+						icon="solar:bus-bold-duotone"
+						tone="primary"
+						onClick={can(P.DEVICE_READ) ? () => navigate("/devices") : undefined}
+					/>
+					<StatCard
+						compact={compact}
+						title={t("dashboard.onlineDevices")}
+						value={canGps ? `${online}/${vehicles.length}` : "—"}
+						loading={canGps && loadingVehicles}
+						hint={canGps ? t("dashboard.mobilizedCount", { count: mobilized }) : undefined}
+						icon="solar:wi-fi-router-bold-duotone"
+						tone="success"
+						onClick={canGps ? () => navigate("/monitoring") : undefined}
+					/>
+					<StatCard
+						compact={compact}
+						title={t("dashboard.processing")}
+						value={stats.data?.processing_incidents}
+						loading={stats.isLoading}
+						icon="solar:siren-rounded-bold-duotone"
+						tone="warning"
+						onClick={canIncident ? () => navigate("/incidents?status=PROCESSING") : undefined}
+					/>
+					<StatCard
+						compact={compact}
+						title={t("dashboard.pendingApproval")}
+						value={canIncident ? counts[1] : "—"}
+						loading={canIncident && statusCounts[1].isLoading}
+						icon="solar:clipboard-check-bold-duotone"
+						tone="info"
+						onClick={canIncident ? () => navigate("/incidents?status=PENDING_APPROVAL") : undefined}
+					/>
+				</div>
 			</div>
 
 			<div className="grid grid-cols-1 gap-4 xl:grid-cols-3">

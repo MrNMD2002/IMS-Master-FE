@@ -2,34 +2,70 @@ import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Icon } from "@/components/icon";
+import { cn } from "@/utils";
 
 interface Quote {
 	text: string;
 	author: string;
+	/** Văn bản / năm xuất xứ (có thể rỗng). */
+	source?: string;
 }
 
-/** Câu trích dẫn về công việc — mỗi ngày một câu (cố định trong ngày), bấm để đổi câu khác. */
-export function WorkQuote() {
+/** Số giờ kể từ một mốc — dùng làm chỉ số câu, đổi câu mỗi khi sang giờ mới. */
+const hourSlot = () => dayjs().diff(dayjs("2026-01-01"), "hour");
+
+/**
+ * Câu trích dẫn của Chủ tịch Hồ Chí Minh, danh nhân, tướng lĩnh, lãnh đạo — mỗi giờ một câu
+ * (tự chuyển khi sang giờ mới, không cần tải lại), bấm ↻ để đổi ngay.
+ */
+export function WorkQuote({ compact = false }: { compact?: boolean }) {
 	const { t, i18n } = useTranslation();
+	// biome-ignore lint/correctness/useExhaustiveDependencies: đổi ngôn ngữ → lấy lại danh sách câu
 	const quotes = useMemo(
 		() => t("dashboard.quotes", { returnObjects: true }) as unknown as Quote[],
-		// biome-ignore lint/correctness/useExhaustiveDependencies: đổi ngôn ngữ → lấy lại danh sách
 		[t, i18n.language],
 	);
-	const [index, setIndex] = useState(() => dayjs().diff(dayjs("2026-01-01"), "day"));
-	const q = quotes.length ? quotes[((index % quotes.length) + quotes.length) % quotes.length] : null;
+	const [slot, setSlot] = useState(hourSlot);
+	const [skip, setSkip] = useState(0); // số lần bấm "Câu khác" trong giờ hiện tại
+	useEffect(() => {
+		const timer = setInterval(() => {
+			const now = hourSlot();
+			setSlot((prev) => {
+				if (prev !== now) setSkip(0);
+				return now;
+			});
+		}, 30_000);
+		return () => clearInterval(timer);
+	}, []);
+	const n = quotes.length;
+	const q = n ? quotes[(((slot + skip) % n) + n) % n] : null;
 	if (!q) return null;
 
 	return (
-		<figure className="flex items-start gap-3">
-			<Icon icon="solar:chat-square-quote-bold-duotone" size={36} className="mt-1 shrink-0 text-primary" />
+		<figure className={cn("flex items-start", compact ? "gap-2" : "gap-3")}>
+			<Icon
+				icon="solar:chat-square-quote-bold-duotone"
+				size={compact ? 22 : 36}
+				className={cn("shrink-0 text-primary", compact ? "mt-0.5" : "mt-1")}
+			/>
 			<div className="min-w-0">
-				<blockquote className="text-xl font-semibold leading-snug sm:text-2xl">“{q.text}”</blockquote>
-				<figcaption className="mt-2 flex items-center gap-2 text-sm text-text-secondary">
-					<span>— {q.author}</span>
+				<blockquote
+					className={cn("font-semibold leading-snug", compact ? "text-base line-clamp-1" : "text-xl sm:text-2xl")}
+					title={compact ? q.text : undefined}
+				>
+					“{q.text}”
+				</blockquote>
+				<figcaption
+					className={cn(
+						"flex flex-wrap items-center gap-x-2 gap-y-1 text-text-secondary",
+						compact ? "mt-0.5 text-xs" : "mt-2 text-sm",
+					)}
+				>
+					<span className="font-semibold text-text-primary">— {q.author}</span>
+					{q.source && !compact && <span className="italic">· {q.source}</span>}
 					<button
 						type="button"
-						onClick={() => setIndex((i) => i + 1)}
+						onClick={() => setSkip((s) => s + 1)}
 						title={t("dashboard.nextQuote")}
 						className="rounded-full p-1 text-text-disabled transition-colors hover:bg-action-hover hover:text-primary"
 					>
@@ -42,19 +78,31 @@ export function WorkQuote() {
 }
 
 /** Đồng hồ 24 giờ chạy từng giây + thứ, ngày. */
-export function LiveClock() {
+export function LiveClock({ compact = false }: { compact?: boolean }) {
 	const [now, setNow] = useState(() => dayjs());
 	useEffect(() => {
 		const timer = setInterval(() => setNow(dayjs()), 1000);
 		return () => clearInterval(timer);
 	}, []);
 	return (
-		<div className="flex shrink-0 flex-col items-end rounded-2xl bg-background/70 px-5 py-3 shadow-sm backdrop-blur">
-			<span className="font-mono text-4xl font-bold leading-none tabular-nums tracking-tight">
+		<div
+			className={cn(
+				"flex shrink-0 flex-col items-end rounded-2xl bg-background/70 shadow-sm backdrop-blur",
+				compact ? "px-3 py-1.5" : "px-5 py-3",
+			)}
+		>
+			<span
+				className={cn(
+					"font-mono font-bold leading-none tabular-nums tracking-tight",
+					compact ? "text-2xl" : "text-4xl",
+				)}
+			>
 				{now.format("HH:mm")}
-				<span className="text-2xl text-text-secondary">:{now.format("ss")}</span>
+				<span className={cn("text-text-secondary", compact ? "text-base" : "text-2xl")}>:{now.format("ss")}</span>
 			</span>
-			<span className="mt-1.5 text-sm capitalize text-text-secondary">{now.format("dddd, DD/MM/YYYY")}</span>
+			<span className={cn("capitalize text-text-secondary", compact ? "mt-0.5 text-xs" : "mt-1.5 text-sm")}>
+				{now.format(compact ? "ddd DD/MM" : "dddd, DD/MM/YYYY")}
+			</span>
 		</div>
 	);
 }
