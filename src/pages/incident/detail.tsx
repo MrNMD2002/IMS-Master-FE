@@ -16,6 +16,7 @@ import BaseMap from "@/components/ims/map/base-map";
 import FitBounds from "@/components/ims/map/fit-bounds";
 import MapControls from "@/components/ims/map/map-controls";
 import { incidentIcon, vehicleIcon } from "@/components/ims/map/markers";
+import { STICKY_PAGE_BAR } from "@/components/ims/page-header";
 import { IncidentStatusBadge } from "@/components/ims/status";
 import { P } from "@/constants/permission";
 import { useLiveVehicles } from "@/hooks/use-live-vehicles";
@@ -23,6 +24,7 @@ import { useCan } from "@/store/userStore";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
+import { cn } from "@/utils";
 import { fmtDateTime, fmtFromNow } from "@/utils/format";
 
 const LOG_ICON: Record<string, { icon: string; color: string }> = {
@@ -169,8 +171,8 @@ export default function IncidentDetailPage() {
 
 	return (
 		<div className="flex flex-col gap-4">
-			{/* Đầu trang */}
-			<div className="flex flex-wrap items-start justify-between gap-3">
+			{/* Đầu trang — ghim khi cuộn để nút Điều xe / Kết thúc luôn trong tầm tay. */}
+			<div className={cn(STICKY_PAGE_BAR, "flex flex-wrap items-start justify-between gap-3")}>
 				<div className="flex items-start gap-3 min-w-0">
 					<Button variant="outline" size="icon" onClick={() => navigate("/incidents")} title={t("common.back")}>
 						<Icon icon="solar:arrow-left-linear" size={18} />

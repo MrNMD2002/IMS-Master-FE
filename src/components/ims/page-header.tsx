@@ -10,10 +10,17 @@ interface Props {
 	className?: string;
 }
 
-/** Tiêu đề trang: icon + tên + mô tả ngắn, nút thao tác bên phải. */
+/**
+ * Thanh tiêu đề ghim ngay dưới thanh trên cùng khi cuộn. Kéo tràn sang hai bên đúng bằng
+ * lề của khung nội dung (layouts/dashboard/main.tsx) để nền phủ kín, nội dung cuộn qua bên dưới.
+ */
+export const STICKY_PAGE_BAR =
+	"sticky top-[var(--layout-header-height)] z-[9] -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 -mt-4 pt-4 sm:-mt-6 sm:pt-6 pb-3 bg-background/90 backdrop-blur-xl";
+
+/** Tiêu đề trang: icon + tên + mô tả ngắn, nút thao tác bên phải — luôn ghim đầu trang. */
 export default function PageHeader({ title, description, icon, actions, className }: Props) {
 	return (
-		<div className={cn("mb-5 flex flex-wrap items-center justify-between gap-3", className)}>
+		<div className={cn(STICKY_PAGE_BAR, "mb-2 flex flex-wrap items-center justify-between gap-3", className)}>
 			<div className="flex items-center gap-3 min-w-0">
 				{icon && (
 					<span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
