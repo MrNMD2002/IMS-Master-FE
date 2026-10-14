@@ -14,11 +14,13 @@ import { useCan, useUserInfo } from "@/store/userStore";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
+import { homePath, tenantComparator } from "@/utils/tenant-order";
 import TenantModal, { type TenantModalState } from "./tenant-modal";
 
 type Row = Tenant & { children?: Row[] };
 
-function toTree(items: Tenant[]): Row[] {
+function toTree(items: Tenant[], homeId?: number | null): Row[] {
+	const compare = tenantComparator(homePath(items, homeId));
 	const ids = new Set(items.map((i) => i.id));
 	const map = new Map<number, Row>(items.map((i) => [i.id, { ...i }]));
 	const roots: Row[] = [];
@@ -28,7 +30,7 @@ function toTree(items: Tenant[]): Row[] {
 		else roots.push(row);
 	}
 	const sort = (rows: Row[]) => {
-		rows.sort((a, b) => a.name.localeCompare(b.name));
+		rows.sort(compare);
 		for (const r of rows) if (r.children) sort(r.children);
 	};
 	sort(roots);
@@ -55,9 +57,12 @@ export default function TenantPage() {
 	const all = data?.data ?? [];
 	const tree = useMemo(() => {
 		const q = search.trim().toLowerCase();
-		if (!q) return toTree(all);
-		return all.filter((x) => `${x.name} ${x.code}`.toLowerCase().includes(q)).map((x) => ({ ...x }));
-	}, [all, search]);
+		if (!q) return toTree(all, me.tenant_id);
+		return all
+			.filter((x) => `${x.name} ${x.code}`.toLowerCase().includes(q))
+			.map((x) => ({ ...x }))
+			.sort(tenantComparator(homePath(all, me.tenant_id)));
+	}, [all, search, me.tenant_id]);
 
 	const remove = useMutation({
 		mutationFn: (id: number) => tenantService.remove(id),
