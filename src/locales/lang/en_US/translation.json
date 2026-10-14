@@ -528,6 +528,7 @@
 		"result": "Result",
 		"success": "Success",
 		"failure": "Failed",
+		"meta": "Details",
 		"detail": "Log entry",
 		"actions": {
 			"login.login_access_token": "Sign in"
@@ -557,7 +558,24 @@
 		"notSyncedDesc": "GPS history still follows the previous configuration for now.",
 		"cleanupNow": "Clean up now",
 		"cleanupConfirm": "Delete expired GPS history now?",
-		"cleanupDone": "Deleted {{count}} records"
+		"cleanupDone": "Deleted {{count}} records",
+		"auditRetention": {
+			"title": "Audit log retention",
+			"policy": "The audit log is evidence of who did what, so it can only be cleaned up by age (rows older than the limit), keeping at least {{min}} days. There is no way to delete individual rows or by person. Every configuration change and every cleanup is itself recorded in the audit log.",
+			"total": "Total rows",
+			"expired": "Expired rows",
+			"oldest": "Oldest row",
+			"cutoff": "Expiry cutoff",
+			"enable": "Automatically clean up expired audit log (02:30 nightly)",
+			"enableHint": "Off = keep the audit log forever",
+			"daysHint": "Between {{min}} and {{max}} days",
+			"range": "Must be between {{min}} and {{max}} days",
+			"saved": "Audit log retention settings saved",
+			"export": "Export expired rows to Excel ({{count}})",
+			"nothingExpired": "No expired rows yet",
+			"cleanupConfirm": "Clean up {{count}} expired audit log rows now?",
+			"cleanupDesc": "This cannot be undone. Export to Excel first to keep an archive."
+		}
 	},
 	"profile": {
 		"description": "Your account information and password",
