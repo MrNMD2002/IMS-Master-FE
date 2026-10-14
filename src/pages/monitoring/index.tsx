@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Marker, Popup, useMapEvents } from "react-leaflet";
 import { useNavigate, useSearchParams } from "react-router";
-import type { Incident } from "#/ims";
+import { dutyCount, type Incident, isOnDuty, isRecalled } from "#/ims";
 import incidentService from "@/api/services/incidentService";
 import { Icon } from "@/components/icon";
 import AddressSearch from "@/components/ims/address-search";
@@ -335,7 +335,7 @@ export default function MonitoringPage() {
 										</span>
 										<span className="flex items-center gap-1">
 											<Icon icon="solar:bus-linear" size={13} />
-											{i.dispatched_devices.filter((d) => !d.completed).length}/{i.dispatched_devices.length}
+											{dutyCount(i.dispatched_devices, i.status === "COMPLETED")}
 										</span>
 									</span>
 								</button>
@@ -477,8 +477,8 @@ function IncidentPopup({
 			<p className="text-xs text-text-secondary">{incident.location_address || incident.location || "—"}</p>
 			<p className="text-xs">
 				{t("incident.vehiclesOnSite", {
-					active: incident.dispatched_devices.filter((d) => !d.completed).length,
-					total: incident.dispatched_devices.length,
+					active: incident.dispatched_devices.filter(isOnDuty).length,
+					total: incident.dispatched_devices.filter((d) => !isRecalled(d)).length,
 				})}{" "}
 				· {fmtFromNow(incident.created_at)}
 			</p>

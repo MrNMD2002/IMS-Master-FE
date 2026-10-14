@@ -35,7 +35,7 @@ export default function PasswordModal({ user, onClose }: { user: UserInfo | null
 		>
 			<p className="mb-3 text-sm text-text-secondary">{t("user.resetPasswordDesc")}</p>
 			<Form form={form} layout="vertical">
-				<Form.Item name="password" label={t("user.field.newPassword")} rules={PASSWORD_RULES(t)}>
+				<Form.Item name="password" label={t("user.field.newPassword")} rules={PASSWORD_RULES(t)} validateFirst>
 					<Input.Password autoComplete="new-password" />
 				</Form.Item>
 				<Form.Item
