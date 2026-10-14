@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Drawer, Skeleton } from "antd";
+import { Alert, Drawer, Skeleton } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -8,6 +8,7 @@ import userService from "@/api/services/userService";
 import { Icon } from "@/components/icon";
 import PermissionChecklist from "@/components/ims/permission-checklist";
 import UserAvatar from "@/components/user-avatar";
+import { P } from "@/constants/permission";
 import { Button } from "@/ui/button";
 
 /** Quyền của một tài khoản = bó quyền của vai (khoá) ∪ quyền cấp lẻ (tích được). */
@@ -29,6 +30,9 @@ export default function PermissionDrawer({ user, onClose }: { user: UserInfo | n
 	const [direct, setDirect] = useState<string[]>([]);
 
 	const rolePerms = detail.data?.role_permissions ?? [];
+	// Thiếu thẻ vào web → tài khoản chỉ dùng được App; cảnh báo để người cấp quyền không bất ngờ.
+	const webAccess = rolePerms.includes(P.DASHBOARD_ACCESS) || direct.includes(P.DASHBOARD_ACCESS);
+	const canGrantWeb = grantable.data?.permissions.some((p) => p.code === P.DASHBOARD_ACCESS) ?? false;
 
 	useEffect(() => {
 		if (detail.data) setDirect(detail.data.direct_permissions ?? []);
@@ -74,6 +78,21 @@ export default function PermissionDrawer({ user, onClose }: { user: UserInfo | n
 				</div>
 			)}
 			<p className="mb-3 text-sm text-text-secondary">{t("user.permissionHint")}</p>
+			{detail.data && !webAccess && user?.role !== "gps_user" && (
+				<Alert
+					className="mb-3"
+					type="warning"
+					showIcon
+					message={t("user.noWebAccessWarn")}
+					action={
+						canGrantWeb && (
+							<Button size="sm" variant="outline" onClick={() => setDirect((d) => [...d, P.DASHBOARD_ACCESS])}>
+								{t("user.grantWebAccess")}
+							</Button>
+						)
+					}
+				/>
+			)}
 			{detail.isLoading ? (
 				<Skeleton active />
 			) : (

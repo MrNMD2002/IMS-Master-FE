@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Dropdown, Input, Popconfirm, Select, Table } from "antd";
+import { App, Dropdown, Input, Select, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -24,6 +24,7 @@ import UserModal from "./user-modal";
 
 export default function UserPage() {
 	const { t } = useTranslation();
+	const { modal } = App.useApp();
 	const qc = useQueryClient();
 	const can = useCan();
 	const me = useUserInfo();
@@ -107,6 +108,11 @@ export default function UserPage() {
 				<div className="flex items-center gap-1">
 					<Badge variant={r === "gps_user" ? "warning" : "info"}>{roleName(r)}</Badge>
 					{u.is_system_root && <Icon icon="solar:crown-bold" size={16} className="text-warning" />}
+					{r !== "gps_user" && !u.permissions?.includes(P.DASHBOARD_ACCESS) && (
+						<Badge variant="secondary" title={t("user.noWebAccessHint")}>
+							{t("user.noWebAccess")}
+						</Badge>
+					)}
 				</div>
 			),
 		},
@@ -167,17 +173,16 @@ export default function UserPage() {
 												key: "delete",
 												danger: true,
 												icon: <Icon icon="solar:trash-bin-trash-linear" size={16} />,
-												label: (
-													<Popconfirm
-														title={t("user.deleteConfirm", { name: u.username })}
-														okText={t("common.delText")}
-														cancelText={t("common.cancelText")}
-														okButtonProps={{ danger: true }}
-														onConfirm={() => remove.mutateAsync(u.id)}
-													>
-														<span onClick={(e) => e.stopPropagation()}>{t("common.delText")}</span>
-													</Popconfirm>
-												),
+												label: t("common.delText"),
+												// Hộp xác nhận riêng: Popconfirm đặt trong menu Dropdown bị đóng theo menu nên không xoá được.
+												onClick: () =>
+													modal.confirm({
+														title: t("user.deleteConfirm", { name: u.username }),
+														okText: t("common.delText"),
+														cancelText: t("common.cancelText"),
+														okButtonProps: { danger: true },
+														onOk: () => remove.mutateAsync(u.id),
+													}),
 											},
 										]
 									: []),
