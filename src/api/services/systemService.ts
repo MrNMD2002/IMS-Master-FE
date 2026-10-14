@@ -52,6 +52,35 @@ const updateGpsRetention = (data: { enable_gps_cleanup?: boolean; gps_retention_
 	apiClient.post<GpsRetention>({ url: "/settings/gps-retention/update", data });
 const triggerGpsCleanup = () => apiClient.post<{ deleted: number }>({ url: "/settings/gps-retention/trigger" });
 
+export interface AuditRetention {
+	enable_audit_cleanup: boolean;
+	audit_retention_days: number;
+	min_days: number;
+	max_days: number;
+	updated_at?: string | null;
+	cutoff: string;
+	total_rows: number;
+	expired_rows: number;
+	oldest_at?: string | null;
+}
+
+const auditRetention = () => apiClient.get<AuditRetention>({ url: "/settings/audit-retention" });
+const updateAuditRetention = (data: { enable_audit_cleanup?: boolean; audit_retention_days?: number }) =>
+	apiClient.post<AuditRetention>({ url: "/settings/audit-retention/update", data });
+const triggerAuditCleanup = () =>
+	apiClient.post<{ deleted: number; days: number }>({ url: "/settings/audit-retention/trigger" });
+/** Excel các dòng quá hạn (sẽ bị dọn) — lưu trữ trước khi dọn. */
+const exportExpiredAudit = async () => {
+	const res = await apiClient.get<AxiosResponse<Blob>>({
+		url: "/settings/audit-retention/export",
+		responseType: "blob",
+		raw: true,
+	});
+	const disposition = res.headers["content-disposition"] as string | undefined;
+	const name = disposition?.match(/filename\*?=(?:UTF-8'')?"?([^";]+)/i)?.[1];
+	return { blob: res.data, filename: name ? decodeURIComponent(name) : "nhat-ky-qua-han.xlsx" };
+};
+
 export default {
 	roleList,
 	roleCreate,
@@ -66,4 +95,8 @@ export default {
 	gpsRetention,
 	updateGpsRetention,
 	triggerGpsCleanup,
+	auditRetention,
+	updateAuditRetention,
+	triggerAuditCleanup,
+	exportExpiredAudit,
 };
