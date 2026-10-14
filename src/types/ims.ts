@@ -234,6 +234,14 @@ export interface DispatchedDevice {
 	note?: string | null;
 }
 
+/** Xe đã bị rút khỏi sự vụ (backend vẫn trả dòng này cho bên sở hữu để giữ lịch sử). */
+export const isRecalled = (d: DispatchedDevice) => d.status === "CANCELED";
+/** Xe đang làm nhiệm vụ trong sự vụ: chưa báo xong, chưa bị rút. */
+export const isOnDuty = (d: DispatchedDevice) => !isRecalled(d) && !d.completed;
+/** "đang làm / tổng" — tổng không tính xe đã rút; sự vụ đã đóng thì không xe nào còn làm. */
+export const dutyCount = (list: DispatchedDevice[], closed = false) =>
+	`${closed ? 0 : list.filter(isOnDuty).length}/${list.filter((d) => !isRecalled(d)).length}`;
+
 export interface IncidentImage {
 	id: number;
 	url?: string | null;

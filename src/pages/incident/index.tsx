@@ -4,7 +4,7 @@ import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router";
-import { INCIDENT_STATUSES, type Incident } from "#/ims";
+import { dutyCount, INCIDENT_STATUSES, type Incident } from "#/ims";
 import incidentService from "@/api/services/incidentService";
 import { Icon } from "@/components/icon";
 import IncidentFormDrawer from "@/components/ims/incident-form-drawer";
@@ -78,7 +78,7 @@ export default function IncidentListPage() {
 			render: (_, r) => (
 				<span className="inline-flex items-center gap-1 text-sm">
 					<Icon icon="solar:bus-linear" size={16} />
-					{r.dispatched_devices.filter((d) => !d.completed).length}/{r.dispatched_devices.length}
+					{dutyCount(r.dispatched_devices, r.status === "COMPLETED")}
 				</span>
 			),
 		},

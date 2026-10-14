@@ -123,7 +123,7 @@ export default function ProfilePage() {
 									name="new_password"
 									label={t("user.field.newPassword")}
 									rules={PASSWORD_RULES(t)}
-									extra={t("validation.passwordPolicy")}
+									validateFirst
 								>
 									<Input.Password autoComplete="new-password" />
 								</Form.Item>

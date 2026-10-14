@@ -11,8 +11,10 @@ import { useUserInfo } from "@/store/userStore";
 
 export const PASSWORD_RULES = (t: (k: string) => string) => [
 	{ required: true, message: t("validation.required") },
-	{ min: 8, message: t("validation.passwordPolicy") },
-	{ pattern: /(?=.*[A-Za-z])(?=.*\d)/, message: t("validation.passwordPolicy") },
+	// Mỗi lỗi một câu riêng; Form.Item đặt validateFirst để chỉ hiện lỗi đầu tiên — không trùng
+	// với dòng gợi ý chính sách mật khẩu bên dưới ô.
+	{ min: 8, message: t("validation.passwordTooShort") },
+	{ pattern: /(?=.*[A-Za-z])(?=.*\d)/, message: t("validation.passwordNeedsBoth") },
 ];
 
 /** `user === null` = tạo mới; `undefined` = đóng. */
@@ -80,12 +82,7 @@ export default function UserModal({ user, onClose }: { user: UserInfo | null | u
 					<Input autoComplete="off" />
 				</Form.Item>
 				{!isEdit && (
-					<Form.Item
-						name="password"
-						label={t("user.field.password")}
-						rules={PASSWORD_RULES(t)}
-						extra={t("validation.passwordPolicy")}
-					>
+					<Form.Item name="password" label={t("user.field.password")} rules={PASSWORD_RULES(t)} validateFirst>
 						<Input.Password autoComplete="new-password" />
 					</Form.Item>
 				)}
