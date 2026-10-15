@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { Input, Segmented, Select } from "antd";
+import { Input, Segmented, Select, Switch } from "antd";
 import L, { type Map as LeafletMap } from "leaflet";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Marker, Popup, useMapEvents } from "react-leaflet";
+import { Circle, Marker, Popup, useMapEvents } from "react-leaflet";
 import { useNavigate, useSearchParams } from "react-router";
 import { dutyCount, type Incident, isOnDuty, isRecalled } from "#/ims";
 import incidentService from "@/api/services/incidentService";
+import tenantService from "@/api/services/tenantService";
 import { Icon } from "@/components/icon";
 import AddressSearch from "@/components/ims/address-search";
 import DispatchDialog from "@/components/ims/dispatch-dialog";
@@ -14,7 +15,15 @@ import EmptyState from "@/components/ims/empty-state";
 import IncidentFormDrawer from "@/components/ims/incident-form-drawer";
 import BaseMap from "@/components/ims/map/base-map";
 import MapControls from "@/components/ims/map/map-controls";
-import { incidentIcon, pickIcon, VEHICLE_COLOR, type VehicleState, vehicleIcon } from "@/components/ims/map/markers";
+import {
+	hqIcon,
+	incidentIcon,
+	pickIcon,
+	radiusCenterIcon,
+	VEHICLE_COLOR,
+	type VehicleState,
+	vehicleIcon,
+} from "@/components/ims/map/markers";
 import OrgUnitFilter from "@/components/ims/org-unit-filter";
 import { IncidentStatusBadge } from "@/components/ims/status";
 import { INCIDENT_READ_GATE, P } from "@/constants/permission";
@@ -24,9 +33,12 @@ import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
 import { cn } from "@/utils";
 import { fmtFromNow, fmtSecondsAgo } from "@/utils/format";
+import { distanceKm, toLatLng } from "@/utils/geo";
 
 type Tab = "vehicles" | "incidents";
 type StateFilter = "all" | VehicleState;
+const RADIUS_OPTIONS_KM = [1, 2, 3, 5, 10, 20, 50];
+const HQ_ZOOM = 14;
 
 function PickHandler({ active, onPick }: { active: boolean; onPick: (lat: number, lng: number) => void }) {
 	useMapEvents({
@@ -59,6 +71,17 @@ export default function MonitoringPage() {
 	const [formOpen, setFormOpen] = useState(false);
 	const [dispatchFor, setDispatchFor] = useState<Incident | null>(null);
 
+	// Trụ sở của tổ chức / đơn vị người đang đăng nhập — mở bản đồ lần đầu ghim vào đây.
+	const myTenant = useQuery({ queryKey: ["tenant", "me"], queryFn: tenantService.mine, staleTime: 300_000 });
+	const hq = toLatLng(myTenant.data);
+
+	// Lọc xe trong bán kính: tâm mặc định là trụ sở, hoặc điểm tự chọn trên bản đồ.
+	const [radiusOn, setRadiusOn] = useState(false);
+	const [radiusKm, setRadiusKm] = useState(5);
+	const [radiusCenter, setRadiusCenter] = useState<[number, number] | null>(null);
+	const [pickingCenter, setPickingCenter] = useState(false);
+	const center = radiusCenter ?? hq;
+
 	const canIncident = can(...INCIDENT_READ_GATE);
 	const canManage = can(P.INCIDENT_MANAGE);
 	const { types } = useDeviceTypes();
@@ -82,22 +105,57 @@ export default function MonitoringPage() {
 	});
 	const incidents = (activeIncidents.data ?? []).filter((i) => i.lat && i.lng);
 
+	// Khoảng cách tới tâm (chỉ khi đang lọc bán kính) — vừa để lọc vừa để xếp gần trước.
+	const distances = useMemo(() => {
+		const m = new Map<number, number>();
+		if (radiusOn && center) for (const v of vehicles) m.set(v.id, distanceKm(center, [v.latitude, v.longitude]));
+		return m;
+	}, [vehicles, radiusOn, center]);
+	const inRadius = useMemo(
+		() =>
+			radiusOn && center
+				? vehicles.filter((v) => (distances.get(v.id) ?? Number.POSITIVE_INFINITY) <= radiusKm)
+				: vehicles,
+		[vehicles, radiusOn, center, distances, radiusKm],
+	);
+
 	const counts = useMemo(() => {
-		const c = { all: vehicles.length, ready: 0, mobilized: 0, offline: 0 };
-		for (const v of vehicles) c[v.state] += 1;
+		const c = { all: inRadius.length, ready: 0, mobilized: 0, offline: 0 };
+		for (const v of inRadius) c[v.state] += 1;
 		return c;
-	}, [vehicles]);
+	}, [inRadius]);
 
 	const filtered = useMemo(() => {
 		const q = search.trim().toLowerCase();
-		return vehicles.filter(
+		const rows = inRadius.filter(
 			(v) =>
 				(stateFilter === "all" || v.state === stateFilter) &&
 				(!q || `${v.name ?? ""} ${v.imei}`.toLowerCase().includes(q)),
 		);
-	}, [vehicles, stateFilter, search]);
+		return radiusOn ? [...rows].sort((a, b) => (distances.get(a.id) ?? 0) - (distances.get(b.id) ?? 0)) : rows;
+	}, [inRadius, stateFilter, search, radiusOn, distances]);
 
-	// Lần đầu có dữ liệu → khung bản đồ ôm hết xe.
+	const fitRadius = (c: [number, number], km: number) =>
+		mapRef.current?.fitBounds(L.latLng(c).toBounds(km * 2000), { padding: [40, 40] });
+	const toggleRadius = (on: boolean) => {
+		setRadiusOn(on);
+		setPickingCenter(false);
+		if (!on) return;
+		// Không có trụ sở và chưa chọn tâm → lấy tâm khung bản đồ hiện tại.
+		let c = center;
+		if (!c && mapRef.current) {
+			const m = mapRef.current.getCenter();
+			c = [m.lat, m.lng];
+			setRadiusCenter(c);
+		}
+		if (c) fitRadius(c, radiusKm);
+	};
+	const changeRadius = (km: number) => {
+		setRadiusKm(km);
+		if (center) fitRadius(center, km);
+	};
+
+	// Lần đầu: có trụ sở → ghim vào trụ sở; chưa khai báo trụ sở → khung ôm hết xe.
 	const fitted = useRef(false);
 	const fitAll = () => {
 		const pts = [...vehicles.map((v) => [v.latitude, v.longitude]), ...incidents.map((i) => [i.lat, i.lng])] as [
@@ -106,13 +164,17 @@ export default function MonitoringPage() {
 		][];
 		if (pts.length && mapRef.current) mapRef.current.fitBounds(L.latLngBounds(pts), { padding: [60, 60], maxZoom: 15 });
 	};
-	// biome-ignore lint/correctness/useExhaustiveDependencies: chỉ chạy khi số xe đổi (lần đầu có dữ liệu)
+	// biome-ignore lint/correctness/useExhaustiveDependencies: chỉ chạy tới khi căn xong lần đầu
 	useEffect(() => {
-		if (!fitted.current && vehicles.length && mapRef.current) {
+		if (fitted.current || !mapRef.current || !myTenant.isFetched) return;
+		if (hq) {
+			fitted.current = true;
+			mapRef.current.setView(hq, HQ_ZOOM);
+		} else if (vehicles.length) {
 			fitted.current = true;
 			fitAll();
 		}
-	}, [vehicles.length]);
+	}, [myTenant.isFetched, hq?.[0], hq?.[1], vehicles.length]);
 
 	const focus = (lat: number, lng: number, id?: number) => {
 		mapRef.current?.flyTo([lat, lng], Math.max(mapRef.current.getZoom(), 16), { duration: 0.6 });
@@ -139,6 +201,45 @@ export default function MonitoringPage() {
 		<div className="relative h-[calc(100vh-var(--layout-header-height))] w-full overflow-hidden">
 			<BaseMap mapRef={mapRef} zoom={12}>
 				<PickHandler active={picking} onPick={onPicked} />
+				<PickHandler
+					active={pickingCenter}
+					onPick={(lat, lng) => {
+						setRadiusCenter([lat, lng]);
+						setPickingCenter(false);
+						setRadiusOn(true);
+					}}
+				/>
+
+				{hq && (
+					<Marker position={hq} icon={hqIcon(myTenant.data?.name)} zIndexOffset={-100}>
+						<Popup>
+							<p className="font-semibold">{myTenant.data?.name}</p>
+							<p className="text-xs text-text-secondary">{myTenant.data?.address_detail || t("monitor.hq")}</p>
+						</Popup>
+					</Marker>
+				)}
+
+				{radiusOn && center && (
+					<>
+						<Circle
+							center={center}
+							radius={radiusKm * 1000}
+							interactive={false}
+							pathOptions={{ color: "#078dee", weight: 1.5, dashArray: "6 6", fillOpacity: 0.06 }}
+						/>
+						<Marker
+							position={center}
+							icon={radiusCenterIcon()}
+							draggable
+							eventHandlers={{
+								dragend: (e) => {
+									const p = e.target.getLatLng();
+									setRadiusCenter([p.lat, p.lng]);
+								},
+							}}
+						/>
+					</>
+				)}
 
 				{filtered.map((v) => (
 					<Marker
@@ -177,7 +278,23 @@ export default function MonitoringPage() {
 
 				{pickPoint && formOpen && <Marker position={[pickPoint.lat, pickPoint.lng]} icon={pickIcon()} />}
 
-				<MapControls onLocate={fitAll} />
+				<MapControls
+					onLocate={fitAll}
+					extra={
+						hq && (
+							<div className="overflow-hidden rounded-lg border bg-background shadow-md">
+								<button
+									type="button"
+									title={t("monitor.backToHq")}
+									onClick={() => mapRef.current?.flyTo(hq, HQ_ZOOM, { duration: 0.6 })}
+									className="flex h-9 w-9 items-center justify-center text-text-primary transition-colors hover:bg-action-hover"
+								>
+									<Icon icon="solar:buildings-2-linear" size={20} />
+								</button>
+							</div>
+						)
+					}
+				/>
 			</BaseMap>
 
 			{/* Thanh công cụ trên cùng */}
@@ -196,6 +313,13 @@ export default function MonitoringPage() {
 					)}
 				</div>
 			</div>
+
+			{pickingCenter && (
+				<div className="absolute left-1/2 top-20 z-[500] -translate-x-1/2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-white shadow-lg">
+					<Icon icon="solar:map-point-bold" size={18} className="mr-1 inline" />
+					{t("monitor.radius.pickHint")}
+				</div>
+			)}
 
 			{picking && (
 				<div className="absolute left-1/2 top-20 z-[500] -translate-x-1/2 rounded-full bg-error px-4 py-2 text-sm font-medium text-white shadow-lg">
@@ -289,6 +413,50 @@ export default function MonitoringPage() {
 									</button>
 								))}
 							</div>
+							<div className="flex flex-col gap-1.5 rounded-lg border px-2.5 py-2">
+								<div className="flex items-center justify-between gap-2">
+									<span className="flex items-center gap-2 text-xs font-medium">
+										<Switch size="small" checked={radiusOn} onChange={toggleRadius} />
+										{t("monitor.radius.title")}
+									</span>
+									<Select
+										size="small"
+										style={{ width: 84 }}
+										value={radiusKm}
+										onChange={changeRadius}
+										disabled={!radiusOn}
+										options={RADIUS_OPTIONS_KM.map((k) => ({ value: k, label: `${k} km` }))}
+									/>
+								</div>
+								{radiusOn && (
+									<div className="flex items-center justify-between gap-2 text-xs text-text-secondary">
+										<span className="truncate">
+											{t(radiusCenter ? "monitor.radius.centerPicked" : "monitor.radius.centerHq")}
+										</span>
+										<span className="flex shrink-0 gap-2">
+											<button
+												type="button"
+												className="text-primary hover:underline"
+												onClick={() => setPickingCenter((v) => !v)}
+											>
+												{pickingCenter ? t("common.cancelText") : t("monitor.radius.pick")}
+											</button>
+											{hq && radiusCenter && (
+												<button
+													type="button"
+													className="text-primary hover:underline"
+													onClick={() => {
+														setRadiusCenter(null);
+														fitRadius(hq, radiusKm);
+													}}
+												>
+													{t("monitor.radius.useHq")}
+												</button>
+											)}
+										</span>
+									</div>
+								)}
+							</div>
 							<label className="flex items-center gap-2 text-xs text-text-secondary">
 								<input type="checkbox" checked={showLabels} onChange={(e) => setShowLabels(e.target.checked)} />
 								{t("monitor.showLabels")}
@@ -302,6 +470,7 @@ export default function MonitoringPage() {
 									<VehicleRow
 										key={v.id}
 										v={v}
+										distanceKm={radiusOn ? distances.get(v.id) : undefined}
 										selected={v.id === selectedId}
 										onClick={() => focus(v.latitude, v.longitude, v.id)}
 									/>
@@ -371,7 +540,17 @@ export default function MonitoringPage() {
 	);
 }
 
-function VehicleRow({ v, selected, onClick }: { v: LiveVehicle; selected: boolean; onClick: () => void }) {
+function VehicleRow({
+	v,
+	selected,
+	onClick,
+	distanceKm: km,
+}: {
+	v: LiveVehicle;
+	selected: boolean;
+	onClick: () => void;
+	distanceKm?: number;
+}) {
 	const { t } = useTranslation();
 	return (
 		<button
@@ -397,7 +576,7 @@ function VehicleRow({ v, selected, onClick }: { v: LiveVehicle; selected: boolea
 			</div>
 			<div className="flex flex-col items-end text-[11px] text-text-secondary">
 				<span>{t(`monitor.state.${v.state}`)}</span>
-				<span>{fmtSecondsAgo(v.seconds_ago)}</span>
+				<span>{km !== undefined ? `${km.toFixed(1)} km` : fmtSecondsAgo(v.seconds_ago)}</span>
 			</div>
 		</button>
 	);

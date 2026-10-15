@@ -47,3 +47,28 @@ export function incidentIcon(status: IncidentStatus, active = false) {
 export function pickIcon() {
 	return incidentIcon("PROCESSING", true);
 }
+
+const HQ_SVG =
+	'<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2 8v2h20V8L12 3zM4 11v7H3v3h18v-3h-1v-7h-3v7h-2v-7h-2v7h-2v-7H8v7H6v-7H4z"/></svg>';
+
+/** Trụ sở tổ chức / đơn vị. */
+export function hqIcon(label?: string | null) {
+	const text = label ? `<span class="ims-hq__label">${escapeHtml(label)}</span>` : "";
+	return L.divIcon({
+		className: "ims-hq",
+		html: `<div class="ims-hq__body">${HQ_SVG}</div>${text}`,
+		iconSize: [30, 30],
+		iconAnchor: [15, 15],
+		popupAnchor: [0, -16],
+	});
+}
+
+/** Tâm vòng lọc bán kính (kéo được). */
+export function radiusCenterIcon() {
+	return L.divIcon({
+		className: "ims-radius-center",
+		html: '<div class="ims-radius-center__dot"></div>',
+		iconSize: [18, 18],
+		iconAnchor: [9, 9],
+	});
+}

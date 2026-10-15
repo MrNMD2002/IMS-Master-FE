@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { Input, Table, Tabs } from "antd";
+import { Input, Segmented, Table, Tabs } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -16,6 +16,7 @@ import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
 import { fmtDateTime, fmtFromNow } from "@/utils/format";
+import IncidentStatsView from "./stats";
 
 export default function IncidentListPage() {
 	const { t } = useTranslation();
@@ -23,6 +24,14 @@ export default function IncidentListPage() {
 	const can = useCan();
 	const [params, setParams] = useSearchParams();
 	const status = params.get("status") ?? "";
+	// ?view=stats — giữ trên đường dẫn để tải lại / gửi link vẫn mở đúng màn thống kê.
+	const view = params.get("view") === "stats" ? "stats" : "list";
+	const setView = (v: string) => {
+		const next = new URLSearchParams(params);
+		if (v === "stats") next.set("view", "stats");
+		else next.delete("view");
+		setParams(next, { replace: true });
+	};
 	const [page, setPage] = useState(1);
 	const [pageSize, setPageSize] = useState(10);
 	const [search, setSearch] = useState("");
@@ -121,11 +130,21 @@ export default function IncidentListPage() {
 				description={t("incident.description")}
 				actions={
 					<>
-						<Button variant="outline" onClick={() => refetch()}>
-							<Icon icon="solar:refresh-linear" size={18} />
-							{t("common.refresh")}
-						</Button>
-						{can(P.INCIDENT_MANAGE) && (
+						<Segmented
+							value={view}
+							onChange={(v) => setView(v as string)}
+							options={[
+								{ value: "list", label: t("incident.view.list"), icon: <Icon icon="solar:list-bold" size={16} /> },
+								{ value: "stats", label: t("incident.view.stats"), icon: <Icon icon="solar:chart-2-bold" size={16} /> },
+							]}
+						/>
+						{view === "list" && (
+							<Button variant="outline" onClick={() => refetch()}>
+								<Icon icon="solar:refresh-linear" size={18} />
+								{t("common.refresh")}
+							</Button>
+						)}
+						{view === "list" && can(P.INCIDENT_MANAGE) && (
 							<Button onClick={() => setFormOpen(true)}>
 								<Icon icon="solar:add-circle-bold" size={18} />
 								{t("incident.create")}
@@ -134,62 +153,68 @@ export default function IncidentListPage() {
 					</>
 				}
 				toolbar={
-					<>
-						<div className="w-full -mb-3">
-							<Tabs
-								activeKey={status}
-								onChange={setStatus}
-								items={[
-									{ key: "", label: t("common.all") },
-									...INCIDENT_STATUSES.map((s) => ({ key: s, label: t(`incident.status.${s}`) })),
-								]}
+					view === "list" && (
+						<>
+							<div className="w-full -mb-3">
+								<Tabs
+									activeKey={status}
+									onChange={setStatus}
+									items={[
+										{ key: "", label: t("common.all") },
+										...INCIDENT_STATUSES.map((s) => ({ key: s, label: t(`incident.status.${s}`) })),
+									]}
+								/>
+							</div>
+							<Input.Search
+								allowClear
+								className="max-w-xs"
+								placeholder={t("incident.searchPlaceholder")}
+								value={search}
+								onChange={(e) => setSearch(e.target.value)}
+								onSearch={(v) => {
+									setKeyword(v.trim());
+									setPage(1);
+								}}
 							/>
-						</div>
-						<Input.Search
-							allowClear
-							className="max-w-xs"
-							placeholder={t("incident.searchPlaceholder")}
-							value={search}
-							onChange={(e) => setSearch(e.target.value)}
-							onSearch={(v) => {
-								setKeyword(v.trim());
-								setPage(1);
-							}}
-						/>
-						<OrgUnitFilter
-							value={tenantId}
-							onChange={(v) => {
-								setTenantId(v);
-								setPage(1);
-							}}
-						/>
-					</>
+							<OrgUnitFilter
+								value={tenantId}
+								onChange={(v) => {
+									setTenantId(v);
+									setPage(1);
+								}}
+							/>
+						</>
+					)
 				}
 			/>
-			<Card className="gap-0 py-5">
-				<CardContent className="px-4 sm:px-6">
-					<Table
-						rowKey="id"
-						size="middle"
-						scroll={{ x: "max-content" }}
-						loading={isFetching}
-						columns={columns}
-						dataSource={data?.data ?? []}
-						onRow={(r) => ({ onClick: () => navigate(`/incidents/${r.id}`), className: "cursor-pointer" })}
-						pagination={{
-							current: page,
-							pageSize,
-							total: data?.metadata.total_items ?? 0,
-							showSizeChanger: true,
-							showTotal: (total) => t("common.totalItems", { total }),
-							onChange: (p, s) => {
-								setPage(p);
-								setPageSize(s);
-							},
-						}}
-					/>
-				</CardContent>
-			</Card>
+			{view === "stats" ? (
+				<IncidentStatsView />
+			) : (
+				<Card className="gap-0 py-5">
+					<CardContent className="px-4 sm:px-6">
+						<Table
+							rowKey="id"
+							size="middle"
+							scroll={{ x: "max-content" }}
+							loading={isFetching}
+							columns={columns}
+							dataSource={data?.data ?? []}
+							onRow={(r) => ({ onClick: () => navigate(`/incidents/${r.id}`), className: "cursor-pointer" })}
+							pagination={{
+								current: page,
+								pageSize,
+								total: data?.metadata.total_items ?? 0,
+								showSizeChanger: true,
+								showTotal: (total) => t("common.totalItems", { total }),
+								onChange: (p, s) => {
+									setPage(p);
+									setPageSize(s);
+								},
+							}}
+						/>
+					</CardContent>
+				</Card>
+			)}
 			<IncidentFormDrawer
 				open={formOpen}
 				onClose={() => setFormOpen(false)}
