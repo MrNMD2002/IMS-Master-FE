@@ -556,7 +556,7 @@
 		"search": "Search by name, code or meaning",
 		"permission": "Permission",
 		"meaning": "What it allows",
-		"matrixHint": "You can grant the {{count}} permissions below. ✓ = the role already includes it (no individual grant needed).",
+		"matrixHint": "You can grant the {{count}} permissions below. ✓ means the role already includes it. Click a role to highlight it, a group to collapse it.",
 		"empty": "No permissions you can grant",
 		"guideLink": "What each permission does",
 		"rulesTitle": "Rules",
@@ -572,7 +572,16 @@
 			"platform": "Platform",
 			"rootOnly": "Root org only",
 			"flag": "System flag"
-		}
+		},
+		"roleCount": "{{count}} permissions",
+		"moreThan": "{{count}} more than {{role}} — click to see",
+		"focusHint": "Click to highlight this role's permissions",
+		"focus": "Highlighting {{role}}: {{count}} permissions. Permissions it lacks are dimmed.",
+		"focusClear": "Clear highlight",
+		"focusAdded": "Added on top of {{role}}:",
+		"collapseAll": "Collapse all",
+		"expandAll": "Expand all",
+		"matrixHintFiltered": "Showing {{count}} of {{total}} permissions matching the search."
 	},
 	"audit": {
 		"description": "Who did what and when — within your part of the organization tree",
