@@ -399,6 +399,7 @@
 		"duration": "Thời gian",
 		"start": "Điểm đầu",
 		"end": "Điểm cuối",
+		"dataFrom": "Chỉ có dữ liệu GPS từ {{time}} — trước đó xe chưa gửi vị trí.",
 		"noData": "Không có dữ liệu GPS trong khoảng thời gian này"
 	},
 	"device": {

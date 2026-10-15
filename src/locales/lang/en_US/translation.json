@@ -399,6 +399,7 @@
 		"duration": "Duration",
 		"start": "Start",
 		"end": "End",
+		"dataFrom": "GPS data only starts at {{time}} — the vehicle sent no positions before that.",
 		"noData": "No GPS data in this time range"
 	},
 	"device": {
