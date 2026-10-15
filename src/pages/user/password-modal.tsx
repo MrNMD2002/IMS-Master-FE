@@ -3,7 +3,7 @@ import { Form, Input, Modal } from "antd";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import type { UserInfo } from "#/ims";
+import type { UserInfo } from "#/cmc";
 import userService from "@/api/services/userService";
 import { PASSWORD_RULES } from "./user-modal";
 

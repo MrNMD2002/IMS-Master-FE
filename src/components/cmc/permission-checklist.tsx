@@ -1,9 +1,9 @@
 import { Checkbox, Collapse, Input, Tooltip } from "antd";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { Permission } from "#/ims";
+import type { Permission } from "#/cmc";
 import { Icon } from "@/components/icon";
-import { usePermissionCatalog } from "@/hooks/use-ims-options";
+import { usePermissionCatalog } from "@/hooks/use-cmc-options";
 
 interface Props {
 	value: string[];

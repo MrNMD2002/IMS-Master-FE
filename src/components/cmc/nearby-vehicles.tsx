@@ -3,9 +3,9 @@ import { Checkbox, InputNumber, Segmented } from "antd";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import gpsService from "@/api/services/gpsService";
+import EmptyState from "@/components/cmc/empty-state";
+import { MobilizedBadge } from "@/components/cmc/status";
 import { Icon } from "@/components/icon";
-import EmptyState from "@/components/ims/empty-state";
-import { MobilizedBadge } from "@/components/ims/status";
 import { cn } from "@/utils";
 
 interface Props {

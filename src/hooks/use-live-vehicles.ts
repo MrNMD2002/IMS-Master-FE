@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import type { Device, GpsLatest } from "#/ims";
+import type { Device, GpsLatest } from "#/cmc";
 import deviceService from "@/api/services/deviceService";
 import gpsService from "@/api/services/gpsService";
-import type { VehicleState } from "@/components/ims/map/markers";
+import type { VehicleState } from "@/components/cmc/map/markers";
 import { P } from "@/constants/permission";
 import { useCan } from "@/store/userStore";
 

@@ -3,12 +3,12 @@ import { Alert, Form, Input, Modal, Select, Switch } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import type { UserCreateReq, UserInfo } from "#/ims";
+import type { UserCreateReq, UserInfo } from "#/cmc";
 import userService from "@/api/services/userService";
-import PermissionChecklist from "@/components/ims/permission-checklist";
-import TenantSelect from "@/components/ims/tenant-select";
+import PermissionChecklist from "@/components/cmc/permission-checklist";
+import TenantSelect from "@/components/cmc/tenant-select";
 import { FLEXIBLE_ROLE, P } from "@/constants/permission";
-import { useRoles } from "@/hooks/use-ims-options";
+import { useRoles } from "@/hooks/use-cmc-options";
 import { useCan, useUserInfo } from "@/store/userStore";
 
 export const PASSWORD_RULES = (t: (k: string) => string) => [

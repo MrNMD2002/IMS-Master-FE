@@ -1,5 +1,5 @@
 import type { Paged, PageQuery } from "#/api";
-import type { GpsHistory, GpsLatest, GpsNearby } from "#/ims";
+import type { GpsHistory, GpsLatest, GpsNearby } from "#/cmc";
 import apiClient from "../apiClient";
 
 /** Vị trí hiện tại của mọi xe trong phạm vi. */
