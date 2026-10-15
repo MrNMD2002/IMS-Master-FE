@@ -135,8 +135,7 @@
 	pointer-events: none;
 }
 
-.ims-sov > span,
-.ims-sov--island {
+.ims-sov > span {
 	white-space: nowrap;
 }
 
@@ -145,9 +144,9 @@
 	display: block;
 	transform: translate(-50%, -50%);
 	text-align: center;
-	color: #0b4f8a;
-	font-weight: 700;
-	font-size: 13px;
+	color: #b71c1c;
+	font-weight: 800;
+	font-size: 14px;
 	letter-spacing: 0.02em;
 	text-shadow:
 		0 0 3px #fff,
@@ -163,7 +162,12 @@
 	letter-spacing: 0.15em;
 }
 
-.ims-sov--island {
+/* Điểm địa danh: chấm + tên */
+.ims-sov--island,
+.ims-sov--reef,
+.ims-sov--subgroup,
+.ims-sov--coast-island,
+.ims-sov--cape {
 	display: flex !important;
 	align-items: center;
 	gap: 4px;
@@ -176,6 +180,24 @@
 		0 0 3px #fff;
 }
 
+.ims-sov--reef {
+	font-size: 10px;
+	font-weight: 500;
+	font-style: italic;
+	color: #2f6fa8;
+}
+
+.ims-sov--subgroup {
+	font-size: 12px;
+	font-weight: 700;
+	color: #b71c1c;
+}
+
+.ims-sov--cape {
+	font-style: italic;
+	color: #5d4037;
+}
+
 .ims-sov__dot {
 	width: 7px;
 	height: 7px;
@@ -185,8 +207,41 @@
 	flex: none;
 }
 
+.ims-sov--reef .ims-sov__dot {
+	width: 5px;
+	height: 5px;
+	border-radius: 1px;
+	background: #2f6fa8;
+	transform: rotate(45deg);
+}
+
+.ims-sov--subgroup .ims-sov__dot {
+	display: none;
+}
+
+.ims-sov--cape .ims-sov__dot {
+	width: 0;
+	height: 0;
+	border-radius: 0;
+	background: none;
+	border-left: 4px solid transparent;
+	border-right: 4px solid transparent;
+	border-bottom: 7px solid #5d4037;
+	border-top: none;
+}
+
 [data-theme-mode="dark"] .ims-sov--group > span,
-[data-theme-mode="dark"] .ims-sov--island {
+[data-theme-mode="dark"] .ims-sov--subgroup {
+	color: #ff8a80;
+	text-shadow:
+		0 0 3px #000,
+		0 0 3px #000;
+}
+
+[data-theme-mode="dark"] .ims-sov--island,
+[data-theme-mode="dark"] .ims-sov--reef,
+[data-theme-mode="dark"] .ims-sov--coast-island,
+[data-theme-mode="dark"] .ims-sov--cape {
 	color: #9cd3ff;
 	text-shadow:
 		0 0 3px #000,
