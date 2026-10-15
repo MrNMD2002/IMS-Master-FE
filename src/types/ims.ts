@@ -302,6 +302,31 @@ export interface IncidentQuery {
 	device_id?: number;
 }
 
+export type ReportPeriod = "day" | "week" | "month" | "year";
+
+/** Khoảng ngày theo giờ Việt Nam (YYYY-MM-DD), gồm cả hai đầu. */
+export interface IncidentReportQuery {
+	period: ReportPeriod;
+	date_from: string;
+	date_to: string;
+	tenant_id?: number;
+}
+
+export interface IncidentReportBucket extends Record<IncidentStatus, number> {
+	bucket: string;
+	total: number;
+}
+
+export interface IncidentReportStats {
+	period: ReportPeriod;
+	date_from: string;
+	date_to: string;
+	total: number;
+	by_status: Record<IncidentStatus, number>;
+	series: IncidentReportBucket[];
+	by_tenant: { tenant_id: number; tenant_name: string; total: number }[];
+}
+
 export interface IncidentLog {
 	id: number;
 	action?: string | null;

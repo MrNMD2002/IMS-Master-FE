@@ -49,5 +49,5 @@ globalStyle(`${chartWrapper} .apexcharts-legend-series`, {
 
 globalStyle(`${chartWrapper} .apexcharts-legend-text`, {
 	lineHeight: "18px",
-	textTransform: "capitalize",
+	textTransform: "none",
 });
