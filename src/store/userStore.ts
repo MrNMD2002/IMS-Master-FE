@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import type { UserInfo, UserToken } from "#/cmc";
 import { StorageEnum } from "#/enum";
-import type { UserInfo, UserToken } from "#/ims";
 import authService, { type SignInReq } from "@/api/services/authService";
 import { P } from "@/constants/permission";
 import { t } from "@/locales/i18n";
@@ -28,7 +28,7 @@ const useUserStore = create<UserStore>()(
 			},
 		}),
 		{
-			name: "imsUserStore",
+			name: "cmcUserStore",
 			storage: createJSONStorage(() => localStorage),
 			partialize: (state) => ({
 				[StorageEnum.UserInfo]: state.userInfo,

@@ -6,7 +6,7 @@ export type GlobalConfig = {
 	/** Trang mở đầu sau khi đăng nhập */
 	defaultRoute: string;
 	publicPath: string;
-	/** Base URL của IMS API, vd `/ims/api` */
+	/** Base URL của CMC API, vd `/cmc/api` */
 	apiBaseUrl: string;
 };
 
@@ -16,5 +16,5 @@ export const GLOBAL_CONFIG: GlobalConfig = {
 	appVersion: packageJson.version,
 	defaultRoute: import.meta.env.VITE_APP_DEFAULT_ROUTE || "/dashboard",
 	publicPath: import.meta.env.VITE_APP_PUBLIC_PATH || "/",
-	apiBaseUrl: import.meta.env.VITE_APP_API_BASE_URL || "/ims/api",
+	apiBaseUrl: import.meta.env.VITE_APP_API_BASE_URL || "/cmc/api",
 };

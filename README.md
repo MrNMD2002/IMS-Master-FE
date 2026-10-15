@@ -3,7 +3,7 @@
 # Command Center — Web quản trị
 
 **Định vị · Giám sát · Xử lý sự vụ.** Web cho người dùng Web (trực ban / chỉ huy) của hệ thống.
-Backend: [IMS-Master](https://github.com/MrNMD2002/IMS-Master).
+Backend: [CMC-Master](https://github.com/MrNMD2002/CMC-Master).
 
 React 19 · TypeScript · Vite · Ant Design 5 · Tailwind 4 (shadcn/ui) · TanStack Query · Zustand · Leaflet.
 Khung giao diện dựa trên template mã nguồn mở [slash-admin](https://github.com/d3george/slash-admin) (MIT).
@@ -31,7 +31,7 @@ Nút bánh răng mở bảng tuỳ chỉnh: màu chủ đạo, bố cục menu (
 
 ## Chạy
 
-Cần Node 20+ và backend IMS đang chạy ở `http://localhost:8010`.
+Cần Node 20+ và backend CMC đang chạy ở `http://localhost:8010`.
 
 ```bash
 cp .env.example .env
@@ -39,7 +39,7 @@ npm install --legacy-peer-deps
 npm run dev          # http://localhost:3001
 ```
 
-Dev server proxy `/ims/api` → `VITE_DEV_API_TARGET` nên không vướng CORS.
+Dev server proxy `/cmc/api` → `VITE_DEV_API_TARGET` nên không vướng CORS.
 Build: `npm run build` (ra `dist/`). Kiểm tra code: `npx tsc --noEmit`, `npm run lint`.
 
 ## Cấu trúc
@@ -49,9 +49,9 @@ src/
   api/apiClient.ts        gọi API: bóc khung {code,data,message}, tự refresh token khi 401,
                           đăng xuất khi 4011, toast lỗi (message tiếng Việt từ backend)
   api/services/*          một file / nhóm endpoint
-  types/ims.ts            kiểu dữ liệu theo schema backend
+  types/cmc.ts            kiểu dữ liệu theo schema backend
   constants/permission.ts mã quyền
-  components/ims/*        thành phần nghiệp vụ dùng chung: bản đồ, chọn đơn vị (cây),
+  components/cmc/*        thành phần nghiệp vụ dùng chung: bản đồ, chọn đơn vị (cây),
                           form tạo sự vụ, chọn xe gần nhất, danh sách quyền...
   pages/*                 mỗi thư mục một trang (route khai báo ở routes/sections/dashboard)
   locales/lang/*/translation.json   bản dịch vi_VN / en_US
@@ -60,7 +60,7 @@ src/
 ## Ghi chú
 
 - **Bản đồ & tra địa chỉ** dùng Esri (không cần API key). `tile.openstreetmap.org` và
-  Nominatim bị chặn trên mạng dev, CARTO giờ đòi key. Muốn đổi nguồn: `components/ims/map/base-map.tsx`
+  Nominatim bị chặn trên mạng dev, CARTO giờ đòi key. Muốn đổi nguồn: `components/cmc/map/base-map.tsx`
   và `utils/geocode.ts`.
 - **Ảnh hiện trường** lấy qua `/incident/{id}/images/{image_id}/raw` kèm token rồi hiện bằng blob URL
   (thẻ `<img>` không gửi được header Authorization).

@@ -1,6 +1,6 @@
 import type { AxiosResponse } from "axios";
 import type { Paged, PageQuery } from "#/api";
-import type { AuditLog, AuditQuery, DashboardStats, Permission, Role, RoleReq } from "#/ims";
+import type { AuditLog, AuditQuery, DashboardStats, Permission, Role, RoleReq } from "#/cmc";
 import apiClient from "../apiClient";
 
 // ── Vai trò / quyền ─────────────────────────────────────────────────────────

@@ -3,7 +3,7 @@ import { Input, Modal } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { type Incident, isOnDuty } from "#/ims";
+import { type Incident, isOnDuty } from "#/cmc";
 import incidentService from "@/api/services/incidentService";
 import { Icon } from "@/components/icon";
 import NearbyVehicles from "./nearby-vehicles";

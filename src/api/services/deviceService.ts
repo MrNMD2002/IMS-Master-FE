@@ -1,5 +1,5 @@
 import type { Paged, PageQuery } from "#/api";
-import type { Device, DeviceQuery, DeviceReq, DeviceType, DeviceTypeReq, DeviceUser } from "#/ims";
+import type { Device, DeviceQuery, DeviceReq, DeviceType, DeviceTypeReq, DeviceUser } from "#/cmc";
 import apiClient from "../apiClient";
 
 const list = (params: PageQuery & DeviceQuery) => apiClient.get<Paged<Device>>({ url: "/device/list", params });

@@ -1,4 +1,4 @@
-/** Mã quyền — khớp `app/shared/permisson_constant.py` của IMS API. */
+/** Mã quyền — khớp `app/shared/permisson_constant.py` của CMC API. */
 export const P = {
 	USER_READ: "user.read",
 	USER_MANAGE: "user.manage",

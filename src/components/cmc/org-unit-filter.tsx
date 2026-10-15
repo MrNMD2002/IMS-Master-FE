@@ -1,7 +1,7 @@
 import { Select, TreeSelect } from "antd";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { type TenantTreeNode, useTenantOptions } from "@/hooks/use-ims-options";
+import { type TenantTreeNode, useTenantOptions } from "@/hooks/use-cmc-options";
 import { cn } from "@/utils";
 
 interface Props {

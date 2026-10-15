@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import type { TenantOption } from "#/ims";
+import type { TenantOption } from "#/cmc";
 import deviceService from "@/api/services/deviceService";
 import systemService from "@/api/services/systemService";
 import tenantService from "@/api/services/tenantService";

@@ -1,5 +1,5 @@
 import type { Paged, PageQuery } from "#/api";
-import type { Tenant, TenantOption, TenantReq } from "#/ims";
+import type { Tenant, TenantOption, TenantReq } from "#/cmc";
 import apiClient from "../apiClient";
 
 const list = (params: PageQuery & { search?: string; is_active?: boolean; parent_tenant_id?: number }) =>
