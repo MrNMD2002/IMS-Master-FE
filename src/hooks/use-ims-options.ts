@@ -65,15 +65,22 @@ export function useDeviceTypes() {
 	return { ...query, types };
 }
 
-/** Danh mục quyền (cache chung với PermissionChecklist) + tra tên hiển thị theo mã. */
+/**
+ * Danh mục quyền + tra tên hiển thị theo mã.
+ * `permissions` CHỈ gồm quyền cấp cố định được: quyền chỉ kích hoạt tạm thời (vd `platform.read`)
+ * không gán được cho vai / tài khoản nên không hiện ở bảng tích quyền và bộ lọc.
+ * `byCode` giữ đủ mọi mã để vẫn ra tên nếu dữ liệu cũ còn chứa mã đó.
+ */
 export function usePermissionCatalog() {
 	const query = useQuery({
 		queryKey: ["permissions"],
 		queryFn: () => systemService.permissionList(),
 		staleTime: 300_000,
 	});
-	const byCode = useMemo(() => new Map((query.data?.data ?? []).map((p) => [p.code, p])), [query.data]);
-	return { ...query, permissions: query.data?.data ?? [], byCode };
+	const all = query.data?.data;
+	const permissions = useMemo(() => (all ?? []).filter((p) => p.is_grantable), [all]);
+	const byCode = useMemo(() => new Map((all ?? []).map((p) => [p.code, p])), [all]);
+	return { ...query, permissions, byCode };
 }
 
 export function useRoles() {
