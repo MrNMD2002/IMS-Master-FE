@@ -1,5 +1,5 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Marker } from "react-leaflet";
 import { useNavigate } from "react-router";
@@ -19,7 +19,7 @@ import { INCIDENT_STATUS_COLOR, IncidentStatusBadge } from "@/components/ims/sta
 import { LiveClock, WorkQuote } from "@/components/ims/work-hero";
 import { INCIDENT_READ_GATE, P } from "@/constants/permission";
 import { useLiveVehicles } from "@/hooks/use-live-vehicles";
-import { useScrolled } from "@/hooks/use-scrolled";
+import { useCompactOnScroll } from "@/hooks/use-scrolled";
 import { useCan, useUserInfo } from "@/store/userStore";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
@@ -30,7 +30,8 @@ export default function DashboardPage() {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const can = useCan();
-	const compact = useScrolled();
+	const barRef = useRef<HTMLDivElement>(null);
+	const compact = useCompactOnScroll(barRef);
 	// Lọc theo Tổ chức → Đơn vị (cấp nền tảng thấy nhiều tổ chức).
 	const [tenantId, setTenantId] = useState<number | undefined>();
 	const { full_name, username, tenant_name } = useUserInfo();
@@ -89,7 +90,7 @@ export default function DashboardPage() {
 	return (
 		<div className="flex flex-col gap-5">
 			{/* Khối ghim: trích dẫn, đồng hồ, bộ lọc, số liệu tổng — thu gọn khi trang đã cuộn. */}
-			<div className={cn(STICKY_PAGE_BAR, "flex flex-col", compact ? "gap-2" : "gap-4")}>
+			<div ref={barRef} className={cn(STICKY_PAGE_BAR, "flex flex-col", compact ? "gap-2" : "gap-4")}>
 				{/* Câu trích dẫn + đồng hồ */}
 				<Card
 					className={cn(
