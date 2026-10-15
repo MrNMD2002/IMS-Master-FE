@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
 import { Checkbox, Collapse, Input, Tooltip } from "antd";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import systemService from "@/api/services/systemService";
+import type { Permission } from "#/ims";
 import { Icon } from "@/components/icon";
+import { usePermissionCatalog } from "@/hooks/use-ims-options";
 
 interface Props {
 	value: string[];
@@ -19,22 +19,18 @@ interface Props {
 export default function PermissionChecklist({ value, onChange, locked = [], allowed, disabled }: Props) {
 	const { t } = useTranslation();
 	const [q, setQ] = useState("");
-	const { data, isLoading } = useQuery({
-		queryKey: ["permissions"],
-		queryFn: () => systemService.permissionList(),
-		staleTime: 300_000,
-	});
+	const { permissions, isLoading } = usePermissionCatalog();
 
 	const groups = useMemo(() => {
 		const query = q.trim().toLowerCase();
-		const m = new Map<string, NonNullable<typeof data>["data"]>();
-		for (const p of data?.data ?? []) {
+		const m = new Map<string, Permission[]>();
+		for (const p of permissions) {
 			if (query && !`${p.code} ${p.name}`.toLowerCase().includes(query)) continue;
 			const mod = p.module || "other";
 			m.set(mod, [...(m.get(mod) ?? []), p]);
 		}
 		return [...m.entries()].sort(([a], [b]) => a.localeCompare(b));
-	}, [data, q]);
+	}, [permissions, q]);
 
 	const set = new Set(value);
 	const lockedSet = new Set(locked);
@@ -78,7 +74,7 @@ export default function PermissionChecklist({ value, onChange, locked = [], allo
 									const box = (
 										<Checkbox
 											checked={isLocked || set.has(p.code)}
-											disabled={disabled || isLocked || (notAllowed && !set.has(p.code)) || !p.is_grantable}
+											disabled={disabled || isLocked || (notAllowed && !set.has(p.code))}
 											onChange={(e) => toggle(p.code, e.target.checked)}
 										>
 											<span className="flex flex-col leading-tight">
