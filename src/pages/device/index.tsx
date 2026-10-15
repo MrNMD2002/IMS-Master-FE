@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { App, Dropdown, Input, Select, Table } from "antd";
+import { App, Dropdown, Input, Select, Table, Tag, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -88,7 +88,23 @@ export default function DevicePage() {
 		},
 		{ title: t("device.field.type"), dataIndex: "device_type_name", render: (v) => v || "—" },
 		{ title: t("device.field.tenant"), dataIndex: "tenant_name", render: (v) => v || "—" },
-		{ title: t("common.statusLabel"), dataIndex: "status", render: (s) => <DeviceStatusBadge status={s} /> },
+		{
+			title: t("common.statusLabel"),
+			dataIndex: "status",
+			render: (s, d) => (
+				<span className="flex flex-wrap items-center gap-1">
+					<DeviceStatusBadge status={s} />
+					{/* Xe "Hoạt động" nhưng loại bị khoá → không điều được; nêu rõ lý do. */}
+					{s === "ACTIVE" && d.available === false && (
+						<Tooltip title={d.unavailable_reason}>
+							<Tag color="error" className="m-0">
+								{t("device.typeLocked")}
+							</Tag>
+						</Tooltip>
+					)}
+				</span>
+			),
+		},
 		{
 			title: t("device.mission"),
 			key: "mobilized",
@@ -97,6 +113,12 @@ export default function DevicePage() {
 					<button type="button" onClick={() => navigate(`/incidents/${d.current_incident_id}`)}>
 						<MobilizedBadge mobilized />
 					</button>
+				) : d.available === false ? (
+					<Tooltip title={d.unavailable_reason}>
+						<Tag color="error" className="m-0">
+							{t("monitor.state.unavailable")}
+						</Tag>
+					</Tooltip>
 				) : (
 					<MobilizedBadge mobilized={d.is_mobilized} />
 				),

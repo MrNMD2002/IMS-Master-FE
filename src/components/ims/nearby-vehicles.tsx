@@ -50,7 +50,8 @@ export default function NearbyVehicles({
 
 	const rows = useMemo(() => {
 		const all = data?.data ?? [];
-		return filter === "ready" ? all.filter((r) => !r.device?.is_mobilized) : all;
+		// "Sẵn sàng": chưa làm nhiệm vụ VÀ khả dụng (không bảo trì / mất / loại bị khoá).
+		return filter === "ready" ? all.filter((r) => !r.device?.is_mobilized && r.device?.available !== false) : all;
 	}, [data, filter]);
 
 	if (!enabled) {
@@ -94,6 +95,7 @@ export default function NearbyVehicles({
 				{rows.map((r) => {
 					const already = excludeIds.includes(r.id);
 					const busy = !!r.device?.is_mobilized;
+					const blocked = r.device?.available === false;
 					const checked = value.includes(r.id);
 					return (
 						<label
@@ -101,10 +103,14 @@ export default function NearbyVehicles({
 							className={cn(
 								"flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 transition-colors",
 								checked ? "border-primary bg-primary/5" : "hover:bg-action-hover",
-								(already || busy) && "cursor-not-allowed opacity-60",
+								(already || busy || blocked) && "cursor-not-allowed opacity-60",
 							)}
 						>
-							<Checkbox checked={checked} disabled={already || busy} onChange={(e) => toggle(r.id, e.target.checked)} />
+							<Checkbox
+								checked={checked}
+								disabled={already || busy || blocked}
+								onChange={(e) => toggle(r.id, e.target.checked)}
+							/>
 							<div className="min-w-0 flex-1">
 								<p className="truncate text-sm font-medium">{r.name || r.imei}</p>
 								<p className="truncate text-xs text-text-secondary">
@@ -119,6 +125,13 @@ export default function NearbyVehicles({
 								</span>
 								{already ? (
 									<span className="text-[11px] text-text-secondary">{t("dispatch.alreadyIn")}</span>
+								) : blocked && !busy ? (
+									<span
+										className="max-w-[160px] truncate text-[11px] text-error"
+										title={r.device?.unavailable_reason ?? ""}
+									>
+										{r.device?.unavailable_reason ?? t("monitor.state.unavailable")}
+									</span>
 								) : (
 									<MobilizedBadge mobilized={busy} />
 								)}
