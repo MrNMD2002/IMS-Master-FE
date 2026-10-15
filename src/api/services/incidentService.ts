@@ -1,6 +1,14 @@
 import type { AxiosResponse } from "axios";
 import type { Paged, PageQuery } from "#/api";
-import type { Incident, IncidentImage, IncidentLog, IncidentQuery, IncidentReq } from "#/ims";
+import type {
+	Incident,
+	IncidentImage,
+	IncidentLog,
+	IncidentQuery,
+	IncidentReportQuery,
+	IncidentReportStats,
+	IncidentReq,
+} from "#/ims";
 import apiClient from "../apiClient";
 
 const list = (params: PageQuery & IncidentQuery) => apiClient.get<Paged<Incident>>({ url: "/incident/list", params });
@@ -48,6 +56,23 @@ const imageBlobUrl = async (id: number, imageId: number) => {
 	return URL.createObjectURL(res.data);
 };
 
+/** Thống kê theo ngày / tuần / tháng / năm (giờ Việt Nam), cùng phạm vi với danh sách. */
+const reportStats = (params: IncidentReportQuery) =>
+	apiClient.get<IncidentReportStats>({ url: "/incident/report/stats", params });
+
+/** Excel báo cáo (không kèm ảnh). */
+const reportExport = async (params: IncidentReportQuery) => {
+	const res = await apiClient.get<AxiosResponse<Blob>>({
+		url: "/incident/report/export",
+		params,
+		responseType: "blob",
+		raw: true,
+	});
+	const disposition = res.headers["content-disposition"] as string | undefined;
+	const name = disposition?.match(/filename\*?=(?:UTF-8'')?"?([^";]+)/i)?.[1];
+	return { blob: res.data, filename: name ? decodeURIComponent(name) : "bao-cao-su-vu.xlsx" };
+};
+
 export default {
 	list,
 	detail,
@@ -63,4 +88,6 @@ export default {
 	images,
 	deleteImage,
 	imageBlobUrl,
+	reportStats,
+	reportExport,
 };

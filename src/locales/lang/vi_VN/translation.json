@@ -253,7 +253,17 @@
 		"speed": "Tốc độ",
 		"lastSeen": "Cập nhật",
 		"replay": "Xem lộ trình",
-		"currentIncident": "Sự vụ đang xử lý"
+		"currentIncident": "Sự vụ đang xử lý",
+		"hq": "Trụ sở",
+		"backToHq": "Về trụ sở",
+		"radius": {
+			"title": "Lọc trong bán kính",
+			"centerHq": "Tâm: trụ sở",
+			"centerPicked": "Tâm: điểm đã chọn (kéo để dời)",
+			"pick": "Chọn tâm",
+			"useHq": "Về trụ sở",
+			"pickHint": "Bấm lên bản đồ để đặt tâm vòng lọc"
+		}
 	},
 	"incident": {
 		"description": "Tiếp nhận, điều động và theo dõi xử lý sự vụ",
@@ -329,6 +339,31 @@
 			"device_complete": "Xe báo kết thúc",
 			"status_update": "Đổi trạng thái",
 			"close": "Đóng sự vụ"
+		},
+		"view": {
+			"list": "Danh sách",
+			"stats": "Thống kê"
+		},
+		"stats": {
+			"period": {
+				"day": "Ngày",
+				"week": "Tuần",
+				"month": "Tháng",
+				"year": "Năm"
+			},
+			"periodCol": {
+				"day": "Ngày",
+				"week": "Tuần",
+				"month": "Tháng",
+				"year": "Năm"
+			},
+			"total": "Tổng sự vụ",
+			"export": "Xuất Excel",
+			"overTime": "Số sự vụ theo {{period}}",
+			"topUnits": "Đơn vị có nhiều sự vụ nhất",
+			"table": "Bảng số liệu (mốc có sự vụ)",
+			"empty": "Không có sự vụ trong khoảng thời gian này",
+			"count": "{{count}} sự vụ"
 		}
 	},
 	"dispatch": {
@@ -425,8 +460,10 @@
 			"city": "Tỉnh / thành phố",
 			"address": "Địa chỉ",
 			"lat": "Vĩ độ",
-			"lng": "Kinh độ"
-		}
+			"lng": "Kinh độ",
+			"hq": "Vị trí trụ sở"
+		},
+		"hqHint": "Tìm địa chỉ hoặc bấm lên bản đồ. Màn giám sát của tài khoản thuộc đơn vị này sẽ mở tại đây."
 	},
 	"user": {
 		"description": "Tài khoản Web (trực ban, chỉ huy) và tài khoản App (cán bộ trên xe)",
@@ -690,6 +727,13 @@
 			"all": "Toàn hệ thống",
 			"subtree": "Đơn vị mình và cấp dưới",
 			"one": "Chỉ đơn vị mình"
+		}
+	},
+	"map": {
+		"sovereignty": {
+			"eastSea": "Biển Đông",
+			"hoangSa": "Quần đảo Hoàng Sa (Việt Nam)",
+			"truongSa": "Quần đảo Trường Sa (Việt Nam)"
 		}
 	}
 }

@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import type { Tenant, TenantReq } from "#/ims";
 import tenantService from "@/api/services/tenantService";
+import AddressSearch from "@/components/ims/address-search";
+import LocationPicker from "@/components/ims/location-picker";
 import TenantSelect from "@/components/ims/tenant-select";
 import { P } from "@/constants/permission";
 import { useCan, useUserInfo } from "@/store/userStore";
@@ -25,6 +27,13 @@ export default function TenantModal({ state, onClose }: { state: TenantModalStat
 	const isEdit = !!tenant;
 	const canMove = can(P.TENANT_SUBTREE_MANAGE, P.TENANT_MANAGE, P.PLATFORM_BYPASS);
 	const selfOnly = isEdit && !canMove && tenant.id === tenant_id;
+	// Trụ sở: ghim trên bản đồ / tìm địa chỉ — đồng bộ với 2 ô vĩ độ, kinh độ bên dưới.
+	const lat = Form.useWatch("latitude", form);
+	const lng = Form.useWatch("longitude", form);
+	const pickHq = (la: number, ln: number, address?: string) => {
+		form.setFieldsValue({ latitude: Number(la.toFixed(6)), longitude: Number(ln.toFixed(6)) });
+		if (address && !form.getFieldValue("address_detail")) form.setFieldValue("address_detail", address);
+	};
 
 	useEffect(() => {
 		if (!open) return;
@@ -116,6 +125,12 @@ export default function TenantModal({ state, onClose }: { state: TenantModalStat
 					<Form.Item name="address_detail" label={t("tenant.field.address")}>
 						<Input />
 					</Form.Item>
+					<Form.Item label={t("tenant.field.hq")} className="sm:col-span-2" extra={t("tenant.hqHint")}>
+						<div className="flex flex-col gap-2">
+							<AddressSearch onSelect={(r) => pickHq(r.lat, r.lng, r.label)} />
+							<LocationPicker lat={lat} lng={lng} onChange={(la, ln) => pickHq(la, ln)} height={220} />
+						</div>
+					</Form.Item>
 					<Form.Item name="latitude" label={t("tenant.field.lat")}>
 						<InputNumber min={-90} max={90} step={0.000001} style={{ width: "100%" }} />
 					</Form.Item>
@@ -123,7 +138,8 @@ export default function TenantModal({ state, onClose }: { state: TenantModalStat
 						<InputNumber min={-180} max={180} step={0.000001} style={{ width: "100%" }} />
 					</Form.Item>
 				</div>
-				{!selfOnly && (
+				{/* Tổ chức mặc định (gốc nền tảng) không khoá được — backend trả 400. */}
+				{!selfOnly && !tenant?.is_default && (
 					<Form.Item
 						name="is_active"
 						label={t("common.statusLabel")}
