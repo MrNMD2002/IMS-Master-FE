@@ -1,5 +1,5 @@
 import L from "leaflet";
-import type { IncidentStatus } from "#/ims";
+import type { IncidentStatus } from "#/cmc";
 import { INCIDENT_STATUS_COLOR } from "../status";
 
 /** `unavailable`: xe ngừng hoạt động / bảo trì / mất, hoặc loại phương tiện bị khoá — không điều được. */
@@ -23,11 +23,11 @@ const escapeHtml = (s: string) =>
 
 export function vehicleIcon(state: VehicleState, label?: string | null, selected = false) {
 	const color = VEHICLE_COLOR[state];
-	const pulse = state === "mobilized" ? `<span class="ims-vehicle__pulse" style="color:${color}"></span>` : "";
-	const text = label ? `<span class="ims-vehicle__label">${escapeHtml(label)}</span>` : "";
+	const pulse = state === "mobilized" ? `<span class="cmc-vehicle__pulse" style="color:${color}"></span>` : "";
+	const text = label ? `<span class="cmc-vehicle__label">${escapeHtml(label)}</span>` : "";
 	return L.divIcon({
-		className: `ims-vehicle${selected ? " ims-vehicle--selected" : ""}`,
-		html: `<div class="ims-vehicle__body" style="background:${color}">${pulse}${CAR_SVG}</div>${text}`,
+		className: `cmc-vehicle${selected ? " cmc-vehicle--selected" : ""}`,
+		html: `<div class="cmc-vehicle__body" style="background:${color}">${pulse}${CAR_SVG}</div>${text}`,
 		iconSize: [34, 34],
 		iconAnchor: [17, 17],
 		popupAnchor: [0, -18],
@@ -37,8 +37,8 @@ export function vehicleIcon(state: VehicleState, label?: string | null, selected
 export function incidentIcon(status: IncidentStatus, active = false) {
 	const color = INCIDENT_STATUS_COLOR[status] ?? "#FF5630";
 	return L.divIcon({
-		className: `ims-incident${active ? " ims-incident--active" : ""}`,
-		html: `<div class="ims-incident__pin" style="background:${color};color:${color}">${SIREN_SVG}</div>`,
+		className: `cmc-incident${active ? " cmc-incident--active" : ""}`,
+		html: `<div class="cmc-incident__pin" style="background:${color};color:${color}">${SIREN_SVG}</div>`,
 		iconSize: [36, 36],
 		iconAnchor: [18, 40],
 		popupAnchor: [0, -38],
@@ -55,10 +55,10 @@ const HQ_SVG =
 
 /** Trụ sở tổ chức / đơn vị. */
 export function hqIcon(label?: string | null) {
-	const text = label ? `<span class="ims-hq__label">${escapeHtml(label)}</span>` : "";
+	const text = label ? `<span class="cmc-hq__label">${escapeHtml(label)}</span>` : "";
 	return L.divIcon({
-		className: "ims-hq",
-		html: `<div class="ims-hq__body">${HQ_SVG}</div>${text}`,
+		className: "cmc-hq",
+		html: `<div class="cmc-hq__body">${HQ_SVG}</div>${text}`,
 		iconSize: [30, 30],
 		iconAnchor: [15, 15],
 		popupAnchor: [0, -16],
@@ -68,8 +68,8 @@ export function hqIcon(label?: string | null) {
 /** Tâm vòng lọc bán kính (kéo được). */
 export function radiusCenterIcon() {
 	return L.divIcon({
-		className: "ims-radius-center",
-		html: '<div class="ims-radius-center__dot"></div>',
+		className: "cmc-radius-center",
+		html: '<div class="cmc-radius-center__dot"></div>',
 		iconSize: [18, 18],
 		iconAnchor: [9, 9],
 	});

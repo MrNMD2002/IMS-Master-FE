@@ -63,7 +63,7 @@ export default function BaseMap({
 			center={center}
 			zoom={zoom}
 			scrollWheelZoom={scrollWheelZoom}
-			className={cn("ims-map h-full w-full", className)}
+			className={cn("cmc-map h-full w-full", className)}
 			zoomControl={false}
 		>
 			<TileLayer

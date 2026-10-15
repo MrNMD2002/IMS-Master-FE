@@ -43,11 +43,11 @@ const toLatLng = (ring: number[][]) => ring.map(([lng, lat]) => [lat, lng] as [n
 /** `text = null`: chỉ chấm vị trí (tên bị nhường chỗ cho địa danh ưu tiên hơn ở gần). */
 const labelIcon = (text: string | null, kind: "group" | "sea" | PlaceKind) =>
 	L.divIcon({
-		className: `ims-sov ims-sov--${kind}`,
+		className: `cmc-sov cmc-sov--${kind}`,
 		html:
 			kind === "group" || kind === "sea"
 				? `<span>${text}</span>`
-				: `<span class="ims-sov__dot"></span>${text ? `<span>${text}</span>` : ""}`,
+				: `<span class="cmc-sov__dot"></span>${text ? `<span>${text}</span>` : ""}`,
 		iconSize: [0, 0],
 	});
 
@@ -103,7 +103,7 @@ export default function SovereigntyLayer() {
 
 	return (
 		<>
-			<Pane name="ims-sovereignty" style={{ zIndex: 350 }}>
+			<Pane name="cmc-sovereignty" style={{ zIndex: 350 }}>
 				{polygons.map((poly, i) => (
 					<Polygon
 						key={i}

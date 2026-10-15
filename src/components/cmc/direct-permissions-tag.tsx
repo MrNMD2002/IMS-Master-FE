@@ -1,7 +1,7 @@
 import { Popover, Tag } from "antd";
 import { useTranslation } from "react-i18next";
 import { FLEXIBLE_ROLE } from "@/constants/permission";
-import { usePermissionCatalog } from "@/hooks/use-ims-options";
+import { usePermissionCatalog } from "@/hooks/use-cmc-options";
 
 /**
  * Quyền cấp lẻ của một tài khoản — để phân biệt các tài khoản cùng vai (nhất là vai Tuỳ chỉnh,

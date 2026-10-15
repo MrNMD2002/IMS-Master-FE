@@ -1,4 +1,4 @@
-/** Khung response chuẩn của IMS API: `{code, data, message}` (+ `metadata` ở danh sách). */
+/** Khung response chuẩn của CMC API: `{code, data, message}` (+ `metadata` ở danh sách). */
 export interface ResultMetaData {
 	current_page: number;
 	page_size: number;

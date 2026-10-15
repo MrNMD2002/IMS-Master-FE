@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => {
 			host: true,
 			port: 3001,
 			proxy: {
-				"/ims/api": {
+				"/cmc/api": {
 					target: env.VITE_DEV_API_TARGET || "http://localhost:8010",
 					changeOrigin: true,
 				},
@@ -46,7 +46,7 @@ export default defineConfig(({ mode }) => {
 			host: true,
 			port: 4173,
 			proxy: {
-				"/ims/api": {
+				"/cmc/api": {
 					target: env.VITE_DEV_API_TARGET || "http://localhost:8010",
 					changeOrigin: true,
 				},

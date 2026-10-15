@@ -1,6 +1,6 @@
 import { TreeSelect, type TreeSelectProps } from "antd";
 import { useTranslation } from "react-i18next";
-import { useTenantOptions } from "@/hooks/use-ims-options";
+import { useTenantOptions } from "@/hooks/use-cmc-options";
 
 type Props = Omit<TreeSelectProps<number>, "treeData">;
 
