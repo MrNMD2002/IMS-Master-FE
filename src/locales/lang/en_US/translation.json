@@ -424,6 +424,8 @@
 			"MAINTENANCE": "Maintenance"
 		},
 		"mission": "Mission",
+		"neverReported": "This vehicle has never reported a position",
+		"lastReported": "Last position {{time}}",
 		"mobilized": "On a mission",
 		"ready": "Available",
 		"officers": "Officers on board",
