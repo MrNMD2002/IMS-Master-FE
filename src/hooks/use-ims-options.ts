@@ -65,6 +65,17 @@ export function useDeviceTypes() {
 	return { ...query, types };
 }
 
+/** Danh mục quyền (cache chung với PermissionChecklist) + tra tên hiển thị theo mã. */
+export function usePermissionCatalog() {
+	const query = useQuery({
+		queryKey: ["permissions"],
+		queryFn: () => systemService.permissionList(),
+		staleTime: 300_000,
+	});
+	const byCode = useMemo(() => new Map((query.data?.data ?? []).map((p) => [p.code, p])), [query.data]);
+	return { ...query, permissions: query.data?.data ?? [], byCode };
+}
+
 export function useRoles() {
 	const can = useCan();
 	const query = useQuery({

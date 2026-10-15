@@ -1,18 +1,20 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { App, Dropdown, Input, Select, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 import type { UserInfo } from "#/ims";
 import userService from "@/api/services/userService";
 import { Icon } from "@/components/icon";
+import DirectPermissionsTag from "@/components/ims/direct-permissions-tag";
 import OrgUnitFilter from "@/components/ims/org-unit-filter";
 import PageHeader from "@/components/ims/page-header";
 import { ActiveBadge } from "@/components/ims/status";
 import UserAvatar from "@/components/user-avatar";
 import { P } from "@/constants/permission";
-import { useRoles } from "@/hooks/use-ims-options";
+import { usePermissionCatalog, useRoles } from "@/hooks/use-ims-options";
 import { useCan, useUserInfo } from "@/store/userStore";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
@@ -31,21 +33,26 @@ export default function UserPage() {
 	const canManage = can(P.USER_MANAGE);
 	const canGrant = can(P.USER_PERMISSION_GRANT);
 	const { roles } = useRoles();
+	const { permissions } = usePermissionCatalog();
+	// Trang Vai trò dẫn sang bằng ?role=custom để xem các tài khoản Tuỳ chỉnh.
+	const [searchParams] = useSearchParams();
 
 	const [page, setPage] = useState(1);
 	const [pageSize, setPageSize] = useState(10);
 	const [search, setSearch] = useState("");
 	const [keyword, setKeyword] = useState("");
 	const [tenantId, setTenantId] = useState<number | undefined>();
-	const [role, setRole] = useState<string | undefined>();
+	const [role, setRole] = useState<string | undefined>(() => searchParams.get("role") ?? undefined);
 	const [active, setActive] = useState<boolean | undefined>();
+	const [permission, setPermission] = useState<string | undefined>();
+	const [hasDirect, setHasDirect] = useState<boolean | undefined>();
 
 	const [editing, setEditing] = useState<UserInfo | null | undefined>(undefined);
 	const [resetFor, setResetFor] = useState<UserInfo | null>(null);
 	const [permFor, setPermFor] = useState<UserInfo | null>(null);
 
 	const { data, isFetching } = useQuery({
-		queryKey: ["user", "list", page, pageSize, keyword, tenantId, role, active],
+		queryKey: ["user", "list", page, pageSize, keyword, tenantId, role, active, permission, hasDirect],
 		queryFn: () =>
 			userService.list({
 				page,
@@ -54,6 +61,8 @@ export default function UserPage() {
 				tenant_id: tenantId,
 				role,
 				is_active: active,
+				permission,
+				has_direct: hasDirect,
 			}),
 		placeholderData: keepPreviousData,
 	});
@@ -74,6 +83,19 @@ export default function UserPage() {
 			invalidate();
 		},
 	});
+
+	// "Có quyền": gom theo nhóm, tên nhóm làm tiền tố để phân biệt "Xem" / "Quản lý" trùng tên.
+	const permissionOptions = useMemo(() => {
+		const groups = new Map<string, { value: string; label: string }[]>();
+		for (const p of permissions) {
+			const mod = p.module || "other";
+			const modName = t(`permission.module.${mod}`, { defaultValue: mod });
+			groups.set(modName, [...(groups.get(modName) ?? []), { value: p.code, label: `${modName}: ${p.name}` }]);
+		}
+		return [...groups.entries()]
+			.sort(([a], [b]) => a.localeCompare(b, "vi"))
+			.map(([label, options]) => ({ label, options }));
+	}, [permissions, t]);
 
 	const roleName = (code: string) =>
 		t(`role.names.${code}`, { defaultValue: roles.find((r) => r.code === code)?.name ?? code });
@@ -105,9 +127,10 @@ export default function UserPage() {
 			title: t("user.field.role"),
 			dataIndex: "role",
 			render: (r: string, u) => (
-				<div className="flex items-center gap-1">
+				<div className="flex flex-wrap items-center gap-1">
 					<Badge variant={r === "gps_user" ? "warning" : "info"}>{roleName(r)}</Badge>
 					{u.is_system_root && <Icon icon="solar:crown-bold" size={16} className="text-warning" />}
+					<DirectPermissionsTag role={r} codes={u.direct_permissions} />
 					{r !== "gps_user" && !u.permissions?.includes(P.DASHBOARD_ACCESS) && (
 						<Badge variant="secondary" title={t("user.noWebAccessHint")}>
 							{t("user.noWebAccess")}
@@ -236,6 +259,28 @@ export default function UserPage() {
 							value={role}
 							onChange={resetPage(setRole)}
 							options={roles.map((r) => ({ value: r.code, label: roleName(r.code) }))}
+						/>
+						<Select
+							allowClear
+							showSearch
+							optionFilterProp="label"
+							style={{ minWidth: 220 }}
+							popupMatchSelectWidth={false}
+							placeholder={t("user.filter.permission")}
+							value={permission}
+							onChange={resetPage(setPermission)}
+							options={permissionOptions}
+						/>
+						<Select
+							allowClear
+							style={{ minWidth: 170 }}
+							placeholder={t("user.filter.source")}
+							value={hasDirect}
+							onChange={resetPage(setHasDirect)}
+							options={[
+								{ value: true, label: t("user.filter.hasDirect") },
+								{ value: false, label: t("user.filter.roleOnly") },
+							]}
 						/>
 						<Select
 							allowClear
