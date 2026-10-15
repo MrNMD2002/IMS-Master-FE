@@ -120,7 +120,7 @@ export default function MonitoringPage() {
 	);
 
 	const counts = useMemo(() => {
-		const c = { all: inRadius.length, ready: 0, mobilized: 0, offline: 0 };
+		const c = { all: inRadius.length, ready: 0, mobilized: 0, unavailable: 0, offline: 0 };
 		for (const v of inRadius) c[v.state] += 1;
 		return c;
 	}, [inRadius]);
@@ -330,7 +330,7 @@ export default function MonitoringPage() {
 
 			{/* Chú thích + giờ cập nhật */}
 			<div className="absolute bottom-6 right-16 z-[500] hidden items-center gap-4 rounded-full border bg-background/95 px-4 py-1.5 text-xs shadow-md backdrop-blur md:flex">
-				{(["ready", "mobilized", "offline"] as VehicleState[]).map((s) => (
+				{(["ready", "mobilized", "unavailable", "offline"] as VehicleState[]).map((s) => (
 					<span key={s} className="flex items-center gap-1.5">
 						<span className="h-2.5 w-2.5 rounded-full" style={{ background: VEHICLE_COLOR[s] }} />
 						{t(`monitor.state.${s}`)}
@@ -396,7 +396,7 @@ export default function MonitoringPage() {
 								/>
 							</div>
 							<div className="flex flex-wrap gap-1">
-								{(["all", "ready", "mobilized", "offline"] as StateFilter[]).map((s) => (
+								{(["all", "ready", "mobilized", "unavailable", "offline"] as StateFilter[]).map((s) => (
 									<button
 										key={s}
 										type="button"
@@ -616,6 +616,12 @@ function VehiclePopup({
 				<dd>{fmtSecondsAgo(v.seconds_ago)}</dd>
 				<dt className="text-text-secondary">{t("common.statusLabel")}</dt>
 				<dd>{t(`monitor.state.${v.state}`)}</dd>
+				{v.state === "unavailable" && v.device?.unavailable_reason && (
+					<>
+						<dt className="text-text-secondary">{t("monitor.reason")}</dt>
+						<dd className="text-error">{v.device.unavailable_reason}</dd>
+					</>
+				)}
 			</dl>
 			<div className="flex flex-wrap gap-1.5">
 				{can(P.DEVICE_ACTIVITY_READ) && (

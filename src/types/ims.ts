@@ -25,6 +25,9 @@ export interface Device {
 	tenant_code?: string | null;
 	tenant_name?: string | null;
 	current_incident_id?: number | null;
+	/** Điều động mới được không: trạng thái ACTIVE và loại phương tiện chưa bị khoá. */
+	available?: boolean;
+	unavailable_reason?: string | null;
 }
 
 export interface UserInfo {

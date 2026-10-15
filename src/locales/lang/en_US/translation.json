@@ -237,6 +237,7 @@
 		"state": {
 			"ready": "Available",
 			"mobilized": "On a mission",
+			"unavailable": "Unavailable",
 			"offline": "No signal"
 		},
 		"searchVehicle": "Search by name or IMEI",
@@ -263,7 +264,8 @@
 			"pick": "Pick center",
 			"useHq": "Use headquarters",
 			"pickHint": "Click the map to set the radius center"
-		}
+		},
+		"reason": "Reason"
 	},
 	"incident": {
 		"description": "Receive, dispatch and follow up on incidents",
@@ -433,7 +435,8 @@
 		"rotateKey": "Rotate mqtt_key",
 		"rotateConfirm": "Rotate this vehicle's mqtt_key?",
 		"rotateDesc": "The App using the old key must sign in again.",
-		"keyRotated": "mqtt_key rotated"
+		"keyRotated": "mqtt_key rotated",
+		"typeLocked": "Type locked"
 	},
 	"tenant": {
 		"description": "Organization → unit → sub-unit tree",
