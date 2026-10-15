@@ -1,6 +1,9 @@
+import { Tooltip } from "antd";
 import { useTranslation } from "react-i18next";
-import type { DeviceStatus, IncidentStatus } from "#/cmc";
+import type { Device, DeviceStatus, IncidentStatus } from "#/cmc";
+import type { VehicleSignal } from "@/hooks/use-vehicle-signal";
 import { Badge } from "@/ui/badge";
+import { fmtSecondsAgo } from "@/utils/format";
 
 type Variant = "success" | "warning" | "error" | "info" | "default" | "secondary";
 
@@ -61,6 +64,45 @@ export function MobilizedBadge({ mobilized }: { mobilized?: boolean | null }) {
 			{t("device.ready")}
 		</Badge>
 	);
+}
+
+/**
+ * Trạng thái xe như trên bản đồ giám sát: đang làm nhiệm vụ → không khả dụng (ngừng hoạt động /
+ * loại bị khoá) → mất tín hiệu (không có vị trí trong 60 giây) → sẵn sàng.
+ * `signal` = null khi không xem được GPS: bỏ qua bước mất tín hiệu.
+ */
+export function VehicleStateBadge({ device, signal }: { device: Device; signal: VehicleSignal | null }) {
+	const { t } = useTranslation();
+	if (device.is_mobilized) return <MobilizedBadge mobilized />;
+	if (device.available === false || device.status !== "ACTIVE") {
+		return (
+			<Tooltip title={device.unavailable_reason}>
+				<span>
+					<Badge variant="error">
+						<Dot />
+						{t("monitor.state.unavailable")}
+					</Badge>
+				</span>
+			</Tooltip>
+		);
+	}
+	if (signal && !signal.online) {
+		const hint =
+			signal.secondsAgo == null
+				? t("device.neverReported")
+				: t("device.lastReported", { time: fmtSecondsAgo(signal.secondsAgo) });
+		return (
+			<Tooltip title={hint}>
+				<span>
+					<Badge variant="secondary">
+						<Dot />
+						{t("monitor.state.offline")}
+					</Badge>
+				</span>
+			</Tooltip>
+		);
+	}
+	return <MobilizedBadge mobilized={false} />;
 }
 
 export function ActiveBadge({ active }: { active: boolean }) {

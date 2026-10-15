@@ -424,6 +424,8 @@
 			"MAINTENANCE": "Bảo trì"
 		},
 		"mission": "Nhiệm vụ",
+		"neverReported": "Xe chưa từng gửi vị trí",
+		"lastReported": "Gửi vị trí lần cuối {{time}}",
 		"mobilized": "Đang làm nhiệm vụ",
 		"ready": "Sẵn sàng",
 		"officers": "Cán bộ trên xe",
