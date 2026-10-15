@@ -253,7 +253,17 @@
 		"speed": "Speed",
 		"lastSeen": "Last update",
 		"replay": "Route replay",
-		"currentIncident": "Current incident"
+		"currentIncident": "Current incident",
+		"hq": "Headquarters",
+		"backToHq": "Back to headquarters",
+		"radius": {
+			"title": "Within radius",
+			"centerHq": "Center: headquarters",
+			"centerPicked": "Center: picked point (drag to move)",
+			"pick": "Pick center",
+			"useHq": "Use headquarters",
+			"pickHint": "Click the map to set the radius center"
+		}
 	},
 	"incident": {
 		"description": "Receive, dispatch and follow up on incidents",
@@ -425,8 +435,10 @@
 			"city": "Province / city",
 			"address": "Address",
 			"lat": "Latitude",
-			"lng": "Longitude"
-		}
+			"lng": "Longitude",
+			"hq": "Headquarters location"
+		},
+		"hqHint": "Search an address or click the map. Live monitoring for accounts in this unit opens here."
 	},
 	"user": {
 		"description": "Web accounts (dispatchers, commanders) and App accounts (officers on vehicles)",
@@ -690,6 +702,13 @@
 			"all": "Whole system",
 			"subtree": "My unit and below",
 			"one": "My unit only"
+		}
+	},
+	"map": {
+		"sovereignty": {
+			"eastSea": "East Sea",
+			"hoangSa": "Hoang Sa Archipelago (Viet Nam)",
+			"truongSa": "Truong Sa Archipelago (Viet Nam)"
 		}
 	}
 }
