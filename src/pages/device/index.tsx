@@ -9,10 +9,11 @@ import { DEVICE_STATUSES, type Device } from "#/cmc";
 import deviceService from "@/api/services/deviceService";
 import OrgUnitFilter from "@/components/cmc/org-unit-filter";
 import PageHeader from "@/components/cmc/page-header";
-import { DeviceStatusBadge, MobilizedBadge } from "@/components/cmc/status";
+import { DeviceStatusBadge, MobilizedBadge, VehicleStateBadge } from "@/components/cmc/status";
 import { Icon } from "@/components/icon";
 import { P } from "@/constants/permission";
 import { useDeviceTypes } from "@/hooks/use-cmc-options";
+import { useVehicleSignal } from "@/hooks/use-vehicle-signal";
 import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
@@ -27,6 +28,7 @@ export default function DevicePage() {
 	const can = useCan();
 	const canManage = can(P.DEVICE_MANAGE);
 	const { types } = useDeviceTypes();
+	const signal = useVehicleSignal();
 
 	const [page, setPage] = useState(1);
 	const [pageSize, setPageSize] = useState(10);
@@ -113,14 +115,8 @@ export default function DevicePage() {
 					<button type="button" onClick={() => navigate(`/incidents/${d.current_incident_id}`)}>
 						<MobilizedBadge mobilized />
 					</button>
-				) : d.available === false ? (
-					<Tooltip title={d.unavailable_reason}>
-						<Tag color="error" className="m-0">
-							{t("monitor.state.unavailable")}
-						</Tag>
-					</Tooltip>
 				) : (
-					<MobilizedBadge mobilized={d.is_mobilized} />
+					<VehicleStateBadge device={d} signal={signal?.get(d.id) ?? null} />
 				),
 		},
 		{

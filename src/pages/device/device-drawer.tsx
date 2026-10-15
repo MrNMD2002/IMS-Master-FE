@@ -6,10 +6,11 @@ import { toast } from "sonner";
 import type { Device } from "#/cmc";
 import deviceService from "@/api/services/deviceService";
 import userService from "@/api/services/userService";
-import { DeviceStatusBadge, MobilizedBadge } from "@/components/cmc/status";
+import { DeviceStatusBadge, VehicleStateBadge } from "@/components/cmc/status";
 import { Icon } from "@/components/icon";
 import UserAvatar from "@/components/user-avatar";
 import { P } from "@/constants/permission";
+import { useVehicleSignal } from "@/hooks/use-vehicle-signal";
 import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
 
@@ -24,6 +25,7 @@ export default function DeviceDrawer({
 	onEdit: (d: Device) => void;
 }) {
 	const { t } = useTranslation();
+	const signal = useVehicleSignal();
 	const qc = useQueryClient();
 	const can = useCan();
 	const canManage = can(P.DEVICE_MANAGE);
@@ -110,7 +112,7 @@ export default function DeviceDrawer({
 							<DeviceStatusBadge status={d.status} />
 						</Descriptions.Item>
 						<Descriptions.Item label={t("device.mission")}>
-							<MobilizedBadge mobilized={d.is_mobilized} />
+							<VehicleStateBadge device={d} signal={signal?.get(d.id) ?? null} />
 						</Descriptions.Item>
 					</Descriptions>
 
