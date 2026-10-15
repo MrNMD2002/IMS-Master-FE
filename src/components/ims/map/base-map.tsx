@@ -5,6 +5,7 @@ import { ThemeMode } from "#/enum";
 import { useSettings } from "@/store/settingStore";
 import { cn } from "@/utils";
 import "./map.css";
+import SovereigntyLayer from "./sovereignty-layer";
 
 /** Trung tâm mặc định: Hà Nội. */
 export const DEFAULT_CENTER: [number, number] = [21.0285, 105.8542];
@@ -73,6 +74,7 @@ export default function BaseMap({
 				maxZoom={19}
 			/>
 			<AutoResize />
+			<SovereigntyLayer />
 			{children}
 		</MapContainer>
 	);

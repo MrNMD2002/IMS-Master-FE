@@ -253,7 +253,17 @@
 		"speed": "Tốc độ",
 		"lastSeen": "Cập nhật",
 		"replay": "Xem lộ trình",
-		"currentIncident": "Sự vụ đang xử lý"
+		"currentIncident": "Sự vụ đang xử lý",
+		"hq": "Trụ sở",
+		"backToHq": "Về trụ sở",
+		"radius": {
+			"title": "Lọc trong bán kính",
+			"centerHq": "Tâm: trụ sở",
+			"centerPicked": "Tâm: điểm đã chọn (kéo để dời)",
+			"pick": "Chọn tâm",
+			"useHq": "Về trụ sở",
+			"pickHint": "Bấm lên bản đồ để đặt tâm vòng lọc"
+		}
 	},
 	"incident": {
 		"description": "Tiếp nhận, điều động và theo dõi xử lý sự vụ",
@@ -425,8 +435,10 @@
 			"city": "Tỉnh / thành phố",
 			"address": "Địa chỉ",
 			"lat": "Vĩ độ",
-			"lng": "Kinh độ"
-		}
+			"lng": "Kinh độ",
+			"hq": "Vị trí trụ sở"
+		},
+		"hqHint": "Tìm địa chỉ hoặc bấm lên bản đồ. Màn giám sát của tài khoản thuộc đơn vị này sẽ mở tại đây."
 	},
 	"user": {
 		"description": "Tài khoản Web (trực ban, chỉ huy) và tài khoản App (cán bộ trên xe)",
@@ -690,6 +702,13 @@
 			"all": "Toàn hệ thống",
 			"subtree": "Đơn vị mình và cấp dưới",
 			"one": "Chỉ đơn vị mình"
+		}
+	},
+	"map": {
+		"sovereignty": {
+			"eastSea": "Biển Đông",
+			"hoangSa": "Quần đảo Hoàng Sa (Việt Nam)",
+			"truongSa": "Quần đảo Trường Sa (Việt Nam)"
 		}
 	}
 }

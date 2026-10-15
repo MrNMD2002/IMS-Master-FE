@@ -127,3 +127,133 @@
 		transform: scale(1.5);
 	}
 }
+
+/* Nhãn chủ quyền biển đảo (sovereignty-layer.tsx) — chữ có viền sáng để đọc được trên mọi nền */
+.ims-sov {
+	background: transparent;
+	border: none;
+	pointer-events: none;
+}
+
+.ims-sov > span,
+.ims-sov--island {
+	white-space: nowrap;
+}
+
+.ims-sov--group > span,
+.ims-sov--sea > span {
+	display: block;
+	transform: translate(-50%, -50%);
+	text-align: center;
+	color: #0b4f8a;
+	font-weight: 700;
+	font-size: 13px;
+	letter-spacing: 0.02em;
+	text-shadow:
+		0 0 3px #fff,
+		0 0 3px #fff,
+		0 0 6px #fff;
+}
+
+.ims-sov--sea > span {
+	font-size: 16px;
+	font-style: italic;
+	font-weight: 600;
+	color: #2f6fa8;
+	letter-spacing: 0.15em;
+}
+
+.ims-sov--island {
+	display: flex !important;
+	align-items: center;
+	gap: 4px;
+	transform: translate(-4px, -50%);
+	color: #0b4f8a;
+	font-size: 11px;
+	font-weight: 600;
+	text-shadow:
+		0 0 3px #fff,
+		0 0 3px #fff;
+}
+
+.ims-sov__dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: #0b4f8a;
+	border: 1.5px solid #fff;
+	flex: none;
+}
+
+[data-theme-mode="dark"] .ims-sov--group > span,
+[data-theme-mode="dark"] .ims-sov--island {
+	color: #9cd3ff;
+	text-shadow:
+		0 0 3px #000,
+		0 0 3px #000;
+}
+
+[data-theme-mode="dark"] .ims-sov--sea > span {
+	color: #7fb8e6;
+	text-shadow: 0 0 3px #000;
+}
+
+[data-theme-mode="dark"] .ims-sov__dot {
+	background: #9cd3ff;
+	border-color: #000;
+}
+
+/* Trụ sở tổ chức */
+.ims-hq {
+	background: transparent;
+	border: none;
+}
+
+.ims-hq__body {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	border-radius: 8px;
+	background: #1e3a8a;
+	color: #fff;
+	border: 2px solid #fff;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.ims-hq__label {
+	position: absolute;
+	top: 32px;
+	left: 50%;
+	transform: translateX(-50%);
+	white-space: nowrap;
+	font-size: 11px;
+	font-weight: 600;
+	color: #1e3a8a;
+	background: rgba(255, 255, 255, 0.92);
+	padding: 1px 6px;
+	border-radius: 6px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme-mode="dark"] .ims-hq__label {
+	color: #c7d7fe;
+	background: rgba(22, 28, 36, 0.92);
+}
+
+/* Tâm vòng lọc bán kính */
+.ims-radius-center {
+	background: transparent;
+	border: none;
+	cursor: grab;
+}
+
+.ims-radius-center__dot {
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: var(--primary, #078dee);
+	border: 3px solid #fff;
+	box-shadow: 0 0 0 3px rgba(7, 141, 238, 0.35);
+}
