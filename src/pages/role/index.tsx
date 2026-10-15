@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Alert, Empty, Form, Input, Modal, Popconfirm } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import type { Role, RoleReq } from "#/ims";
@@ -8,16 +8,22 @@ import systemService from "@/api/services/systemService";
 import { Icon } from "@/components/icon";
 import PageHeader from "@/components/ims/page-header";
 import PermissionChecklist from "@/components/ims/permission-checklist";
-import { P } from "@/constants/permission";
+import { FLEXIBLE_ROLE, P } from "@/constants/permission";
 import { useRoles } from "@/hooks/use-ims-options";
 import { useCan } from "@/store/userStore";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { cn } from "@/utils";
+import FlexibleRolePanel from "./flexible-role-panel";
 
-/** Vai hệ thống — không xoá / đổi mã. */
-const SYSTEM_ROLES = ["super_admin", "tenant_admin", "unit_admin", "gps_user", "customer_user", "custom"];
+/** 4 vai chính, thấp → cao — không xoá / đổi mã. */
+const MAIN_ROLES = ["gps_user", "unit_admin", "tenant_admin", "super_admin"];
+const SYSTEM_ROLES = [...MAIN_ROLES, FLEXIBLE_ROLE];
+type Section = "main" | "flexible" | "org";
+const SECTIONS: Section[] = ["main", "flexible", "org"];
+const sectionOf = (code: string): Section =>
+	MAIN_ROLES.includes(code) ? "main" : code === FLEXIBLE_ROLE ? "flexible" : "org";
 
 export default function RolePage() {
 	const { t } = useTranslation();
@@ -29,7 +35,23 @@ export default function RolePage() {
 	const [perms, setPerms] = useState<string[]>([]);
 	const [modal, setModal] = useState<Role | null | undefined>(undefined);
 
-	const selected = roles.find((r) => r.id === selectedId) ?? roles[0];
+	// Gom 3 nhóm để không lẫn: vai chính (theo bậc), vai linh hoạt, vai do tổ chức tự tạo.
+	const grouped = useMemo(
+		() =>
+			SECTIONS.map((section) => ({
+				section,
+				items: roles
+					.filter((r) => sectionOf(r.code) === section)
+					.sort((a, b) =>
+						section === "main"
+							? MAIN_ROLES.indexOf(a.code) - MAIN_ROLES.indexOf(b.code)
+							: a.name.localeCompare(b.name, "vi"),
+					),
+			})).filter((g) => g.items.length > 0),
+		[roles],
+	);
+	const selected = roles.find((r) => r.id === selectedId) ?? grouped[0]?.items[0];
+	const isFlexible = selected?.code === FLEXIBLE_ROLE;
 
 	useEffect(() => {
 		if (selected) setPerms(selected.permissions);
@@ -76,23 +98,34 @@ export default function RolePage() {
 				<Card className="gap-2 py-4 h-fit lg:sticky lg:top-[calc(var(--layout-header-height)+var(--page-bar-h,0px)+8px)] lg:max-h-[calc(100vh-var(--layout-header-height)-var(--page-bar-h,0px)-24px)] lg:overflow-y-auto">
 					<CardContent className="flex flex-col gap-1 px-2">
 						{!isLoading && roles.length === 0 && <Empty />}
-						{roles.map((r) => (
-							<button
-								key={r.id}
-								type="button"
-								onClick={() => setSelectedId(r.id)}
-								className={cn(
-									"flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors",
-									selected?.id === r.id ? "bg-primary/10 text-primary" : "hover:bg-action-hover",
-								)}
-							>
-								<Icon icon="solar:shield-user-bold-duotone" size={22} />
-								<div className="min-w-0 flex-1">
-									<p className="truncate font-medium">{roleLabel(r)}</p>
-									<p className="truncate font-mono text-xs text-text-secondary">{r.code}</p>
-								</div>
-								<Badge variant="secondary">{r.permissions.length}</Badge>
-							</button>
+						{grouped.map(({ section, items }) => (
+							<div key={section} className="flex flex-col gap-1 [&:not(:first-child)]:mt-3">
+								<p className="px-3 pb-1 text-xs font-semibold text-text-secondary">{t(`role.section.${section}`)}</p>
+								{items.map((r) => (
+									<button
+										key={r.id}
+										type="button"
+										onClick={() => setSelectedId(r.id)}
+										className={cn(
+											"flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors",
+											selected?.id === r.id ? "bg-primary/10 text-primary" : "hover:bg-action-hover",
+										)}
+									>
+										<Icon
+											icon={r.code === FLEXIBLE_ROLE ? "solar:tuning-2-bold-duotone" : "solar:shield-user-bold-duotone"}
+											size={22}
+										/>
+										<p className="min-w-0 flex-1 truncate font-medium">{roleLabel(r)}</p>
+										{r.code === FLEXIBLE_ROLE ? (
+											<Badge variant="secondary" title={t("role.flexible.badgeHint")}>
+												{t("role.flexible.badge")}
+											</Badge>
+										) : (
+											<Badge variant="secondary">{r.permissions.length}</Badge>
+										)}
+									</button>
+								))}
+							</div>
 						))}
 					</CardContent>
 				</Card>
@@ -132,11 +165,12 @@ export default function RolePage() {
 							)}
 						</CardHeader>
 						<CardContent className="flex flex-col gap-4">
-							{selected.code !== "gps_user" && !perms.includes(P.DASHBOARD_ACCESS) && (
+							{isFlexible && <FlexibleRolePanel />}
+							{!isFlexible && selected.code !== "gps_user" && !perms.includes(P.DASHBOARD_ACCESS) && (
 								<Alert type="warning" showIcon message={t("role.noWebAccessWarn")} />
 							)}
-							<PermissionChecklist value={perms} onChange={setPerms} disabled={!canManage} />
-							{canManage && (
+							{!isFlexible && <PermissionChecklist value={perms} onChange={setPerms} disabled={!canManage} />}
+							{canManage && !isFlexible && (
 								<div className="sticky bottom-0 flex justify-end gap-2 border-t bg-card pt-3">
 									<Button variant="outline" disabled={!dirty} onClick={() => setPerms(selected.permissions)}>
 										{t("common.resetText")}

@@ -33,9 +33,9 @@ const DEFAULT_TENANT_ONLY = new Set([
 	"setting.manage",
 ]);
 const SYSTEM_FLAG = new Set(["scope.device"]);
-const RULES = ["effective", "onlyOwn", "scope", "web", "app", "platform"] as const;
+const RULES = ["effective", "flexible", "onlyOwn", "scope", "web", "app", "platform"] as const;
 /** Bậc vai dựng sẵn, thấp → cao. Vai do tổ chức tự tạo xếp sau, theo số quyền. */
-const LADDER = ["customer_user", "gps_user", "unit_admin", "tenant_admin", "super_admin"];
+const LADDER = ["gps_user", "unit_admin", "tenant_admin", "super_admin"];
 const ROLE_COL_W = 112;
 
 type Perm = { code: string; name: string; module?: string | null };

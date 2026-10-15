@@ -83,6 +83,10 @@ export interface UserQuery {
 	tenant_id?: number;
 	role?: string;
 	is_active?: boolean;
+	/** Có quyền này trong quyền hiệu lực (vai ∪ cấp lẻ). */
+	permission?: string;
+	/** true = có quyền cấp lẻ, false = chỉ quyền của vai. */
+	has_direct?: boolean;
 }
 
 // ── Cây tổ chức ─────────────────────────────────────────────────────────────
