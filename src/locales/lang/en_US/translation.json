@@ -464,7 +464,22 @@
 			"role": "Role",
 			"tenant": "Unit",
 			"lastLogin": "Last sign-in"
-		}
+		},
+		"noPermissions": "No permissions",
+		"ownPermissions": "Own permission set",
+		"directPermissions": "Extra granted permissions",
+		"permCount": "{{count}} own permissions",
+		"directCount": "+{{count}} extra",
+		"filter": {
+			"permission": "Has permission…",
+			"source": "Permission source",
+			"hasDirect": "Has extra grants",
+			"roleOnly": "Role only"
+		},
+		"flexiblePermsTitle": "Account permissions",
+		"flexiblePermsHint": "The Custom role has no built-in permissions — pick them for this account. “Dashboard access” is preselected so it can sign in to the web.",
+		"flexiblePermsSwitchHint": "Switching to Custom keeps the account's current permissions as its own set — remove or add here.",
+		"flexibleNoGrant": "You cannot grant permissions: this Custom account will have none until someone who can grants them."
 	},
 	"role": {
 		"description": "Permission bundles per role; an account's permissions = role bundle + direct grants",
@@ -485,7 +500,6 @@
 			"tenant_admin": "Organization admin",
 			"unit_admin": "Unit admin",
 			"gps_user": "Officer (App)",
-			"customer_user": "User",
 			"custom": "Custom"
 		},
 		"desc": {
@@ -493,8 +507,25 @@
 			"tenant_admin": "Read and write the whole branch; manage accounts, roles, vehicles and incidents.",
 			"unit_admin": "Read the whole branch, write within own unit, edit own unit info.",
 			"gps_user": "App account: only sees incidents its vehicle is assigned to.",
-			"customer_user": "Can enter the admin site; other permissions granted directly.",
-			"custom": "Empty role — permissions are granted directly."
+			"custom": "The only flexible role: no built-in permissions, each account has its own set."
+		},
+		"section": {
+			"main": "Main roles",
+			"flexible": "Flexible",
+			"org": "Organization roles"
+		},
+		"flexible": {
+			"badge": "Own",
+			"badgeHint": "Each account has its own permission set",
+			"empty": "This role is always empty and cannot be edited — adding permissions here would grant them to every Custom account at once.",
+			"perAccount": "Permissions are chosen per account: when creating it, or via “Permissions” on the Accounts page.",
+			"sameSet": "When 2+ accounts need the same set, create a dedicated role (“Add role”): edit once, everyone follows.",
+			"duplicate": "{{count}} accounts share the same permission set — consider a dedicated role",
+			"accounts": "Custom accounts ({{count}})",
+			"openUsers": "Open in Accounts",
+			"permissions": "Permissions",
+			"none": "No Custom accounts yet",
+			"sampleNote": "Showing the first {{count}} accounts — see all on the Accounts page."
 		}
 	},
 	"permission": {
@@ -564,9 +595,10 @@
 			"effective": "An account's permissions = its role's bundle + individually granted extras. Changing a role's bundle applies immediately to everyone holding that role.",
 			"onlyOwn": "You can only grant permissions you hold yourself — the table lists exactly those. You cannot grant to, revoke from or edit accounts with more power than you.",
 			"scope": "Every permission applies only within the account's organization / unit (and sub-units with a “subtree” permission). None reveals another organization's data, except platform permissions.",
-			"web": "Signing in to the web requires “Access admin site”. The “Custom” role is empty — grant it if the account needs the web.",
+			"web": "Signing in to the web requires “Dashboard access”. For Custom accounts it is preselected on creation — untick it if the account does not need the web.",
 			"app": "App accounts (officers in vehicles) use the mobile app only and only see / act on their assigned vehicles.",
-			"platform": "“Platform” permissions can only be granted by system administrators; “Root org only” ones only to people in the root (operator) organization."
+			"platform": "“Platform” permissions can only be granted by system administrators; “Root org only” ones only to people in the root (operator) organization.",
+			"flexible": "Besides the 4 main roles there is only ONE flexible role, “Custom”: no built-in permissions, each account has its own set. If several accounts need the same set, create an organization role."
 		},
 		"tag": {
 			"platform": "Platform",
