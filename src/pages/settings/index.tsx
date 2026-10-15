@@ -61,16 +61,11 @@ function DeviceTypesTab() {
 	});
 
 	const columns: ColumnsType<DeviceType> = [
-		{ title: "#", dataIndex: "sort_order", width: 60 },
+		{ title: "ID", dataIndex: "id", width: 70 },
 		{
 			title: t("settings.typeName"),
 			dataIndex: "name",
-			render: (v, r) => (
-				<span className="flex items-center gap-2">
-					<Icon icon={r.icon?.includes(":") ? r.icon : "solar:bus-bold-duotone"} size={20} className="text-primary" />
-					<span className="font-medium">{v}</span>
-				</span>
-			),
+			render: (v) => <span className="font-medium">{v}</span>,
 		},
 		{ title: t("tenant.field.code"), dataIndex: "code", render: (v) => <span className="font-mono text-xs">{v}</span> },
 		{ title: t("common.statusLabel"), dataIndex: "is_active", render: (v) => <ActiveBadge active={v} /> },
@@ -129,7 +124,7 @@ function DeviceTypeModal({ type, onClose }: { type: DeviceType | null | undefine
 	useEffect(() => {
 		if (!open) return;
 		form.resetFields();
-		form.setFieldsValue(type ?? { is_active: true, sort_order: 0 });
+		form.setFieldsValue(type ?? { is_active: true });
 	}, [open, type, form]);
 
 	const save = useMutation({
@@ -174,14 +169,6 @@ function DeviceTypeModal({ type, onClose }: { type: DeviceType | null | undefine
 				>
 					<Input className="font-mono" disabled={isEdit} />
 				</Form.Item>
-				<div className="grid grid-cols-2 gap-x-4">
-					<Form.Item name="icon" label={t("settings.typeIcon")} tooltip={t("settings.typeIconTip")}>
-						<Input placeholder="solar:bus-bold-duotone" />
-					</Form.Item>
-					<Form.Item name="sort_order" label={t("settings.sortOrder")}>
-						<InputNumber min={0} style={{ width: "100%" }} />
-					</Form.Item>
-				</div>
 				<Form.Item name="is_active" label={t("common.statusLabel")} valuePropName="checked">
 					<Switch checkedChildren={t("common.activeText")} unCheckedChildren={t("common.inactiveText")} />
 				</Form.Item>
