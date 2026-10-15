@@ -45,6 +45,7 @@
 			"tenant": "Tổ chức / đơn vị",
 			"user": "Tài khoản",
 			"role": "Vai trò & quyền",
+			"permGuide": "Hướng dẫn phân quyền",
 			"audit": "Nhật ký thao tác",
 			"settings": "Cài đặt",
 			"profile": "Hồ sơ cá nhân"
@@ -463,7 +464,22 @@
 			"role": "Vai trò",
 			"tenant": "Đơn vị",
 			"lastLogin": "Đăng nhập gần nhất"
-		}
+		},
+		"noPermissions": "Chưa có quyền",
+		"ownPermissions": "Bộ quyền riêng",
+		"directPermissions": "Quyền cấp lẻ thêm",
+		"permCount": "{{count}} quyền riêng",
+		"directCount": "+{{count}} quyền lẻ",
+		"filter": {
+			"permission": "Có quyền…",
+			"source": "Nguồn quyền",
+			"hasDirect": "Có quyền cấp lẻ",
+			"roleOnly": "Chỉ quyền của vai"
+		},
+		"flexiblePermsTitle": "Quyền của tài khoản",
+		"flexiblePermsHint": "Vai Tuỳ chỉnh không có quyền sẵn — chọn quyền cho riêng tài khoản này. Đã tích sẵn “Truy cập trang quản trị” để vào được web.",
+		"flexiblePermsSwitchHint": "Đổi sang Tuỳ chỉnh: quyền đang có của tài khoản được giữ lại thành quyền riêng — bỏ bớt hoặc thêm tại đây.",
+		"flexibleNoGrant": "Bạn không có quyền cấp quyền: tài khoản Tuỳ chỉnh sẽ chưa có quyền nào cho tới khi người có quyền cấp thêm."
 	},
 	"role": {
 		"description": "Bó quyền mẫu theo vai trò; quyền của mỗi tài khoản = quyền vai + quyền cấp lẻ",
@@ -484,7 +500,6 @@
 			"tenant_admin": "Quản trị tổ chức",
 			"unit_admin": "Quản trị đơn vị",
 			"gps_user": "Cán bộ (App)",
-			"customer_user": "Người dùng",
 			"custom": "Tuỳ chỉnh"
 		},
 		"desc": {
@@ -492,13 +507,62 @@
 			"tenant_admin": "Đọc và ghi cả nhánh tổ chức; quản lý tài khoản, vai trò, xe, sự vụ.",
 			"unit_admin": "Đọc cả nhánh, ghi trong đơn vị mình, sửa thông tin đơn vị mình.",
 			"gps_user": "Tài khoản App: chỉ thấy sự vụ có xe mình được gán.",
-			"customer_user": "Chỉ vào được trang quản trị; quyền khác cấp lẻ.",
-			"custom": "Vai trống — quyền do cấp lẻ hoàn toàn."
+			"custom": "Vai linh hoạt duy nhất: không có quyền sẵn, mỗi tài khoản có bộ quyền riêng."
+		},
+		"section": {
+			"main": "Vai chính",
+			"flexible": "Linh hoạt",
+			"org": "Vai của tổ chức"
+		},
+		"flexible": {
+			"badge": "Riêng",
+			"badgeHint": "Mỗi tài khoản một bộ quyền riêng",
+			"empty": "Vai này luôn rỗng và không sửa được — tích quyền cho vai sẽ cấp cùng lúc cho mọi tài khoản Tuỳ chỉnh, trái mục đích.",
+			"perAccount": "Quyền chọn cho từng tài khoản: khi tạo tài khoản, hoặc ở mục “Phân quyền” trong trang Tài khoản.",
+			"sameSet": "Từ 2 tài khoản trở lên cần cùng một bộ quyền → nên tạo vai riêng (“Thêm vai trò”): sửa một chỗ, mọi người đổi theo.",
+			"duplicate": "{{count}} tài khoản có cùng bộ quyền — nên gom về một vai riêng",
+			"accounts": "Tài khoản Tuỳ chỉnh ({{count}})",
+			"openUsers": "Xem trong Tài khoản",
+			"permissions": "Bộ quyền",
+			"none": "Chưa có tài khoản Tuỳ chỉnh nào",
+			"sampleNote": "Chỉ hiện {{count}} tài khoản đầu — xem đủ trong trang Tài khoản."
 		}
 	},
 	"permission": {
 		"fromRole": "Quyền này thuộc vai trò, không gỡ lẻ được",
 		"notGrantable": "Bạn không có quyền này nên không cấp được",
+		"guide": {
+			"audit.read": "Mở trang Nhật ký thao tác: xem ai đã làm gì, lúc nào, kết quả ra sao, và xuất Excel. Chỉ thấy thao tác của người trong phạm vi tổ chức / đơn vị mình.",
+			"dashboard.access": "Thẻ vào trang quản trị web. Thiếu quyền này thì không đăng nhập được web (chỉ dùng App), dù có các quyền khác. Mở trang Tổng quan.",
+			"device.read": "Xem danh sách phương tiện, thông tin xe, cán bộ phụ trách và danh mục loại phương tiện trong phạm vi.",
+			"device.manage": "Thêm / sửa / xoá phương tiện, gán hoặc gỡ cán bộ App phụ trách xe, đổi khoá kết nối thiết bị (MQTT).",
+			"device_activity.read": "Mở trang Lộ trình: xem lại hành trình GPS của xe (tối đa 24 giờ mỗi lần), quãng đường, tốc độ, phát lại.",
+			"device_activity.manage": "Quản lý dữ liệu hoạt động của xe (để dành cho chức năng chỉnh / xoá dữ liệu hành trình).",
+			"gps.read": "Mở trang Giám sát trực tuyến: xem vị trí xe theo thời gian thực trên bản đồ, tìm xe gần một điểm.",
+			"incident.read": "Xem sự vụ mà đơn vị mình tạo hoặc có xe được điều tới: chi tiết, ảnh hiện trường, nhật ký xử lý.",
+			"incident.read.all": "Xem MỌI sự vụ trong nhánh tổ chức, kể cả sự vụ không điều xe của mình — dành cho trực ban / chỉ huy theo dõi toàn cục.",
+			"incident.manage": "Tạo / sửa / xoá sự vụ, điều xe, rút xe, đổi trạng thái, duyệt kết thúc và đóng sự vụ.",
+			"menu.read": "Xem cấu hình menu của hệ thống (chức năng quản trị nền tảng, hiện chưa dùng trên web).",
+			"menu.manage": "Sửa cấu hình menu dùng chung cho mọi tổ chức (chỉ quản trị nền tảng).",
+			"permission.read": "Xem danh mục quyền của hệ thống (cần để mở màn hình cấp quyền / vai trò).",
+			"permission.manage": "Sửa danh mục quyền dùng chung (tên, mô tả, cho phép cấp hay không) — ảnh hưởng mọi tổ chức.",
+			"platform.bypass": "Toàn quyền hệ thống: xem và sửa dữ liệu của MỌI tổ chức, cấp mọi quyền. Chỉ dành cho quản trị hệ thống.",
+			"platform.read": "Đọc dữ liệu của mọi tổ chức nhưng không sửa được. Chỉ được kích hoạt tạm thời, không gán cố định.",
+			"privilege.elevate": "Cho phép tự nâng lên các quyền chỉ cấp tạm thời (như “Đọc toàn hệ thống”). Chỉ dành cho tổ chức gốc.",
+			"role.read": "Xem các vai trò và bó quyền của từng vai; cần để chọn vai khi tạo / sửa tài khoản.",
+			"role.manage": "Tạo vai trò riêng cho tổ chức mình, sửa bó quyền của vai, xoá vai không còn ai dùng. Chỉ đưa vào vai được những quyền mình có.",
+			"scope.device": "Đánh dấu tài khoản App của cán bộ hiện trường: chỉ thấy và thao tác trên xe được gán. Không mở thêm thao tác nào.",
+			"setting.read": "Xem các cấu hình hệ thống: thời gian lưu lịch sử GPS, lưu trữ nhật ký thao tác.",
+			"setting.manage": "Đổi cấu hình hệ thống: thời gian lưu GPS, bật / tắt tự dọn nhật ký, dọn ngay, xuất dữ liệu quá hạn; sửa danh mục loại phương tiện.",
+			"tenant.read": "Mở trang Tổ chức / đơn vị ở cấp toàn hệ thống (vẫn chỉ thấy trong phạm vi của mình).",
+			"tenant.manage": "Tạo / sửa / xoá MỌI tổ chức, kể cả tổ chức gốc (chỉ quản trị nền tảng).",
+			"tenant.self_config": "Sửa thông tin của chính đơn vị mình (tên, địa chỉ, liên hệ…).",
+			"tenant.subtree_read": "Xem đơn vị mình và mọi đơn vị cấp dưới cùng dữ liệu của chúng (xe, sự vụ, tài khoản…).",
+			"tenant.subtree_manage": "Thêm / sửa / xoá đơn vị cấp dưới và thao tác trên dữ liệu của cả nhánh.",
+			"user.read": "Xem danh sách tài khoản trong phạm vi (họ tên, vai trò, đơn vị, lần đăng nhập gần nhất).",
+			"user.manage": "Tạo / sửa / khoá / xoá tài khoản, đặt lại mật khẩu, đổi vai trò và đơn vị — chỉ với tài khoản không có quyền cao hơn mình.",
+			"user.permission.grant": "Cấp / thu hồi quyền lẻ cho tài khoản khác (chỉ những quyền mình đang có). Mở trang Hướng dẫn phân quyền."
+		},
 		"module": {
 			"audit": "Nhật ký",
 			"dashboard": "Tổng quan",
@@ -516,6 +580,40 @@
 			"user": "Tài khoản",
 			"other": "Khác"
 		}
+	},
+	"permGuide": {
+		"title": "Hướng dẫn phân quyền",
+		"description": "Các quyền bạn được phép cấp cho tài khoản cấp dưới, ý nghĩa từng quyền và vai nào đang có sẵn",
+		"search": "Tìm quyền theo tên, mã hoặc ý nghĩa",
+		"permission": "Quyền",
+		"meaning": "Ý nghĩa",
+		"matrixHint": "Bạn cấp được {{count}} quyền dưới đây. Dấu ✓ là quyền vai đó có sẵn. Bấm tên vai để làm nổi, bấm tên nhóm để thu gọn.",
+		"empty": "Không có quyền nào bạn cấp được",
+		"guideLink": "Hướng dẫn từng quyền",
+		"rulesTitle": "Nguyên tắc",
+		"rules": {
+			"effective": "Quyền của một tài khoản = quyền có sẵn của vai trò + quyền cấp lẻ thêm. Sửa quyền của vai thì mọi tài khoản giữ vai đó đổi theo ngay.",
+			"onlyOwn": "Bạn chỉ cấp được quyền mà chính bạn đang có — bảng dưới chỉ liệt kê những quyền đó. Không cấp / gỡ / sửa được tài khoản có quyền cao hơn mình.",
+			"scope": "Mọi quyền chỉ có tác dụng trong phạm vi tổ chức / đơn vị của tài khoản (và đơn vị cấp dưới nếu có quyền “nhánh”). Không quyền nào cho xem dữ liệu của tổ chức khác, trừ quyền nền tảng.",
+			"web": "Muốn đăng nhập web phải có “Truy cập trang quản trị”. Với vai Tuỳ chỉnh, quyền này được tích sẵn khi tạo tài khoản — bỏ tích nếu tài khoản không cần vào web.",
+			"app": "Tài khoản App (cán bộ trên xe) chỉ dùng ứng dụng di động, chỉ thấy và thao tác trên xe được gán.",
+			"platform": "Quyền gắn nhãn “Cấp nền tảng” chỉ quản trị hệ thống cấp được; nhãn “Chỉ tổ chức gốc” chỉ cấp được cho người thuộc tổ chức gốc (đơn vị vận hành).",
+			"flexible": "Ngoài 4 vai chính chỉ có MỘT vai linh hoạt là “Tuỳ chỉnh”: không có quyền sẵn, mỗi tài khoản có bộ quyền riêng. Nhiều tài khoản cần cùng bộ quyền thì tạo vai riêng của tổ chức."
+		},
+		"tag": {
+			"platform": "Cấp nền tảng",
+			"rootOnly": "Chỉ tổ chức gốc",
+			"flag": "Cờ hệ thống"
+		},
+		"roleCount": "{{count}} quyền",
+		"moreThan": "Có thêm {{count}} quyền so với {{role}} — bấm để xem",
+		"focusHint": "Bấm để làm nổi các quyền của vai này",
+		"focus": "Đang làm nổi vai {{role}}: có {{count}} quyền. Quyền vai này không có được làm mờ.",
+		"focusClear": "Bỏ làm nổi",
+		"focusAdded": "Có thêm so với {{role}}:",
+		"collapseAll": "Thu gọn tất cả",
+		"expandAll": "Mở tất cả",
+		"matrixHintFiltered": "Đang hiện {{count}} / {{total}} quyền khớp từ khoá."
 	},
 	"audit": {
 		"description": "Ai đã làm gì, lúc nào — trong phạm vi cây tổ chức của bạn",

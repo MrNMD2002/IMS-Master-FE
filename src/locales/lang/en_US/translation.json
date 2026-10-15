@@ -45,6 +45,7 @@
 			"tenant": "Organizations",
 			"user": "Accounts",
 			"role": "Roles & permissions",
+			"permGuide": "Permission guide",
 			"audit": "Audit log",
 			"settings": "Settings",
 			"profile": "My profile"
@@ -463,7 +464,22 @@
 			"role": "Role",
 			"tenant": "Unit",
 			"lastLogin": "Last sign-in"
-		}
+		},
+		"noPermissions": "No permissions",
+		"ownPermissions": "Own permission set",
+		"directPermissions": "Extra granted permissions",
+		"permCount": "{{count}} own permissions",
+		"directCount": "+{{count}} extra",
+		"filter": {
+			"permission": "Has permission…",
+			"source": "Permission source",
+			"hasDirect": "Has extra grants",
+			"roleOnly": "Role only"
+		},
+		"flexiblePermsTitle": "Account permissions",
+		"flexiblePermsHint": "The Custom role has no built-in permissions — pick them for this account. “Dashboard access” is preselected so it can sign in to the web.",
+		"flexiblePermsSwitchHint": "Switching to Custom keeps the account's current permissions as its own set — remove or add here.",
+		"flexibleNoGrant": "You cannot grant permissions: this Custom account will have none until someone who can grants them."
 	},
 	"role": {
 		"description": "Permission bundles per role; an account's permissions = role bundle + direct grants",
@@ -484,7 +500,6 @@
 			"tenant_admin": "Organization admin",
 			"unit_admin": "Unit admin",
 			"gps_user": "Officer (App)",
-			"customer_user": "User",
 			"custom": "Custom"
 		},
 		"desc": {
@@ -492,13 +507,62 @@
 			"tenant_admin": "Read and write the whole branch; manage accounts, roles, vehicles and incidents.",
 			"unit_admin": "Read the whole branch, write within own unit, edit own unit info.",
 			"gps_user": "App account: only sees incidents its vehicle is assigned to.",
-			"customer_user": "Can enter the admin site; other permissions granted directly.",
-			"custom": "Empty role — permissions are granted directly."
+			"custom": "The only flexible role: no built-in permissions, each account has its own set."
+		},
+		"section": {
+			"main": "Main roles",
+			"flexible": "Flexible",
+			"org": "Organization roles"
+		},
+		"flexible": {
+			"badge": "Own",
+			"badgeHint": "Each account has its own permission set",
+			"empty": "This role is always empty and cannot be edited — adding permissions here would grant them to every Custom account at once.",
+			"perAccount": "Permissions are chosen per account: when creating it, or via “Permissions” on the Accounts page.",
+			"sameSet": "When 2+ accounts need the same set, create a dedicated role (“Add role”): edit once, everyone follows.",
+			"duplicate": "{{count}} accounts share the same permission set — consider a dedicated role",
+			"accounts": "Custom accounts ({{count}})",
+			"openUsers": "Open in Accounts",
+			"permissions": "Permissions",
+			"none": "No Custom accounts yet",
+			"sampleNote": "Showing the first {{count}} accounts — see all on the Accounts page."
 		}
 	},
 	"permission": {
 		"fromRole": "Comes from the role, cannot be removed individually",
 		"notGrantable": "You do not hold this permission, so you cannot grant it",
+		"guide": {
+			"audit.read": "Open the Audit log: who did what, when and with what result; export to Excel. Only actions by people within your organization / unit.",
+			"dashboard.access": "Ticket to the admin website. Without it the account cannot sign in to the web (mobile app only), whatever else it has. Opens the Overview.",
+			"device.read": "View vehicles, their details, assigned officers and the vehicle type catalog within scope.",
+			"device.manage": "Add / edit / delete vehicles, assign or remove App officers, rotate the device connection key (MQTT).",
+			"device_activity.read": "Open Route history: replay a vehicle's GPS track (up to 24 hours at a time), distance and speed.",
+			"device_activity.manage": "Manage vehicle activity data (reserved for editing / deleting track data).",
+			"gps.read": "Open Live monitoring: real-time vehicle positions on the map, find vehicles near a point.",
+			"incident.read": "View incidents your unit created or has vehicles dispatched to: details, scene photos, handling log.",
+			"incident.read.all": "View ALL incidents in the organization subtree, even those not involving your vehicles — for duty officers / commanders.",
+			"incident.manage": "Create / edit / delete incidents, dispatch and recall vehicles, change status, approve completion and close.",
+			"menu.read": "View the system menu configuration (platform admin feature, not used on the web yet).",
+			"menu.manage": "Edit the menu configuration shared by all organizations (platform admins only).",
+			"permission.read": "View the permission catalog (needed for the permission / role screens).",
+			"permission.manage": "Edit the shared permission catalog (names, descriptions, grantable flag) — affects every organization.",
+			"platform.bypass": "Full system access: view and change data of EVERY organization, grant any permission. System administrators only.",
+			"platform.read": "Read data of every organization without changing it. Only activated temporarily, never assigned permanently.",
+			"privilege.elevate": "Allows self-elevation to temporary-only permissions (such as “Read whole system”). Root organization only.",
+			"role.read": "View roles and their permission bundles; needed to pick a role when creating / editing accounts.",
+			"role.manage": "Create your organization's own roles, edit bundles, delete unused roles. Only permissions you hold can go into a role.",
+			"scope.device": "Marks an officer's App account: only sees and acts on assigned vehicles. Adds no extra capability.",
+			"setting.read": "View system settings: GPS history retention, audit log retention.",
+			"setting.manage": "Change system settings: GPS retention, audit log auto-cleanup, clean now, export expired data; edit vehicle types.",
+			"tenant.read": "Open Organizations at system level (still limited to your own scope).",
+			"tenant.manage": "Create / edit / delete ANY organization, including the root (platform admins only).",
+			"tenant.self_config": "Edit your own unit's details (name, address, contacts…).",
+			"tenant.subtree_read": "View your unit and all sub-units with their data (vehicles, incidents, accounts…).",
+			"tenant.subtree_manage": "Add / edit / delete sub-units and act on data across the whole subtree.",
+			"user.read": "View accounts within scope (name, role, unit, last sign-in).",
+			"user.manage": "Create / edit / lock / delete accounts, reset passwords, change role and unit — only for accounts not more powerful than you.",
+			"user.permission.grant": "Grant / revoke individual permissions to other accounts (only ones you hold). Opens the Permission guide."
+		},
 		"module": {
 			"audit": "Audit",
 			"dashboard": "Dashboard",
@@ -516,6 +580,40 @@
 			"user": "Accounts",
 			"other": "Other"
 		}
+	},
+	"permGuide": {
+		"title": "Permission guide",
+		"description": "Permissions you can grant to accounts below you, what each one does and which roles already include it",
+		"search": "Search by name, code or meaning",
+		"permission": "Permission",
+		"meaning": "What it allows",
+		"matrixHint": "You can grant the {{count}} permissions below. ✓ means the role already includes it. Click a role to highlight it, a group to collapse it.",
+		"empty": "No permissions you can grant",
+		"guideLink": "What each permission does",
+		"rulesTitle": "Rules",
+		"rules": {
+			"effective": "An account's permissions = its role's bundle + individually granted extras. Changing a role's bundle applies immediately to everyone holding that role.",
+			"onlyOwn": "You can only grant permissions you hold yourself — the table lists exactly those. You cannot grant to, revoke from or edit accounts with more power than you.",
+			"scope": "Every permission applies only within the account's organization / unit (and sub-units with a “subtree” permission). None reveals another organization's data, except platform permissions.",
+			"web": "Signing in to the web requires “Dashboard access”. For Custom accounts it is preselected on creation — untick it if the account does not need the web.",
+			"app": "App accounts (officers in vehicles) use the mobile app only and only see / act on their assigned vehicles.",
+			"platform": "“Platform” permissions can only be granted by system administrators; “Root org only” ones only to people in the root (operator) organization.",
+			"flexible": "Besides the 4 main roles there is only ONE flexible role, “Custom”: no built-in permissions, each account has its own set. If several accounts need the same set, create an organization role."
+		},
+		"tag": {
+			"platform": "Platform",
+			"rootOnly": "Root org only",
+			"flag": "System flag"
+		},
+		"roleCount": "{{count}} permissions",
+		"moreThan": "{{count}} more than {{role}} — click to see",
+		"focusHint": "Click to highlight this role's permissions",
+		"focus": "Highlighting {{role}}: {{count}} permissions. Permissions it lacks are dimmed.",
+		"focusClear": "Clear highlight",
+		"focusAdded": "Added on top of {{role}}:",
+		"collapseAll": "Collapse all",
+		"expandAll": "Expand all",
+		"matrixHintFiltered": "Showing {{count}} of {{total}} permissions matching the search."
 	},
 	"audit": {
 		"description": "Who did what and when — within your part of the organization tree",

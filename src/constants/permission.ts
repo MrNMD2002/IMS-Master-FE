@@ -22,6 +22,8 @@ export const P = {
 	INCIDENT_READ_ALL: "incident.read.all",
 	AUDIT_READ: "audit.read",
 	DASHBOARD_ACCESS: "dashboard.access",
+	// Cờ hệ thống đánh dấu tài khoản App (cán bộ trên xe).
+	SCOPE_DEVICE: "scope.device",
 	PLATFORM_BYPASS: "platform.bypass",
 	PLATFORM_READ: "platform.read",
 } as const;
@@ -36,3 +38,9 @@ export const TENANT_READ_GATE = [
 ];
 
 export const INCIDENT_READ_GATE = [P.INCIDENT_READ, P.INCIDENT_READ_ALL];
+
+/**
+ * Vai linh hoạt duy nhất — bó quyền luôn rỗng (backend khoá), mỗi tài khoản có bộ quyền cấp lẻ
+ * riêng. Khớp `FLEXIBLE_ROLE` ở `app/shared/permisson_constant.py`.
+ */
+export const FLEXIBLE_ROLE = "custom";
