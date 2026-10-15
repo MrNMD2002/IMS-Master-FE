@@ -556,7 +556,7 @@
 		"search": "Tìm quyền theo tên, mã hoặc ý nghĩa",
 		"permission": "Quyền",
 		"meaning": "Ý nghĩa",
-		"matrixHint": "Bạn cấp được {{count}} quyền dưới đây. Dấu ✓ = vai đó đã có sẵn quyền (không cần cấp lẻ).",
+		"matrixHint": "Bạn cấp được {{count}} quyền dưới đây. Dấu ✓ là quyền vai đó có sẵn. Bấm tên vai để làm nổi, bấm tên nhóm để thu gọn.",
 		"empty": "Không có quyền nào bạn cấp được",
 		"guideLink": "Hướng dẫn từng quyền",
 		"rulesTitle": "Nguyên tắc",
@@ -572,7 +572,16 @@
 			"platform": "Cấp nền tảng",
 			"rootOnly": "Chỉ tổ chức gốc",
 			"flag": "Cờ hệ thống"
-		}
+		},
+		"roleCount": "{{count}} quyền",
+		"moreThan": "Có thêm {{count}} quyền so với {{role}} — bấm để xem",
+		"focusHint": "Bấm để làm nổi các quyền của vai này",
+		"focus": "Đang làm nổi vai {{role}}: có {{count}} quyền. Quyền vai này không có được làm mờ.",
+		"focusClear": "Bỏ làm nổi",
+		"focusAdded": "Có thêm so với {{role}}:",
+		"collapseAll": "Thu gọn tất cả",
+		"expandAll": "Mở tất cả",
+		"matrixHintFiltered": "Đang hiện {{count}} / {{total}} quyền khớp từ khoá."
 	},
 	"audit": {
 		"description": "Ai đã làm gì, lúc nào — trong phạm vi cây tổ chức của bạn",
