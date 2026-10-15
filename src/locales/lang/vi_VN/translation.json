@@ -237,6 +237,7 @@
 		"state": {
 			"ready": "Sẵn sàng",
 			"mobilized": "Đang làm nhiệm vụ",
+			"unavailable": "Ngừng hoạt động",
 			"offline": "Mất tín hiệu"
 		},
 		"searchVehicle": "Tìm theo tên xe hoặc IMEI",
@@ -263,7 +264,8 @@
 			"pick": "Chọn tâm",
 			"useHq": "Về trụ sở",
 			"pickHint": "Bấm lên bản đồ để đặt tâm vòng lọc"
-		}
+		},
+		"reason": "Lý do"
 	},
 	"incident": {
 		"description": "Tiếp nhận, điều động và theo dõi xử lý sự vụ",
@@ -433,7 +435,8 @@
 		"rotateKey": "Đổi mqtt_key",
 		"rotateConfirm": "Đổi mqtt_key của xe?",
 		"rotateDesc": "App đang dùng khoá cũ phải đăng nhập lại.",
-		"keyRotated": "Đã đổi mqtt_key"
+		"keyRotated": "Đã đổi mqtt_key",
+		"typeLocked": "Loại bị khoá"
 	},
 	"tenant": {
 		"description": "Cây tổ chức → đơn vị → đơn vị con",

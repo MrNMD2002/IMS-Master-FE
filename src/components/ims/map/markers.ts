@@ -2,11 +2,13 @@ import L from "leaflet";
 import type { IncidentStatus } from "#/ims";
 import { INCIDENT_STATUS_COLOR } from "../status";
 
-export type VehicleState = "ready" | "mobilized" | "offline";
+/** `unavailable`: xe ngừng hoạt động / bảo trì / mất, hoặc loại phương tiện bị khoá — không điều được. */
+export type VehicleState = "ready" | "mobilized" | "unavailable" | "offline";
 
 export const VEHICLE_COLOR: Record<VehicleState, string> = {
 	ready: "#22C55E",
 	mobilized: "#FF7A00",
+	unavailable: "#B71D18",
 	offline: "#919EAB",
 };
 

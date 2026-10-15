@@ -42,7 +42,14 @@ export function useLiveVehicles(params: { tenant_id?: number; device_type?: numb
 		const byId = new Map((devices.data?.data ?? []).map((d) => [d.id, d]));
 		return (gps.data?.data ?? []).map((g) => {
 			const device = byId.get(g.id);
-			const state: VehicleState = device?.is_mobilized ? "mobilized" : g.is_active ? "ready" : "offline";
+			// Xe đang làm nhiệm vụ vẫn hiện "đang làm nhiệm vụ" dù loại vừa bị khoá (không bị rút).
+			const state: VehicleState = device?.is_mobilized
+				? "mobilized"
+				: device?.available === false
+					? "unavailable"
+					: g.is_active
+						? "ready"
+						: "offline";
 			return { ...g, device, state };
 		});
 	}, [gps.data, devices.data]);
