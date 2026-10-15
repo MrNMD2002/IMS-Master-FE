@@ -5,16 +5,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Circle, Marker, Popup, useMapEvents } from "react-leaflet";
 import { useNavigate, useSearchParams } from "react-router";
-import { dutyCount, type Incident, isOnDuty, isRecalled } from "#/ims";
+import { dutyCount, type Incident, isOnDuty, isRecalled } from "#/cmc";
 import incidentService from "@/api/services/incidentService";
 import tenantService from "@/api/services/tenantService";
-import { Icon } from "@/components/icon";
-import AddressSearch from "@/components/ims/address-search";
-import DispatchDialog from "@/components/ims/dispatch-dialog";
-import EmptyState from "@/components/ims/empty-state";
-import IncidentFormDrawer from "@/components/ims/incident-form-drawer";
-import BaseMap from "@/components/ims/map/base-map";
-import MapControls from "@/components/ims/map/map-controls";
+import AddressSearch from "@/components/cmc/address-search";
+import DispatchDialog from "@/components/cmc/dispatch-dialog";
+import EmptyState from "@/components/cmc/empty-state";
+import IncidentFormDrawer from "@/components/cmc/incident-form-drawer";
+import BaseMap from "@/components/cmc/map/base-map";
+import MapControls from "@/components/cmc/map/map-controls";
 import {
 	hqIcon,
 	incidentIcon,
@@ -23,11 +22,12 @@ import {
 	VEHICLE_COLOR,
 	type VehicleState,
 	vehicleIcon,
-} from "@/components/ims/map/markers";
-import OrgUnitFilter from "@/components/ims/org-unit-filter";
-import { IncidentStatusBadge } from "@/components/ims/status";
+} from "@/components/cmc/map/markers";
+import OrgUnitFilter from "@/components/cmc/org-unit-filter";
+import { IncidentStatusBadge } from "@/components/cmc/status";
+import { Icon } from "@/components/icon";
 import { INCIDENT_READ_GATE, P } from "@/constants/permission";
-import { useDeviceTypes } from "@/hooks/use-ims-options";
+import { useDeviceTypes } from "@/hooks/use-cmc-options";
 import { type LiveVehicle, useLiveVehicles } from "@/hooks/use-live-vehicles";
 import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";

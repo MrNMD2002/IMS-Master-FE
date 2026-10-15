@@ -3,11 +3,11 @@ import { Form, Input, InputNumber, Modal, Switch } from "antd";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import type { Tenant, TenantReq } from "#/ims";
+import type { Tenant, TenantReq } from "#/cmc";
 import tenantService from "@/api/services/tenantService";
-import AddressSearch from "@/components/ims/address-search";
-import LocationPicker from "@/components/ims/location-picker";
-import TenantSelect from "@/components/ims/tenant-select";
+import AddressSearch from "@/components/cmc/address-search";
+import LocationPicker from "@/components/cmc/location-picker";
+import TenantSelect from "@/components/cmc/tenant-select";
 import { P } from "@/constants/permission";
 import { useCan, useUserInfo } from "@/store/userStore";
 

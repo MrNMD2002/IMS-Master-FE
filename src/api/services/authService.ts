@@ -1,4 +1,4 @@
-import type { LoginResult, UserInfo } from "#/ims";
+import type { LoginResult, UserInfo } from "#/cmc";
 import apiClient from "../apiClient";
 
 export interface SignInReq {

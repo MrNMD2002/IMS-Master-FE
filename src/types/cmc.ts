@@ -1,4 +1,4 @@
-/** Kiểu dữ liệu theo schema của IMS API (app/schemas/*.py). */
+/** Kiểu dữ liệu theo schema của CMC API (app/schemas/*.py). */
 
 // ── Phạm vi / người dùng ────────────────────────────────────────────────────
 

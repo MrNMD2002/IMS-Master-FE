@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import type { DeviceStatus, IncidentStatus } from "#/ims";
+import type { DeviceStatus, IncidentStatus } from "#/cmc";
 import { Badge } from "@/ui/badge";
 
 type Variant = "success" | "warning" | "error" | "info" | "default" | "secondary";

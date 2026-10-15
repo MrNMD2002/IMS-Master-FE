@@ -8,7 +8,7 @@ import type {
 	IncidentReportQuery,
 	IncidentReportStats,
 	IncidentReq,
-} from "#/ims";
+} from "#/cmc";
 import apiClient from "../apiClient";
 
 const list = (params: PageQuery & IncidentQuery) => apiClient.get<Paged<Incident>>({ url: "/incident/list", params });

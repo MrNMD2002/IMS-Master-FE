@@ -3,7 +3,7 @@ import { Drawer, Form, Input, Steps } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import type { Incident, IncidentReq } from "#/ims";
+import type { Incident, IncidentReq } from "#/cmc";
 import incidentService from "@/api/services/incidentService";
 import { Icon } from "@/components/icon";
 import { useUserInfo } from "@/store/userStore";

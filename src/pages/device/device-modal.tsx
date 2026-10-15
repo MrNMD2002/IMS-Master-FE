@@ -3,10 +3,10 @@ import { Form, Input, Modal, Select } from "antd";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { DEVICE_STATUSES, type Device, type DeviceReq } from "#/ims";
+import { DEVICE_STATUSES, type Device, type DeviceReq } from "#/cmc";
 import deviceService from "@/api/services/deviceService";
-import TenantSelect from "@/components/ims/tenant-select";
-import { useDeviceTypes } from "@/hooks/use-ims-options";
+import TenantSelect from "@/components/cmc/tenant-select";
+import { useDeviceTypes } from "@/hooks/use-cmc-options";
 import { useUserInfo } from "@/store/userStore";
 
 const IMEI_RE = /^[A-Za-z0-9_-]+$/;
