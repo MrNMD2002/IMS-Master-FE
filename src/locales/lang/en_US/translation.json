@@ -339,6 +339,31 @@
 			"device_complete": "Vehicle finished",
 			"status_update": "Status changed",
 			"close": "Incident closed"
+		},
+		"view": {
+			"list": "List",
+			"stats": "Statistics"
+		},
+		"stats": {
+			"period": {
+				"day": "Day",
+				"week": "Week",
+				"month": "Month",
+				"year": "Year"
+			},
+			"periodCol": {
+				"day": "Day",
+				"week": "Week",
+				"month": "Month",
+				"year": "Year"
+			},
+			"total": "Total incidents",
+			"export": "Export Excel",
+			"overTime": "Incidents per {{period}}",
+			"topUnits": "Units with most incidents",
+			"table": "Data table (periods with incidents)",
+			"empty": "No incidents in this period",
+			"count": "{{count}} incidents"
 		}
 	},
 	"dispatch": {
