@@ -97,6 +97,9 @@
 		"inactiveText": "Ngừng dùng",
 		"lockedText": "Đã khoá",
 		"createdAt": "Tạo lúc",
+		"durationHm": "{{h}} giờ {{m}} phút",
+		"durationMs": "{{m}} phút {{s}} giây",
+		"durationS": "{{s}} giây",
 		"updatedAt": "Cập nhật",
 		"saved": "Đã lưu thay đổi",
 		"deleted": "Đã xoá",
@@ -314,6 +317,12 @@
 		"noVehicle": "Chưa điều xe nào",
 		"deviceDispatched": "Đã điều",
 		"deviceConfirmed": "Đã nhận lệnh",
+		"deviceArrived": "Đã tới hiện trường",
+		"dispatchedAt": "Điều xe lúc",
+		"arrivedAt": "Tới nơi",
+		"responseTime": "Thời gian phản ứng",
+		"notArrived": "Chưa tới",
+		"arrivalByGps": "Tự động theo GPS, cách hiện trường {{m}} m",
 		"deviceDone": "Đã xong",
 		"deviceRecalled": "Đã rút",
 		"deviceReleased": "Đã giải phóng",
@@ -338,6 +347,7 @@
 			"received": "Tiếp nhận sự vụ",
 			"device_dispatch": "Điều động xe",
 			"device_recall": "Rút xe",
+			"device_arrive": "Xe tới hiện trường",
 			"device_complete": "Xe báo kết thúc",
 			"status_update": "Đổi trạng thái",
 			"close": "Đóng sự vụ"
@@ -365,7 +375,13 @@
 			"topUnits": "Đơn vị có nhiều sự vụ nhất",
 			"table": "Bảng số liệu (mốc có sự vụ)",
 			"empty": "Không có sự vụ trong khoảng thời gian này",
-			"count": "{{count}} sự vụ"
+			"count": "{{count}} sự vụ",
+			"responseMedian": "Phản ứng (trung vị)",
+			"responseP90": "Phản ứng P90",
+			"responseHint": "Từ lúc điều xe tới lúc xe tới hiện trường",
+			"responseP90Hint": "90% lượt điều xe tới nơi nhanh hơn mức này",
+			"responseCoverage": "Lượt có mốc tới nơi",
+			"responseCoverageHint": "{{measured}}/{{total}} lượt điều xe — phần còn lại chưa tới hoặc thiếu GPS"
 		}
 	},
 	"dispatch": {

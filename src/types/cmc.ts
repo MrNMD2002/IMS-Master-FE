@@ -239,6 +239,15 @@ export interface DispatchedDevice {
 	completed: boolean;
 	completed_at?: string | null;
 	note?: string | null;
+	/** Giờ điều của lượt hiện tại (điều lại sau khi rút → giờ mới). */
+	dispatched_at?: string | null;
+	/** Tới hiện trường — backend tự ghi từ GPS. */
+	arrived_at?: string | null;
+	arrival_source?: string | null;
+	/** Cách toạ độ sự vụ lúc được tính là tới (mét). */
+	arrival_distance_m?: number | null;
+	/** Thời gian phản ứng = tới nơi − điều xe (giây). */
+	response_seconds?: number | null;
 }
 
 /** Xe đã bị rút khỏi sự vụ (backend vẫn trả dòng này cho bên sở hữu để giữ lịch sử). */
@@ -328,6 +337,14 @@ export interface IncidentReportStats {
 	by_status: Record<IncidentStatus, number>;
 	series: IncidentReportBucket[];
 	by_tenant: { tenant_id: number; tenant_name: string; total: number }[];
+	/** Thời gian phản ứng của các lượt điều xe (đã loại xe bị rút). */
+	response: {
+		dispatches: number;
+		/** Số lượt đã có mốc tới nơi. */
+		measured: number;
+		median_s: number | null;
+		p90_s: number | null;
+	};
 }
 
 export interface IncidentLog {

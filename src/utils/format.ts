@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
+import type { TFunction } from "i18next";
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
@@ -19,6 +20,18 @@ export const fmtDateTime = (value?: string | number | null, pattern = "DD/MM/YYY
 	parseApiTime(value)?.format(pattern) ?? "—";
 
 export const fmtFromNow = (value?: string | number | null) => parseApiTime(value)?.fromNow() ?? "—";
+
+/** Khoảng thời gian (giây) → "12 phút 05 giây" / "1 giờ 03 phút" theo ngôn ngữ đang chọn. */
+export const fmtDuration = (seconds: number | null | undefined, t: TFunction) => {
+	if (seconds === null || seconds === undefined) return "—";
+	const h = Math.floor(seconds / 3600);
+	const m = Math.floor((seconds % 3600) / 60);
+	const s = seconds % 60;
+	const pad = (n: number) => String(n).padStart(2, "0");
+	if (h > 0) return t("common.durationHm", { h, m: pad(m) });
+	if (m > 0) return t("common.durationMs", { m, s: pad(s) });
+	return t("common.durationS", { s });
+};
 
 export const fmtSecondsAgo = (seconds: number) => dayjs().subtract(seconds, "second").fromNow();
 
