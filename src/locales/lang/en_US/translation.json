@@ -97,6 +97,9 @@
 		"inactiveText": "Inactive",
 		"lockedText": "Locked",
 		"createdAt": "Created",
+		"durationHm": "{{h}} h {{m}} min",
+		"durationMs": "{{m}} min {{s}} s",
+		"durationS": "{{s}} s",
 		"updatedAt": "Updated",
 		"saved": "Changes saved",
 		"deleted": "Deleted",
@@ -314,6 +317,12 @@
 		"noVehicle": "No vehicles dispatched yet",
 		"deviceDispatched": "Dispatched",
 		"deviceConfirmed": "Acknowledged",
+		"deviceArrived": "On scene",
+		"dispatchedAt": "Dispatched at",
+		"arrivedAt": "Arrived",
+		"responseTime": "Response time",
+		"notArrived": "Not arrived",
+		"arrivalByGps": "Detected by GPS, {{m}} m from the scene",
 		"deviceDone": "Done",
 		"deviceRecalled": "Recalled",
 		"deviceReleased": "Released",
@@ -338,6 +347,7 @@
 			"received": "Incident received",
 			"device_dispatch": "Vehicle dispatched",
 			"device_recall": "Vehicle recalled",
+			"device_arrive": "Vehicle on scene",
 			"device_complete": "Vehicle finished",
 			"status_update": "Status changed",
 			"close": "Incident closed"
@@ -365,7 +375,13 @@
 			"topUnits": "Units with most incidents",
 			"table": "Data table (periods with incidents)",
 			"empty": "No incidents in this period",
-			"count": "{{count}} incidents"
+			"count": "{{count}} incidents",
+			"responseMedian": "Response (median)",
+			"responseP90": "Response P90",
+			"responseHint": "From dispatch until the vehicle reaches the scene",
+			"responseP90Hint": "90% of dispatches arrive faster than this",
+			"responseCoverage": "Dispatches with arrival time",
+			"responseCoverageHint": "{{measured}}/{{total}} dispatches — the rest have not arrived or lack GPS"
 		}
 	},
 	"dispatch": {

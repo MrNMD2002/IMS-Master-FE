@@ -25,12 +25,13 @@ import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { cn } from "@/utils";
-import { fmtDateTime, fmtFromNow } from "@/utils/format";
+import { fmtDateTime, fmtDuration, fmtFromNow } from "@/utils/format";
 
 const LOG_ICON: Record<string, { icon: string; color: string }> = {
 	received: { icon: "solar:inbox-in-bold", color: "#078DEE" },
 	device_dispatch: { icon: "solar:bus-bold", color: "#FF7A00" },
 	device_recall: { icon: "solar:undo-left-bold", color: "#FF5630" },
+	device_arrive: { icon: "solar:map-point-wave-bold", color: "#00B8D9" },
 	device_complete: { icon: "solar:check-circle-bold", color: "#22C55E" },
 	status_update: { icon: "solar:refresh-circle-bold", color: "#7635DC" },
 	close: { icon: "solar:lock-keyhole-bold", color: "#637381" },
@@ -134,10 +135,40 @@ export default function IncidentDetailPage() {
 					<Tooltip title={fmtDateTime(d.completed_at)}>
 						<Badge variant="success">{t("incident.deviceDone")}</Badge>
 					</Tooltip>
+				) : d.arrived_at ? (
+					<Badge variant="default">{t("incident.deviceArrived")}</Badge>
 				) : d.confirmed ? (
 					<Badge variant="info">{t("incident.deviceConfirmed")}</Badge>
 				) : (
 					<Badge variant="warning">{t("incident.deviceDispatched")}</Badge>
+				),
+		},
+		{
+			title: t("incident.dispatchedAt"),
+			key: "dispatched_at",
+			render: (_, d) => <span className="whitespace-nowrap">{fmtDateTime(d.dispatched_at, "HH:mm:ss DD/MM")}</span>,
+		},
+		{
+			title: t("incident.arrivedAt"),
+			key: "arrived_at",
+			render: (_, d) =>
+				d.arrived_at ? (
+					<Tooltip
+						title={
+							d.arrival_source === "GPS" && d.arrival_distance_m != null
+								? t("incident.arrivalByGps", { m: d.arrival_distance_m })
+								: undefined
+						}
+					>
+						<div className="whitespace-nowrap">
+							<p>{fmtDateTime(d.arrived_at, "HH:mm:ss DD/MM")}</p>
+							<p className="text-xs text-text-secondary">
+								{t("incident.responseTime")}: {fmtDuration(d.response_seconds, t)}
+							</p>
+						</div>
+					</Tooltip>
+				) : (
+					<span className="text-text-disabled">{isRecalled(d) ? "—" : t("incident.notArrived")}</span>
 				),
 		},
 		{ title: t("incident.field.note"), dataIndex: "note", render: (v) => v || "—" },

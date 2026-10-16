@@ -14,7 +14,7 @@ import { Icon } from "@/components/icon";
 import { useSettings } from "@/store/settingStore";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import { downloadBlob } from "@/utils/format";
+import { downloadBlob, fmtDuration } from "@/utils/format";
 
 const { RangePicker } = DatePicker;
 const PERIODS: ReportPeriod[] = ["day", "week", "month", "year"];
@@ -219,6 +219,45 @@ export default function IncidentStatsView() {
 						loading={!data}
 					/>
 				))}
+			</div>
+
+			<div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+				<StatCard
+					title={t("incident.stats.responseMedian")}
+					value={data ? fmtDuration(data.response.median_s, t) : undefined}
+					hint={t("incident.stats.responseHint")}
+					icon="solar:stopwatch-bold-duotone"
+					tone="info"
+					loading={!data}
+				/>
+				<StatCard
+					title={t("incident.stats.responseP90")}
+					value={data ? fmtDuration(data.response.p90_s, t) : undefined}
+					hint={t("incident.stats.responseP90Hint")}
+					icon="solar:graph-up-bold-duotone"
+					tone="warning"
+					loading={!data}
+				/>
+				<StatCard
+					title={t("incident.stats.responseCoverage")}
+					value={
+						data
+							? data.response.dispatches
+								? `${Math.round((data.response.measured / data.response.dispatches) * 100)}%`
+								: "—"
+							: undefined
+					}
+					hint={
+						data &&
+						t("incident.stats.responseCoverageHint", {
+							measured: data.response.measured,
+							total: data.response.dispatches,
+						})
+					}
+					icon="solar:map-point-wave-bold-duotone"
+					tone="success"
+					loading={!data}
+				/>
 			</div>
 
 			<div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
