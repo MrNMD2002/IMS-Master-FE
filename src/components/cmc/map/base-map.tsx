@@ -5,25 +5,31 @@ import { ThemeMode } from "#/enum";
 import { useSettings } from "@/store/settingStore";
 import { cn } from "@/utils";
 import "./map.css";
-import SovereigntyLayer from "./sovereignty-layer";
 
 /** Trung tâm mặc định: Hà Nội. */
 export const DEFAULT_CENTER: [number, number] = [21.0285, 105.8542];
 
 /**
- * Nền bản đồ Esri — không cần API key. (tile.openstreetmap.org bị chặn trên mạng dev,
- * CARTO giờ đòi key.) Có tile server riêng thì đổi URL ở đây: docs/map/OSM_TILE_SERVER.md.
+ * Nền bản đồ CMC tự host (repo backend: docker-compose.map.yml) — đã vẽ sẵn chủ quyền biển đảo
+ * và viền lãnh thổ Việt Nam. `VITE_MAP_TILE_URL` bỏ trống → máy chủ ảnh nền cùng máy với Web,
+ * cổng 8090. `{r}` = "@2x" trên màn hình nét; `?v=` tăng mỗi khi backend đổi kiểu bản đồ để
+ * trình duyệt bỏ ảnh cũ đã lưu tạm (xem docs/map/MAP_SERVER.md ở repo backend).
  */
-const ESRI = "https://server.arcgisonline.com/ArcGIS/rest/services";
-const ESRI_ATTR = 'Tiles &copy; <a href="https://www.esri.com/">Esri</a>';
-const TILES = {
-	light: { url: `${ESRI}/World_Street_Map/MapServer/tile/{z}/{y}/{x}`, attribution: ESRI_ATTR, maxNativeZoom: 19 },
-	dark: {
-		url: `${ESRI}/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}`,
-		attribution: ESRI_ATTR,
-		maxNativeZoom: 16,
-	},
-};
+const MAP_STYLE_VERSION = 3;
+const TILE_URL =
+	import.meta.env.VITE_MAP_TILE_URL ||
+	`${window.location.protocol}//${window.location.hostname}:8090/styles/cmc/{z}/{x}/{y}{r}.png?v=${MAP_STYLE_VERSION}`;
+const ATTRIBUTION =
+	'&copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+/**
+ * Nền chỉ có dữ liệu trong khung dựng (backend scripts/map/build-map-data.sh, BOUNDS) — ngoài
+ * khung là ô trống (biển thành màu đất). Không cho thu nhỏ / kéo ra ngoài khung đó.
+ */
+const MIN_ZOOM = 5;
+const MAX_BOUNDS: [[number, number], [number, number]] = [
+	[-12, 78],
+	[40, 142],
+];
 
 /** Leaflet cần gọi invalidateSize khi khung đổi kích thước (đóng / mở menu, panel). */
 function AutoResize() {
@@ -46,7 +52,7 @@ interface Props {
 	scrollWheelZoom?: boolean;
 }
 
-/** Bản đồ nền — tự đổi lớp nền sáng / tối theo giao diện. */
+/** Bản đồ nền CMC — giao diện tối thì làm tối ảnh nền bằng CSS. */
 export default function BaseMap({
 	center = DEFAULT_CENTER,
 	zoom = 13,
@@ -56,7 +62,7 @@ export default function BaseMap({
 	scrollWheelZoom = true,
 }: Props) {
 	const { themeMode } = useSettings();
-	const tile = themeMode === ThemeMode.Dark ? TILES.dark : TILES.light;
+	const dark = themeMode === ThemeMode.Dark;
 	return (
 		<MapContainer
 			ref={mapRef}
@@ -65,16 +71,18 @@ export default function BaseMap({
 			scrollWheelZoom={scrollWheelZoom}
 			className={cn("cmc-map h-full w-full", className)}
 			zoomControl={false}
+			minZoom={MIN_ZOOM}
+			maxBounds={MAX_BOUNDS}
+			maxBoundsViscosity={1}
 		>
 			<TileLayer
-				key={tile.url}
-				url={tile.url}
-				attribution={tile.attribution}
-				maxNativeZoom={tile.maxNativeZoom}
+				url={TILE_URL}
+				attribution={ATTRIBUTION}
+				maxNativeZoom={19}
 				maxZoom={19}
+				className={dark ? "cmc-tiles-dim" : undefined}
 			/>
 			<AutoResize />
-			<SovereigntyLayer />
 			{children}
 		</MapContainer>
 	);
