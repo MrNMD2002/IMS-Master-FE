@@ -14,7 +14,7 @@ export default function AddressSearch({
 	className?: string;
 	size?: "small" | "middle" | "large";
 }) {
-	const { t, i18n } = useTranslation();
+	const { t } = useTranslation();
 	const [q, setQ] = useState("");
 	const [results, setResults] = useState<GeoResult[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -26,11 +26,11 @@ export default function AddressSearch({
 		}
 		const timer = setTimeout(async () => {
 			setLoading(true);
-			setResults(await searchAddress(q, i18n.language === "en_US" ? "en" : "vi"));
+			setResults(await searchAddress(q));
 			setLoading(false);
 		}, 500);
 		return () => clearTimeout(timer);
-	}, [q, i18n.language]);
+	}, [q]);
 
 	return (
 		<AutoComplete

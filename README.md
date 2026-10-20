@@ -59,13 +59,21 @@ src/
 
 ## Ghi chú
 
-- **Bản đồ & tra địa chỉ** dùng Esri (không cần API key). `tile.openstreetmap.org` và
-  Nominatim bị chặn trên mạng dev, CARTO giờ đòi key. Muốn đổi nguồn: `components/cmc/map/base-map.tsx`
-  và `utils/geocode.ts`.
+- **Bản đồ hoàn toàn tự host, không gọi dịch vụ bên ngoài** (repo backend: `docker-compose.map.yml`,
+  `docs/map/MAP_SERVER.md`):
+  - **Nền**: `VITE_MAP_TILE_URL` (bỏ trống → cùng máy với web, cổng 8090). Nền đã vẽ sẵn chủ quyền
+    Hoàng Sa, Trường Sa và viền đỏ lãnh thổ Việt Nam. Không cho thu nhỏ dưới mức 5 / kéo ra ngoài
+    khung dữ liệu (`base-map.tsx`). Đổi kiểu bản đồ ở backend thì tăng `?v=` trong URL. Giao diện tối
+    làm dịu nền bằng CSS.
+  - **Tra địa chỉ** (`utils/geocode.ts`): `GET /map/geocode`, `GET /map/reverse` của backend (Photon trên
+    dữ liệu OSM Việt Nam) — đơn vị hành chính mới (phường / xã, tỉnh / thành, bỏ cấp huyện); vùng Hoàng
+    Sa / Trường Sa ghi "Đặc khu Hoàng Sa, Thành phố Đà Nẵng" / "Đặc khu Trường Sa, Tỉnh Khánh Hòa".
 - **Ảnh hiện trường** lấy qua `/incident/{id}/images/{image_id}/raw` kèm token rồi hiện bằng blob URL
   (thẻ `<img>` không gửi được header Authorization).
 - **Xe gần nhất** chỉ gồm xe đang trực tuyến (gửi GPS trong 60 giây) thuộc đơn vị phụ trách sự vụ và cấp dưới
-  — đúng luật điều xe của backend.
+  — đúng luật điều xe của backend. Danh sách lấy từ `GET /map/dispatch-suggestions`: xe tới nhanh nhất theo
+  đường đi thực tế trước, hiện "~7 phút · 2,6 km", 3 xe sẵn sàng tới nhanh nhất có nhãn **Gợi ý**. Máy chủ
+  dẫn đường lỗi thì vẫn hiện danh sách, xếp theo đường chim bay kèm dòng cảnh báo.
 - Thêm chuỗi giao diện mới: thêm khoá vào **cả hai** file `translation.json`.
 - Tài khoản không có `dashboard.access` (tài khoản App của cán bộ) bị chặn ngay ở trang đăng nhập web.
 - Bộ nhận diện: `src/assets/brand/` (biểu tượng, logo ngang), `public/` (favicon, icon PWA). Tên hệ thống ở

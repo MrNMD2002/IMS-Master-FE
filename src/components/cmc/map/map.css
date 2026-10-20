@@ -128,136 +128,6 @@
 	}
 }
 
-/* Nhãn chủ quyền biển đảo (sovereignty-layer.tsx) — chữ có viền sáng để đọc được trên mọi nền */
-.cmc-sov {
-	background: transparent;
-	border: none;
-	pointer-events: none;
-}
-
-.cmc-sov > span {
-	white-space: nowrap;
-}
-
-.cmc-sov--group > span,
-.cmc-sov--sea > span {
-	display: block;
-	transform: translate(-50%, -50%);
-	text-align: center;
-	color: #b71c1c;
-	font-weight: 800;
-	font-size: 14px;
-	letter-spacing: 0.02em;
-	text-shadow:
-		0 0 3px #fff,
-		0 0 3px #fff,
-		0 0 6px #fff;
-}
-
-.cmc-sov--sea > span {
-	font-size: 16px;
-	font-style: italic;
-	font-weight: 600;
-	color: #2f6fa8;
-	letter-spacing: 0.15em;
-}
-
-/* Điểm địa danh: chấm + tên */
-.cmc-sov--island,
-.cmc-sov--reef,
-.cmc-sov--subgroup,
-.cmc-sov--coast-island,
-.cmc-sov--cape {
-	display: flex !important;
-	align-items: center;
-	gap: 4px;
-	transform: translate(-4px, -50%);
-	color: #0b4f8a;
-	font-size: 11px;
-	font-weight: 600;
-	text-shadow:
-		0 0 3px #fff,
-		0 0 3px #fff;
-}
-
-.cmc-sov--reef {
-	font-size: 10px;
-	font-weight: 500;
-	font-style: italic;
-	color: #2f6fa8;
-}
-
-.cmc-sov--subgroup {
-	font-size: 12px;
-	font-weight: 700;
-	color: #b71c1c;
-}
-
-.cmc-sov--cape {
-	font-style: italic;
-	color: #5d4037;
-}
-
-.cmc-sov__dot {
-	width: 7px;
-	height: 7px;
-	border-radius: 50%;
-	background: #0b4f8a;
-	border: 1.5px solid #fff;
-	flex: none;
-}
-
-.cmc-sov--reef .cmc-sov__dot {
-	width: 5px;
-	height: 5px;
-	border-radius: 1px;
-	background: #2f6fa8;
-	transform: rotate(45deg);
-}
-
-.cmc-sov--subgroup .cmc-sov__dot {
-	display: none;
-}
-
-.cmc-sov--cape .cmc-sov__dot {
-	width: 0;
-	height: 0;
-	border-radius: 0;
-	background: none;
-	border-left: 4px solid transparent;
-	border-right: 4px solid transparent;
-	border-bottom: 7px solid #5d4037;
-	border-top: none;
-}
-
-[data-theme-mode="dark"] .cmc-sov--group > span,
-[data-theme-mode="dark"] .cmc-sov--subgroup {
-	color: #ff8a80;
-	text-shadow:
-		0 0 3px #000,
-		0 0 3px #000;
-}
-
-[data-theme-mode="dark"] .cmc-sov--island,
-[data-theme-mode="dark"] .cmc-sov--reef,
-[data-theme-mode="dark"] .cmc-sov--coast-island,
-[data-theme-mode="dark"] .cmc-sov--cape {
-	color: #9cd3ff;
-	text-shadow:
-		0 0 3px #000,
-		0 0 3px #000;
-}
-
-[data-theme-mode="dark"] .cmc-sov--sea > span {
-	color: #7fb8e6;
-	text-shadow: 0 0 3px #000;
-}
-
-[data-theme-mode="dark"] .cmc-sov__dot {
-	background: #9cd3ff;
-	border-color: #000;
-}
-
 /* Trụ sở tổ chức */
 .cmc-hq {
 	background: transparent;
@@ -311,4 +181,9 @@
 	background: var(--primary, #078dee);
 	border: 3px solid #fff;
 	box-shadow: 0 0 0 3px rgba(7, 141, 238, 0.35);
+}
+
+/* Nền CMC chỉ có bản sáng — giảm độ chói khi giao diện tối. */
+[data-theme-mode="dark"] .cmc-map .cmc-tiles-dim {
+	filter: brightness(0.78) contrast(1.05) saturate(0.85);
 }
