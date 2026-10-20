@@ -31,6 +31,7 @@ const LOG_ICON: Record<string, { icon: string; color: string }> = {
 	received: { icon: "solar:inbox-in-bold", color: "#078DEE" },
 	device_dispatch: { icon: "solar:bus-bold", color: "#FF7A00" },
 	device_recall: { icon: "solar:undo-left-bold", color: "#FF5630" },
+	device_ack: { icon: "solar:clipboard-check-bold", color: "#22C55E" },
 	device_arrive: { icon: "solar:map-point-wave-bold", color: "#00B8D9" },
 	device_complete: { icon: "solar:check-circle-bold", color: "#22C55E" },
 	status_update: { icon: "solar:refresh-circle-bold", color: "#7635DC" },

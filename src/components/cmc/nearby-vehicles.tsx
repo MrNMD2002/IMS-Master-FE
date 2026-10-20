@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { Checkbox, InputNumber, Segmented } from "antd";
+import { Checkbox, InputNumber, Segmented, Tag } from "antd";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import gpsService from "@/api/services/gpsService";
+import mapService from "@/api/services/mapService";
 import EmptyState from "@/components/cmc/empty-state";
 import { MobilizedBadge } from "@/components/cmc/status";
 import { Icon } from "@/components/icon";
@@ -20,7 +20,10 @@ interface Props {
 	maxHeight?: number;
 }
 
-/** Danh sách xe quanh một điểm (gần nhất trước) để chọn điều động. */
+const SUGGEST_TOP = 3;
+
+/** Xe quanh một điểm để chọn điều động — xe tới nhanh nhất (theo đường đi thực tế) trước,
+ * 3 xe sẵn sàng tới nhanh nhất được gắn nhãn "Gợi ý". */
 export default function NearbyVehicles({
 	lat,
 	lng,
@@ -36,9 +39,9 @@ export default function NearbyVehicles({
 	const enabled = lat !== null && lat !== undefined && lng !== null && lng !== undefined;
 
 	const { data, isFetching } = useQuery({
-		queryKey: ["gps-nearby", lat, lng, radius, tenantId],
+		queryKey: ["dispatch-suggestions", lat, lng, radius, tenantId],
 		queryFn: () =>
-			gpsService.nearby({
+			mapService.dispatchSuggestions({
 				latitude: lat as number,
 				longitude: lng as number,
 				radius_km: radius,
@@ -49,10 +52,28 @@ export default function NearbyVehicles({
 	});
 
 	const rows = useMemo(() => {
-		const all = data?.data ?? [];
+		const all = data?.items ?? [];
 		// "Sẵn sàng": chưa làm nhiệm vụ VÀ khả dụng (không bảo trì / mất / loại bị khoá).
 		return filter === "ready" ? all.filter((r) => !r.device?.is_mobilized && r.device?.available !== false) : all;
 	}, [data, filter]);
+
+	// Nhãn "Gợi ý": 3 xe điều được tới nhanh nhất (danh sách đã xếp theo thời gian đi đường).
+	// Tính lại ở đây vì API không biết xe nào đã có trong sự vụ này.
+	const suggestedIds = useMemo(() => {
+		const byRoad = data?.method !== "straight_line";
+		return new Set(
+			(data?.items ?? [])
+				.filter(
+					(r) =>
+						!excludeIds.includes(r.id) &&
+						!r.device?.is_mobilized &&
+						r.device?.available !== false &&
+						(!byRoad || (r.eta_s !== null && r.eta_s !== undefined)),
+				)
+				.slice(0, SUGGEST_TOP)
+				.map((r) => r.id),
+		);
+	}, [data, excludeIds]);
 
 	if (!enabled) {
 		return <EmptyState text={t("dispatch.pickLocationFirst")} icon="solar:map-point-search-bold-duotone" />;
@@ -85,6 +106,9 @@ export default function NearbyVehicles({
 					km
 				</div>
 			</div>
+			{data?.method === "straight_line" && rows.length > 0 && (
+				<p className="text-xs text-warning">{t("dispatch.routingDown")}</p>
+			)}
 			<div className="flex flex-col gap-1 overflow-y-auto pr-1" style={{ maxHeight }}>
 				{isFetching && !rows.length && (
 					<p className="py-6 text-center text-sm text-text-secondary">{t("common.loadingText")}</p>
@@ -119,10 +143,31 @@ export default function NearbyVehicles({
 								</p>
 							</div>
 							<div className="flex flex-col items-end gap-1">
-								<span className="flex items-center gap-1 text-xs font-semibold text-primary">
-									<Icon icon="solar:routing-2-linear" size={14} />
-									{r.distance_km !== null && r.distance_km !== undefined ? `${r.distance_km.toFixed(1)} km` : "—"}
-								</span>
+								{r.eta_s !== null && r.eta_s !== undefined ? (
+									<span
+										className="flex items-center gap-1 text-xs font-semibold text-primary"
+										title={t("dispatch.etaTitle")}
+									>
+										<Icon icon="solar:routing-2-linear" size={14} />
+										{t("dispatch.eta", { minutes: Math.max(1, Math.round(r.eta_s / 60)) })}
+										{r.road_distance_km !== null && r.road_distance_km !== undefined
+											? ` · ${r.road_distance_km.toFixed(1)} km`
+											: ""}
+									</span>
+								) : (
+									<span
+										className="flex items-center gap-1 text-xs font-semibold text-text-secondary"
+										title={t("dispatch.straightTitle")}
+									>
+										<Icon icon="solar:map-arrow-up-linear" size={14} />
+										{r.distance_km !== null && r.distance_km !== undefined ? `${r.distance_km.toFixed(1)} km` : "—"}
+									</span>
+								)}
+								{suggestedIds.has(r.id) && (
+									<Tag color="green" className="!m-0 !text-[11px]">
+										{t("dispatch.suggested")}
+									</Tag>
+								)}
 								{already ? (
 									<span className="text-[11px] text-text-secondary">{t("dispatch.alreadyIn")}</span>
 								) : blocked && !busy ? (

@@ -3,7 +3,7 @@ import { Input, Modal } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { type Incident, isOnDuty } from "#/cmc";
+import { type Incident, isRecalled } from "#/cmc";
 import incidentService from "@/api/services/incidentService";
 import { Icon } from "@/components/icon";
 import NearbyVehicles from "./nearby-vehicles";
@@ -72,7 +72,8 @@ export default function DispatchDialog({
 						tenantId={incident.tenant_id}
 						value={ids}
 						onChange={setIds}
-						excludeIds={incident.dispatched_devices.filter(isOnDuty).map((d) => d.device_id)}
+						// Xe đang làm hoặc đã báo xong ở sự vụ này không điều lại được (backend chỉ điều lại xe đã rút).
+						excludeIds={incident.dispatched_devices.filter((d) => !isRecalled(d)).map((d) => d.device_id)}
 					/>
 					<Input.TextArea
 						value={note}

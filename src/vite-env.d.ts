@@ -19,6 +19,8 @@ interface ImportMetaEnv {
 	readonly VITE_NDAMAP_API_KEY?: string;
 	/** NDA Map tiles base URL */
 	readonly VITE_NDAMAP_TILES_URL?: string;
+	/** Nền bản đồ CMC tự host, vd http://localhost:8090/styles/cmc/{z}/{x}/{y}.png (đã vẽ sẵn Hoàng Sa, Trường Sa) */
+	readonly VITE_MAP_TILE_URL?: string;
 }
 
 interface ImportMeta {
