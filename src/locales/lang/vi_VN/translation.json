@@ -347,6 +347,7 @@
 			"received": "Tiếp nhận sự vụ",
 			"device_dispatch": "Điều động xe",
 			"device_recall": "Rút xe",
+			"device_ack": "Xe nhận lệnh",
 			"device_arrive": "Xe tới hiện trường",
 			"device_complete": "Xe báo kết thúc",
 			"status_update": "Đổi trạng thái",
@@ -400,7 +401,12 @@
 		"recallReason": "Lý do rút xe (gửi tới App của xe, có thể để trống)",
 		"notePlaceholder": "Ghi chú gửi kèm lệnh điều động tới App (có thể để trống)",
 		"recallConfirm": "Rút xe {{name}} khỏi sự vụ?",
-		"recalled": "Đã rút xe"
+		"recalled": "Đã rút xe",
+		"suggested": "Gợi ý",
+		"eta": "~{{minutes}} phút",
+		"etaTitle": "Thời gian đi đường ước tính và quãng đường thực tế tới hiện trường",
+		"straightTitle": "Khoảng cách đường chim bay (chưa tính được đường đi)",
+		"routingDown": "Máy chủ dẫn đường chưa sẵn sàng — đang xếp theo khoảng cách đường chim bay."
 	},
 	"activity": {
 		"description": "Xem lại hành trình của phương tiện (tối đa 24 giờ mỗi lần)",
@@ -746,13 +752,6 @@
 			"all": "Toàn hệ thống",
 			"subtree": "Đơn vị mình và cấp dưới",
 			"one": "Chỉ đơn vị mình"
-		}
-	},
-	"map": {
-		"sovereignty": {
-			"eastSea": "Biển Đông",
-			"hoangSa": "Quần đảo Hoàng Sa (Việt Nam)",
-			"truongSa": "Quần đảo Trường Sa (Việt Nam)"
 		}
 	}
 }

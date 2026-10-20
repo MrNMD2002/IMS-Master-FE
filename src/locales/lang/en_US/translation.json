@@ -347,6 +347,7 @@
 			"received": "Incident received",
 			"device_dispatch": "Vehicle dispatched",
 			"device_recall": "Vehicle recalled",
+			"device_ack": "Vehicle acknowledged",
 			"device_arrive": "Vehicle on scene",
 			"device_complete": "Vehicle finished",
 			"status_update": "Status changed",
@@ -400,7 +401,12 @@
 		"recallReason": "Reason for recall (sent to the vehicle's App, optional)",
 		"notePlaceholder": "Note sent with the dispatch order to the App (optional)",
 		"recallConfirm": "Recall {{name}} from this incident?",
-		"recalled": "Vehicle recalled"
+		"recalled": "Vehicle recalled",
+		"suggested": "Suggested",
+		"eta": "~{{minutes}} min",
+		"etaTitle": "Estimated driving time and road distance to the scene",
+		"straightTitle": "Straight-line distance (no road route available)",
+		"routingDown": "Routing server unavailable — sorted by straight-line distance."
 	},
 	"activity": {
 		"description": "Replay a vehicle's route (up to 24 hours at a time)",
@@ -746,13 +752,6 @@
 			"all": "Whole system",
 			"subtree": "My unit and below",
 			"one": "My unit only"
-		}
-	},
-	"map": {
-		"sovereignty": {
-			"eastSea": "East Sea",
-			"hoangSa": "Hoang Sa Archipelago (Viet Nam)",
-			"truongSa": "Truong Sa Archipelago (Viet Nam)"
 		}
 	}
 }

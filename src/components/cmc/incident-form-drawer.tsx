@@ -29,7 +29,7 @@ type FormValues = IncidentReq;
 const PHONE_RE = /^0\d{9}$/;
 
 export default function IncidentFormDrawer({ open, onClose, incident, initialPoint, onSaved }: Props) {
-	const { t, i18n } = useTranslation();
+	const { t } = useTranslation();
 	const qc = useQueryClient();
 	const { tenant_id } = useUserInfo();
 	const [form] = Form.useForm<FormValues>();
@@ -55,7 +55,7 @@ export default function IncidentFormDrawer({ open, onClose, incident, initialPoi
 	}, [open, incident, initialPoint]);
 
 	const fillAddress = async (la: number, ln: number) => {
-		const addr = await reverseGeocode(la, ln, i18n.language === "en_US" ? "en" : "vi");
+		const addr = await reverseGeocode(la, ln);
 		if (addr) form.setFieldsValue({ location_address: addr, location: addr.split(",").slice(0, 2).join(",") });
 	};
 

@@ -205,6 +205,19 @@ export interface GpsNearby {
 	device?: Device | null;
 }
 
+/** Xe quanh hiện trường kèm thời gian đi đường (`GET /map/dispatch-suggestions`). */
+export interface DispatchSuggestion extends GpsNearby {
+	road_distance_km?: number | null;
+	eta_s?: number | null;
+	suggested: boolean;
+}
+
+export interface DispatchSuggestions {
+	/** road = xếp theo thời gian đi đường; straight_line = máy chủ dẫn đường lỗi, xếp theo đường chim bay */
+	method: "road" | "straight_line";
+	items: DispatchSuggestion[];
+}
+
 export interface GpsPoint {
 	lat: number;
 	lng: number;
@@ -423,4 +436,12 @@ export interface AuditQuery {
 export interface DashboardStats {
 	total_devices: number;
 	processing_incidents: number;
+}
+
+/** Kết quả tìm địa chỉ — GET /map/geocode, /map/reverse. */
+export interface GeocodeItem {
+	latitude: number;
+	longitude: number;
+	/** Số nhà đường, phường / xã, tỉnh / thành. */
+	label: string;
 }
