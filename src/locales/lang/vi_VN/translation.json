@@ -137,7 +137,7 @@
 		"onlineDevices": "Đang trực tuyến",
 		"mobilizedCount": "{{count}} xe đang làm nhiệm vụ",
 		"processing": "Sự vụ đang xử lý",
-		"pendingApproval": "Chờ xác nhận",
+		"pendingApproval": "Chờ xét duyệt",
 		"liveMap": "Bản đồ phương tiện",
 		"openMap": "Mở bản đồ",
 		"incidentByStatus": "Sự vụ theo trạng thái",
@@ -282,7 +282,7 @@
 		"noLocation": "Sự vụ chưa có toạ độ",
 		"status": {
 			"PROCESSING": "Đang xử lý",
-			"PENDING_APPROVAL": "Chờ xác nhận",
+			"PENDING_APPROVAL": "Chờ xét duyệt",
 			"COMPLETED": "Đã xử lý"
 		},
 		"field": {
@@ -329,7 +329,7 @@
 		"finishNoteApp": "Ghi chú gửi tới App các xe còn làm nhiệm vụ (có thể để trống)",
 		"completeDevice": "Kết thúc",
 		"completeDeviceTitle": "Báo kết thúc cho xe {{name}}",
-		"completeDeviceDesc": "Xe sẽ được giải phóng khỏi sự vụ và App của xe nhận thông báo kèm ghi chú. Nếu là xe cuối cùng, sự vụ chuyển sang Chờ xác nhận.",
+		"completeDeviceDesc": "Xe sẽ được giải phóng khỏi sự vụ và App của xe nhận thông báo kèm ghi chú. Nếu là xe cuối cùng, sự vụ chuyển sang Chờ xét duyệt.",
 		"deviceCompleted": "Đã báo kết thúc cho xe",
 		"finish": "Kết thúc sự vụ",
 		"finishTitle": "Kết thúc sự vụ này?",
