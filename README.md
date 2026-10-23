@@ -59,8 +59,7 @@ src/
 
 ## Ghi chú
 
-- **Bản đồ hoàn toàn tự host, không gọi dịch vụ bên ngoài** (repo backend: `docker-compose.map.yml`,
-  `docs/map/MAP_SERVER.md`):
+- **Bản đồ hoàn toàn tự host, không gọi dịch vụ bên ngoài** (repo [Map_CMC](https://github.com/MrNMD2002/Map_CMC)):
   - **Nền**: `VITE_MAP_TILE_URL` (bỏ trống → cùng máy với web, cổng 8090). Nền đã vẽ sẵn chủ quyền
     Hoàng Sa, Trường Sa và viền đỏ lãnh thổ Việt Nam. Không cho thu nhỏ dưới mức 5 / kéo ra ngoài
     khung dữ liệu (`base-map.tsx`). Đổi kiểu bản đồ ở backend thì tăng `?v=` trong URL. Giao diện tối

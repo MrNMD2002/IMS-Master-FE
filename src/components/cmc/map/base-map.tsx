@@ -10,10 +10,10 @@ import "./map.css";
 export const DEFAULT_CENTER: [number, number] = [21.0285, 105.8542];
 
 /**
- * Nền bản đồ CMC tự host (repo backend: docker-compose.map.yml) — đã vẽ sẵn chủ quyền biển đảo
+ * Nền bản đồ CMC tự host (repo Map_CMC) — đã vẽ sẵn chủ quyền biển đảo
  * và viền lãnh thổ Việt Nam. `VITE_MAP_TILE_URL` bỏ trống → máy chủ ảnh nền cùng máy với Web,
  * cổng 8090. `{r}` = "@2x" trên màn hình nét; `?v=` tăng mỗi khi backend đổi kiểu bản đồ để
- * trình duyệt bỏ ảnh cũ đã lưu tạm (xem docs/map/MAP_SERVER.md ở repo backend).
+ * trình duyệt bỏ ảnh cũ đã lưu tạm (xem README repo Map_CMC).
  */
 const MAP_STYLE_VERSION = 3;
 const TILE_URL =
@@ -22,7 +22,7 @@ const TILE_URL =
 const ATTRIBUTION =
 	'&copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 /**
- * Nền chỉ có dữ liệu trong khung dựng (backend scripts/map/build-map-data.sh, BOUNDS) — ngoài
+ * Nền chỉ có dữ liệu trong khung dựng (Map_CMC scripts/build-map-data.sh, BOUNDS) — ngoài
  * khung là ô trống (biển thành màu đất). Không cho thu nhỏ / kéo ra ngoài khung đó.
  */
 const MIN_ZOOM = 5;
