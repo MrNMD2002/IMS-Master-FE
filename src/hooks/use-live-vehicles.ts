@@ -12,8 +12,8 @@ export interface LiveVehicle extends GpsLatest {
 	state: VehicleState;
 }
 
-/** Chu kỳ làm mới vị trí xe trên bản đồ. */
-export const LIVE_REFRESH_MS = 10_000;
+/** Chu kỳ làm mới vị trí xe trên bản đồ. Marker nội suy trượt đều trong khoảng này (xem AnimatedMarker). */
+export const LIVE_REFRESH_MS = 5_000;
 
 /**
  * Vị trí xe hiện tại (gps_latest) ghép với thông tin xe (đang điều động hay không).
