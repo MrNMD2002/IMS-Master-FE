@@ -12,6 +12,7 @@ import AddressSearch from "@/components/cmc/address-search";
 import DispatchDialog from "@/components/cmc/dispatch-dialog";
 import EmptyState from "@/components/cmc/empty-state";
 import IncidentFormDrawer from "@/components/cmc/incident-form-drawer";
+import { AnimatedMarker } from "@/components/cmc/map/animated-marker";
 import BaseMap from "@/components/cmc/map/base-map";
 import MapControls from "@/components/cmc/map/map-controls";
 import {
@@ -28,7 +29,7 @@ import { IncidentStatusBadge } from "@/components/cmc/status";
 import { Icon } from "@/components/icon";
 import { INCIDENT_READ_GATE, P } from "@/constants/permission";
 import { useDeviceTypes } from "@/hooks/use-cmc-options";
-import { type LiveVehicle, useLiveVehicles } from "@/hooks/use-live-vehicles";
+import { LIVE_REFRESH_MS, type LiveVehicle, useLiveVehicles } from "@/hooks/use-live-vehicles";
 import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
 import { cn } from "@/utils";
@@ -242,9 +243,10 @@ export default function MonitoringPage() {
 				)}
 
 				{filtered.map((v) => (
-					<Marker
+					<AnimatedMarker
 						key={v.id}
 						position={[v.latitude, v.longitude]}
+						duration={LIVE_REFRESH_MS}
 						icon={vehicleIcon(v.state, showLabels ? v.name || v.imei : null, v.id === selectedId)}
 						eventHandlers={{ click: () => setSelectedId(v.id) }}
 						zIndexOffset={v.id === selectedId ? 1000 : 0}
@@ -256,7 +258,7 @@ export default function MonitoringPage() {
 								onIncident={(id) => navigate(`/incidents/${id}`)}
 							/>
 						</Popup>
-					</Marker>
+					</AnimatedMarker>
 				))}
 
 				{incidents.map((i) => (
