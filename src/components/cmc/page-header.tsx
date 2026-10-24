@@ -23,7 +23,7 @@ export const STICKY_PAGE_BAR =
  * Chiều cao khối ghim hiện tại, công bố qua biến CSS `--page-bar-h` để phần khác dính ngay
  * bên dưới (vd cột danh sách vai trò): `top-[calc(var(--layout-header-height)+var(--page-bar-h))]`.
  */
-export function usePublishBarHeight() {
+function usePublishBarHeight() {
 	const ref = useRef<HTMLDivElement>(null);
 	useEffect(() => {
 		const el = ref.current;

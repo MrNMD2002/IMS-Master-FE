@@ -39,16 +39,6 @@ export enum LocalEnum {
 	vi_VN = "vi_VN",
 }
 
-export enum MultiTabOperation {
-	FULLSCREEN = "fullscreen",
-	REFRESH = "refresh",
-	CLOSE = "close",
-	CLOSEOTHERS = "closeOthers",
-	CLOSEALL = "closeAll",
-	CLOSELEFT = "closeLeft",
-	CLOSERIGHT = "closeRight",
-}
-
 export enum HtmlDataAttribute {
 	ColorPalette = "data-color-palette",
 	ThemeMode = "data-theme-mode",

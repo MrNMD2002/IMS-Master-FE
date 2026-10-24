@@ -326,18 +326,6 @@ export default function SettingButton() {
 							<div className="flex items-center justify-between">
 								<Text variant="subTitle2">{t("sys.settings.breadcrumb")}</Text>
 								<Switch checked={breadCrumb} onCheckedChange={(checked) => updateSettings({ breadCrumb: checked })} />
-								{/* <div className="flex items-center justify-between text-sm text-text-disabled">
-									<div>{t("sys.settings.multiTab")}</div>
-									<Switch checked={multiTab} onCheckedChange={(checked) => updateSettings({ multiTab: checked })} />
-								</div> */}
-								{/* <div className="flex items-center justify-between text-sm text-text-disabled">
-									<div>{t("sys.settings.darkSidebar")}</div>
-									<Switch checked={darkSidebar} onCheckedChange={(checked) => updateSettings({ darkSidebar: checked })} />
-								</div> */}
-								{/* <div className="flex items-center justify-between text-sm text-text-disabled">
-									<div>{t("sys.settings.accordion")}</div>
-									<Switch checked={accordion} onCheckedChange={(checked) => updateSettings({ accordion: checked })} />
-								</div> */}
 							</div>
 						</div>
 					</div>
