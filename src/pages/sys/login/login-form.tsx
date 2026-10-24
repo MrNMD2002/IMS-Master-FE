@@ -12,7 +12,7 @@ import { Button } from "@/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/ui/form";
 import { Input } from "@/ui/input";
 
-export function LoginForm() {
+function LoginForm() {
 	const { t } = useTranslation();
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");

@@ -18,7 +18,7 @@ export interface TenantTreeNode {
 }
 
 /** Dựng cây từ danh sách phẳng. Node có cha ngoài phạm vi → thành gốc. */
-export function buildTenantTree(options: TenantOption[], homeId?: number | null): TenantTreeNode[] {
+function buildTenantTree(options: TenantOption[], homeId?: number | null): TenantTreeNode[] {
 	const compare = tenantComparator(homePath(options, homeId));
 	const ids = new Set(options.map((o) => o.id));
 	const byParent = new Map<number | null, TenantOption[]>();

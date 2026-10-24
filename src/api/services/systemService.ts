@@ -38,7 +38,7 @@ const auditExport = async (params: AuditQuery) => {
 const dashboardStats = (tenant_id?: number) =>
 	apiClient.get<DashboardStats>({ url: "/dashboard/stats", params: { tenant_id } });
 
-export interface GpsRetention {
+interface GpsRetention {
 	enable_gps_cleanup: boolean;
 	gps_retention_days: number;
 	updated_at?: string | null;
@@ -52,7 +52,7 @@ const updateGpsRetention = (data: { enable_gps_cleanup?: boolean; gps_retention_
 	apiClient.post<GpsRetention>({ url: "/settings/gps-retention/update", data });
 const triggerGpsCleanup = () => apiClient.post<{ deleted: number }>({ url: "/settings/gps-retention/trigger" });
 
-export interface AuditRetention {
+interface AuditRetention {
 	enable_audit_cleanup: boolean;
 	audit_retention_days: number;
 	min_days: number;
