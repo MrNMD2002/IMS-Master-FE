@@ -16,7 +16,7 @@ export const DEFAULT_CENTER: [number, number] = [21.0285, 105.8542];
  * 1 năm — trình duyệt giữ ô đã tải, phóng lại không phải tải lại — nên **bắt buộc** tăng `?v=`
  * mỗi khi đổi kiểu bản đồ / dữ liệu nền (xem README repo Map_CMC).
  */
-const MAP_STYLE_VERSION = 3;
+const MAP_STYLE_VERSION = 4;
 const TILE_URL =
 	import.meta.env.VITE_MAP_TILE_URL ||
 	`${window.location.protocol}//${window.location.hostname}:8090/styles/cmc/{z}/{x}/{y}{r}.png?v=${MAP_STYLE_VERSION}`;
