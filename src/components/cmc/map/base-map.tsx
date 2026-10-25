@@ -12,8 +12,9 @@ export const DEFAULT_CENTER: [number, number] = [21.0285, 105.8542];
 /**
  * Nền bản đồ CMC tự host (repo Map_CMC) — đã vẽ sẵn chủ quyền biển đảo
  * và viền lãnh thổ Việt Nam. `VITE_MAP_TILE_URL` bỏ trống → máy chủ ảnh nền cùng máy với Web,
- * cổng 8090. `{r}` = "@2x" trên màn hình nét; `?v=` tăng mỗi khi backend đổi kiểu bản đồ để
- * trình duyệt bỏ ảnh cũ đã lưu tạm (xem README repo Map_CMC).
+ * cổng 8090. `{r}` = "@2x" trên màn hình nét. Máy chủ ảnh nền gửi `Cache-Control: immutable`
+ * 1 năm — trình duyệt giữ ô đã tải, phóng lại không phải tải lại — nên **bắt buộc** tăng `?v=`
+ * mỗi khi đổi kiểu bản đồ / dữ liệu nền (xem README repo Map_CMC).
  */
 const MAP_STYLE_VERSION = 3;
 const TILE_URL =
@@ -74,12 +75,17 @@ export default function BaseMap({
 			minZoom={MIN_ZOOM}
 			maxBounds={MAX_BOUNDS}
 			maxBoundsViscosity={1}
+			// Ô đã có sẵn (cache máy chủ / trình duyệt) hiện ngay — hiệu ứng mờ dần 0,2 s chỉ làm
+			// bản đồ nháy trắng mỗi lần phóng to / thu nhỏ.
+			fadeAnimation={false}
 		>
 			<TileLayer
 				url={TILE_URL}
 				attribution={ATTRIBUTION}
 				maxNativeZoom={19}
 				maxZoom={19}
+				// Giữ thêm 4 hàng ô quanh khung nhìn (mặc định 2): kéo bản đồ không lộ mép trống.
+				keepBuffer={4}
 				className={dark ? "cmc-tiles-dim" : undefined}
 			/>
 			<AutoResize />
