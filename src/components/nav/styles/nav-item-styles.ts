@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import { themeVars } from "@/theme/theme.css";
 
-export type NavItemStyles = {
+type NavItemStyles = {
 	icon: CSSProperties;
 	texts: CSSProperties;
 	title: CSSProperties;

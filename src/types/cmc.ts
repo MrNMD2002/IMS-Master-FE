@@ -2,7 +2,7 @@
 
 // ── Phạm vi / người dùng ────────────────────────────────────────────────────
 
-export interface ScopeInfo {
+interface ScopeInfo {
 	kind: "all" | "subtree" | "one";
 	tenant_ids?: number[];
 }
@@ -206,7 +206,7 @@ export interface GpsNearby {
 }
 
 /** Xe quanh hiện trường kèm thời gian đi đường (`GET /map/dispatch-suggestions`). */
-export interface DispatchSuggestion extends GpsNearby {
+interface DispatchSuggestion extends GpsNearby {
 	road_distance_km?: number | null;
 	eta_s?: number | null;
 	suggested: boolean;

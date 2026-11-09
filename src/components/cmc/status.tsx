@@ -7,7 +7,7 @@ import { fmtSecondsAgo } from "@/utils/format";
 
 type Variant = "success" | "warning" | "error" | "info" | "default" | "secondary";
 
-export const INCIDENT_STATUS_VARIANT: Record<IncidentStatus, Variant> = {
+const INCIDENT_STATUS_VARIANT: Record<IncidentStatus, Variant> = {
 	PROCESSING: "warning",
 	PENDING_APPROVAL: "info",
 	COMPLETED: "success",
@@ -116,21 +116,6 @@ export function ActiveBadge({ active }: { active: boolean }) {
 		<Badge variant="error">
 			<Dot />
 			{t("common.lockedText")}
-		</Badge>
-	);
-}
-
-export function OnlineBadge({ online }: { online: boolean }) {
-	const { t } = useTranslation();
-	return online ? (
-		<Badge variant="success">
-			<Dot />
-			{t("monitor.online")}
-		</Badge>
-	) : (
-		<Badge variant="secondary">
-			<Dot />
-			{t("monitor.offline")}
 		</Badge>
 	);
 }

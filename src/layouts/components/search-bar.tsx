@@ -69,11 +69,6 @@ const SearchBar = () => {
 		return items;
 	}, [navData]);
 
-	// const searchResult = useMemo(() => {
-	// 	const query = searchQuery.toLowerCase();
-	// 	return flattenedItems.filter((item) => t(item.label).toLowerCase().includes(query) || item.key.toLowerCase().includes(query));
-	// }, [searchQuery, t, flattenedItems]);
-
 	useEffect(() => {
 		const down = (e: KeyboardEvent) => {
 			if (e.key === "k" && (e.metaKey || e.ctrlKey)) {

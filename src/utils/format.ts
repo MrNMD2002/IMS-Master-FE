@@ -10,7 +10,7 @@ dayjs.extend(utc);
  * API trả datetime không kèm múi giờ (UTC naive) → coi là UTC rồi đổi về giờ máy.
  * Chuỗi đã có `Z` / `+07:00` thì giữ nguyên.
  */
-export const parseApiTime = (value?: string | number | null) => {
+const parseApiTime = (value?: string | number | null) => {
 	if (value === null || value === undefined || value === "") return null;
 	if (typeof value === "number") return dayjs.unix(value);
 	return /[zZ]|[+-]\d{2}:?\d{2}$/.test(value) ? dayjs(value) : dayjs.utc(value).local();

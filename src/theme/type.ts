@@ -190,14 +190,14 @@ export const themeTokens = {
 	},
 };
 
-export type UILibraryAdapterProps = {
+type UILibraryAdapterProps = {
 	mode: ThemeMode;
 	children: React.ReactNode;
 };
 export type UILibraryAdapter = React.FC<UILibraryAdapterProps>;
 
 // is leaf object
-export type IsLeafObject<T> = T extends object ? (T[keyof T] extends null | string ? true : false) : false;
+type IsLeafObject<T> = T extends object ? (T[keyof T] extends null | string ? true : false) : false;
 
 // add channel
 export type AddChannelToLeaf<T> = T extends object

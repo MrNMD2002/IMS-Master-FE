@@ -1,6 +1,6 @@
 import packageJson from "../package.json";
 
-export type GlobalConfig = {
+type GlobalConfig = {
 	appName: string;
 	appVersion: string;
 	/** Trang mở đầu sau khi đăng nhập */

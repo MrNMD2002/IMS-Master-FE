@@ -57,7 +57,7 @@ export function rgbAlpha(colorVal: string | string[] | number[], alpha: number):
  * @param propertyPath example: `colors.palette.primary`
  * @returns example: `--colors-palette-primary`
  */
-export const toCssVar = (propertyPath: string) => {
+const toCssVar = (propertyPath: string) => {
 	return `--${propertyPath.split(".").join("-")}`;
 };
 
@@ -99,7 +99,7 @@ export const creatColorChannel = (propertyPath: string) => {
  * @param propertyPath example: `colors.palette.primary`
  * @returns example: `["lighter", "light", "main", "dark", "darker"]`
  */
-export const getThemeTokenVariants = (propertyPath: string) => {
+const getThemeTokenVariants = (propertyPath: string) => {
 	const keys = propertyPath.split(".");
 	const val = keys.reduce((obj: any, key) => {
 		if (obj && typeof obj === "object") {
