@@ -1,5 +1,5 @@
 /** Khung response chuẩn của CMC API: `{code, data, message}` (+ `metadata` ở danh sách). */
-export interface ResultMetaData {
+interface ResultMetaData {
 	current_page: number;
 	page_size: number;
 	total_items: number;

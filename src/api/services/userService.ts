@@ -2,7 +2,7 @@ import type { Paged, PageQuery } from "#/api";
 import type { UserCreateReq, UserInfo, UserQuery, UserUpdateReq } from "#/cmc";
 import apiClient from "../apiClient";
 
-export interface GrantablePermission {
+interface GrantablePermission {
 	code: string;
 	name: string;
 	module?: string | null;

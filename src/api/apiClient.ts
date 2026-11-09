@@ -12,7 +12,7 @@ import { t } from "@/locales/i18n";
 import userStore from "@/store/userStore";
 
 /** Lỗi nghiệp vụ từ API — giữ `code` + `data` (vd `data.errors` của 422) để form tự xử lý. */
-export class ApiError extends Error {
+class ApiError extends Error {
 	code: string;
 	data?: unknown;
 	constructor(code: string, message: string, data?: unknown) {
