@@ -320,6 +320,24 @@ export interface IncidentReq {
 	device_ids?: number[];
 }
 
+export interface IncidentStatusCount {
+	total: number;
+	/** Vào trạng thái này sau mốc `since_*` gửi lên. */
+	new: number;
+}
+
+export type IncidentStatusSummary = Record<IncidentStatus, IncidentStatusCount> & {
+	/** Giờ máy chủ (ISO, UTC) — dùng làm mốc "đã xem". */
+	server_time: string;
+};
+
+export interface IncidentStatusSummaryQuery {
+	since_processing?: string;
+	since_pending_approval?: string;
+	since_completed?: string;
+	tenant_id?: number;
+}
+
 export interface IncidentQuery {
 	search?: string;
 	status?: string;

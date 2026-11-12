@@ -274,6 +274,8 @@
 		"created": "Incident created",
 		"updated": "Incident updated",
 		"searchPlaceholder": "Search by name, address...",
+		"newBadgeSr": "({{count}} new)",
+		"newBadgeTitle": "{{count}} new since your last visit",
 		"notFound": "Incident not found or you are not allowed to view it",
 		"noAddress": "No address",
 		"noLocation": "This incident has no coordinates",
