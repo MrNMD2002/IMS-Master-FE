@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { Input, Segmented, Table, Tabs } from "antd";
+import { Badge, Input, Segmented, Table, Tabs } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -17,6 +17,7 @@ import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
 import { fmtDateTime, fmtFromNow } from "@/utils/format";
 import IncidentStatsView from "./stats";
+import { useIncidentNewCounts } from "./use-new-counts";
 
 export default function IncidentListPage() {
 	const { t } = useTranslation();
@@ -38,6 +39,7 @@ export default function IncidentListPage() {
 	const [keyword, setKeyword] = useState("");
 	const [tenantId, setTenantId] = useState<number | undefined>();
 	const [formOpen, setFormOpen] = useState(false);
+	const newCounts = useIncidentNewCounts(status, tenantId);
 
 	const { data, isFetching, refetch } = useQuery({
 		queryKey: ["incident", "list", page, pageSize, status, keyword, tenantId],
@@ -161,7 +163,30 @@ export default function IncidentListPage() {
 									onChange={setStatus}
 									items={[
 										{ key: "", label: t("common.all") },
-										...INCIDENT_STATUSES.map((s) => ({ key: s, label: t(`incident.status.${s}`) })),
+										...INCIDENT_STATUSES.map((s) => {
+											const n = newCounts[s] ?? 0;
+											return {
+												key: s,
+												label: (
+													<span className="inline-flex items-center gap-1.5">
+														{t(`incident.status.${s}`)}
+														{n > 0 && (
+															<>
+																<span aria-hidden>
+																	<Badge
+																		count={n}
+																		overflowCount={99}
+																		size="small"
+																		title={t("incident.newBadgeTitle", { count: n })}
+																	/>
+																</span>
+																<span className="sr-only">{t("incident.newBadgeSr", { count: n })}</span>
+															</>
+														)}
+													</span>
+												),
+											};
+										}),
 									]}
 								/>
 							</div>
