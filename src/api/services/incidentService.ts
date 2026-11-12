@@ -8,10 +8,15 @@ import type {
 	IncidentReportQuery,
 	IncidentReportStats,
 	IncidentReq,
+	IncidentStatusSummary,
+	IncidentStatusSummaryQuery,
 } from "#/cmc";
 import apiClient from "../apiClient";
 
 const list = (params: PageQuery & IncidentQuery) => apiClient.get<Paged<Incident>>({ url: "/incident/list", params });
+/** Badge "sự vụ mới" trên tab trạng thái. */
+const statusSummary = (params: IncidentStatusSummaryQuery) =>
+	apiClient.get<IncidentStatusSummary>({ url: "/incident/status-summary", params });
 const detail = (id: number) => apiClient.get<Incident>({ url: `/incident/detail/${id}` });
 const logs = (id: number) => apiClient.get<IncidentLog[]>({ url: `/incident/${id}/logs` });
 const create = (data: IncidentReq) => apiClient.post<Incident>({ url: "/incident/create", data });
@@ -75,6 +80,7 @@ const reportExport = async (params: IncidentReportQuery) => {
 
 export default {
 	list,
+	statusSummary,
 	detail,
 	logs,
 	create,

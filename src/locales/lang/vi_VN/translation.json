@@ -274,6 +274,8 @@
 		"created": "Đã tạo sự vụ",
 		"updated": "Đã cập nhật sự vụ",
 		"searchPlaceholder": "Tìm theo tên, địa chỉ...",
+		"newBadgeSr": "({{count}} sự vụ mới)",
+		"newBadgeTitle": "{{count}} sự vụ mới từ lần xem trước",
 		"notFound": "Không tìm thấy sự vụ hoặc bạn không có quyền xem",
 		"noAddress": "Chưa có địa chỉ",
 		"noLocation": "Sự vụ chưa có toạ độ",
