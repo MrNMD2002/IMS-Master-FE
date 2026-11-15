@@ -13,6 +13,7 @@ import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
 import { downloadBlob, fmtDateTime } from "@/utils/format";
+import { IpCell } from "./ip-cell";
 
 const METHOD_VARIANT: Record<string, "info" | "success" | "warning" | "error" | "secondary"> = {
 	GET: "secondary",
@@ -89,7 +90,7 @@ export default function AuditPage() {
 					</Badge>
 				),
 		},
-		{ title: "IP", dataIndex: "ip", render: (v) => <span className="font-mono text-xs">{v || "—"}</span> },
+		{ title: "IP", dataIndex: "ip", render: (v, r) => <IpCell ip={v} method={r.method} /> },
 	];
 
 	return (
@@ -200,7 +201,9 @@ export default function AuditPage() {
 						<Descriptions.Item label={t("audit.result")}>
 							{viewing.outcome} · HTTP {viewing.status_code}
 						</Descriptions.Item>
-						<Descriptions.Item label="IP">{viewing.ip || "—"}</Descriptions.Item>
+						<Descriptions.Item label="IP">
+							<IpCell ip={viewing.ip} method={viewing.method} full />
+						</Descriptions.Item>
 						<Descriptions.Item label="User agent">
 							<span className="text-xs">{viewing.user_agent || "—"}</span>
 						</Descriptions.Item>
