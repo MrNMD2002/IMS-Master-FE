@@ -23,7 +23,7 @@ type Props = { ip?: string | null; method?: string | null; full?: boolean };
  * IP trong nhật ký thao tác, kèm nhãn giải thích:
  * - Trống + method CRON → "Hệ thống" (tác vụ định kỳ, không có request nên không có IP).
  * - IP nội bộ → nhãn "Nội bộ" (mạng Docker: dòng ghi trước khi đọc IP thật, hoặc gọi API trực tiếp không qua tên miền).
- * - IPv6 → nhãn "IPv6"; địa chỉ dài được xuống dòng thay vì tràn cột.
+ * - IPv6 → nhãn "IPv6"; địa chỉ giữ một dòng trong bảng (nhãn xuống dòng nếu thiếu chỗ).
  */
 export function IpCell({ ip, method, full }: Props) {
 	const { t } = useTranslation();
@@ -41,8 +41,8 @@ export function IpCell({ ip, method, full }: Props) {
 	const v6 = ip.includes(":");
 	const internal = isPrivate(ip);
 	return (
-		<span className={`inline-flex flex-wrap items-center gap-1 ${full ? "" : "max-w-[200px]"}`}>
-			<span className="font-mono text-xs break-all">{ip}</span>
+		<span className="inline-flex flex-wrap items-center gap-1">
+			<span className={`font-mono text-xs ${full ? "break-all" : "whitespace-nowrap"}`}>{ip}</span>
 			{internal ? (
 				<Tooltip title={t("audit.ipInternalHint")}>
 					<Badge variant="warning">{t("audit.ipInternal")}</Badge>
