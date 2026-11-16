@@ -1,7 +1,7 @@
 /**
  * API Trạm AI (Vigil) — hợp đồng `Vigil-Master/docs/cmc-contract.md` mục 4.
  *
- * `GLOBAL_CONFIG.vigilMock` (biến `VITE_AI_STATION_MOCK`, mặc định bật) chọn dữ liệu giả trong
+ * `GLOBAL_CONFIG.vigilMock` (biến `VITE_AI_STATION_MOCK=true`, mặc định tắt) chọn dữ liệu giả trong
  * trình duyệt thay cho CMC API. Trang chỉ gọi qua đây nên bỏ mock không phải sửa trang.
  */
 import type { AxiosResponse } from "axios";
