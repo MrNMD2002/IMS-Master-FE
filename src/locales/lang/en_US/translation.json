@@ -48,7 +48,10 @@
 			"permGuide": "Permission guide",
 			"audit": "Audit log",
 			"settings": "Settings",
-			"profile": "My profile"
+			"profile": "My profile",
+			"aiStation": "AI stations",
+			"aiStationList": "Stations",
+			"aiEvent": "AI events"
 		},
 		"settings": {
 			"title": "Appearance",
@@ -596,6 +599,8 @@
 		"fromRole": "Comes from the role, cannot be removed individually",
 		"notGrantable": "You do not hold this permission, so you cannot grant it",
 		"guide": {
+			"ai_station.read": "Open AI stations and AI events: station status, cameras, plugins, alarms and evidence images in scope.",
+			"ai_station.manage": "Add / rename / delete AI stations and issue new Vigil pairing codes (the old code stops working at once).",
 			"audit.read": "Open the Audit log: who did what, when and with what result; export to Excel. Only actions by people within your organization / unit.",
 			"dashboard.access": "Ticket to the admin website. Without it the account cannot sign in to the web (mobile app only), whatever else it has. Opens the Overview.",
 			"device.read": "View vehicles, their details, assigned officers and the vehicle type catalog within scope.",
@@ -628,6 +633,7 @@
 			"user.permission.grant": "Grant / revoke individual permissions to other accounts (only ones you hold). Opens the Permission guide."
 		},
 		"module": {
+			"ai_station": "AI stations",
 			"audit": "Audit",
 			"dashboard": "Dashboard",
 			"device": "Vehicles",
@@ -757,6 +763,223 @@
 			"all": "Whole system",
 			"subtree": "My unit and below",
 			"one": "My unit only"
+		}
+	},
+	"aiStation": {
+		"description": "Vigil video analytics boxes on site, sending alerts to CMC",
+		"mockBanner": "Showing simulated data: the CMC API has no AI station service yet. Create, edit and delete only live in this browser.",
+		"create": "Add station",
+		"searchPlaceholder": "Search by name, station ID, location",
+		"empty": "No AI stations yet",
+		"notFound": "Station not found",
+		"state": {
+			"online": "Online",
+			"offline": "Offline",
+			"unpaired": "Not paired"
+		},
+		"lastSeen": "last seen {{time}}",
+		"neverSeen": "Never connected",
+		"camerasLive": "{{live}}/{{total}} cameras running",
+		"noAlarm": "No alarms",
+		"alarmCount": "{{n}} alarms",
+		"statusAt": "Status report at {{time}}",
+		"view": {
+			"table": "Table",
+			"grid": "Cards"
+		},
+		"field": {
+			"name": "Station name",
+			"id": "Station ID",
+			"location": "Location",
+			"tenant": "Owning unit",
+			"version": "Version",
+			"hardware": "Hardware (GPU/CPU)",
+			"cameras": "Cameras",
+			"alarms": "Alarms",
+			"eventsToday": "Events today",
+			"hostname": "Hostname",
+			"configRevision": "Config revision"
+		},
+		"accel": {
+			"cuda": "NVIDIA CUDA",
+			"tensorrt": "NVIDIA TensorRT",
+			"openvino": "Intel OpenVINO",
+			"directml": "DirectML",
+			"cpu": "CPU only"
+		},
+		"summary": {
+			"online": "Stations online",
+			"withAlarm": "{{n}} stations with alarms",
+			"cameras": "Cameras running",
+			"eventsToday": "Events today",
+			"offline": "Stations offline"
+		},
+		"form": {
+			"createTitle": "Add AI station",
+			"editTitle": "Rename / relocate station",
+			"createSubmit": "Create and get code",
+			"nameRequired": "Enter a station name",
+			"namePlaceholder": "e.g. Warehouse A — Dong Anh",
+			"locationPlaceholder": "Address or description of where the box sits",
+			"tenantHint": "Leave empty to use your own unit."
+		},
+		"token": {
+			"title": "Station pairing code",
+			"for": "Code for station",
+			"copy": "Copy",
+			"copied": "Pairing code copied",
+			"copyFailed": "Copy failed, select the code and copy it manually",
+			"copyServer": "copy address",
+			"serverCopied": "Server address copied",
+			"once": "This code is shown ONCE. Copy it into Vigil now; if lost, issue a new one from the station page.",
+			"stepsTitle": "Enter the code in Vigil (3 steps)",
+			"step1": "On the camera box, open Vigil → Settings → CMC.",
+			"step2": "Enter server address {{server}} and paste the pairing code above.",
+			"step3": "Click “Connect”. The station turns Online here within seconds.",
+			"done": "Saved it, close"
+		},
+		"created": "Station created",
+		"updated": "Station updated",
+		"rotate": "Issue new pairing code",
+		"rotateConfirm": "Issue a new pairing code for “{{name}}”?",
+		"rotateDesc": "The old code stops working immediately. A connected station must enter the new code to reconnect.",
+		"rename": "Rename / relocate",
+		"delete": "Delete station",
+		"more": "More actions",
+		"deleteConfirm": "Delete station “{{name}}”?",
+		"deleteDesc": "The station is disconnected from CMC and all its events are deleted. This cannot be undone.",
+		"viewEvents": "View events",
+		"info": "Station info",
+		"resources": "Resources",
+		"notPairedTitle": "Station not paired",
+		"notPairedHint": "Click “Issue new pairing code”, then enter it in Vigil (Settings → CMC) on the station.",
+		"offlineHint": "The station has lost its connection to CMC. Below is its last report; events raised while offline are replayed when it reconnects.",
+		"noCameras": "The station has not reported any cameras",
+		"noPlugins": "The station has not reported its plugin catalog (not paired or not started)",
+		"tab": {
+			"cameras": "Cameras ({{n}})",
+			"plugins": "Plugins ({{n}})",
+			"events": "Events"
+		},
+		"camState": {
+			"live": "Live",
+			"connecting": "Connecting",
+			"error": "Error",
+			"off": "Off"
+		},
+		"cam": {
+			"name": "Camera",
+			"resolution": "Resolution",
+			"plugins": "Enabled plugins",
+			"noPlugin": "No plugins"
+		},
+		"plugin": {
+			"displayName": "Plugin",
+			"on": "Enabled",
+			"off": "Disabled",
+			"offOnStation": "Plugin disabled on this station",
+			"model": "Model",
+			"eventTypes": "Event types",
+			"usedBy": "Cameras using"
+		}
+	},
+	"aiEvent": {
+		"description": "Alerts raised by AI stations from camera feeds",
+		"detailTitle": "Event details",
+		"empty": "No events match the filters",
+		"noImage": "No evidence image",
+		"noObjects": "No objects",
+		"showBoxes": "Show detection boxes",
+		"openImage": "Open original image",
+		"zoneOf": "Zone: {{zone}}",
+		"ms": "{{n}} ms",
+		"type": {
+			"people_count": "People in zone",
+			"crowd": "Crowd",
+			"fire": "Fire detected",
+			"smoke": "Smoke detected",
+			"illegal_parking": "Illegal parking",
+			"red_light": "Red-light running",
+			"wrong_way": "Wrong-way driving"
+		},
+		"plugin": {
+			"people_counting": "People counting",
+			"crowd_detection": "Crowd detection",
+			"smoke_fire_detection": "Smoke & fire detection",
+			"parking_violation_detection": "Parking violation",
+			"traffic_violation_detection": "Traffic violation"
+		},
+		"cls": {
+			"person": "Person",
+			"car": "Car",
+			"truck": "Truck",
+			"bus": "Bus",
+			"motorbike": "Motorbike",
+			"fire": "Fire",
+			"smoke": "Smoke"
+		},
+		"extraKey": {
+			"count": "People",
+			"threshold": "Alert threshold",
+			"sustained_secs": "Sustained",
+			"zone_name": "Zone",
+			"frames": "Consecutive frames",
+			"max_score": "Max score",
+			"vehicle_class": "Vehicle type",
+			"parked_secs": "Parked for",
+			"plate_text": "Plate"
+		},
+		"summary": {
+			"people": "{{count}} people",
+			"crowd": "{{n}} people · threshold {{threshold}} · for {{dur}}",
+			"parking": "{{vehicle}} · parked {{dur}}",
+			"plate": "Plate {{plate}}",
+			"frames": "{{n}} consecutive frames"
+		},
+		"field": {
+			"time": "Time",
+			"type": "Event type",
+			"station": "Station",
+			"camera": "Camera",
+			"zone": "Zone",
+			"plugin": "Plugin",
+			"score": "Confidence",
+			"object": "Object",
+			"extra": "Extra",
+			"eventId": "Event ID",
+			"frameKey": "Storage key",
+			"latency": "Send latency"
+		},
+		"filter": {
+			"station": "All stations",
+			"camera": "All cameras",
+			"cameraNeedStation": "Pick a station to filter cameras",
+			"plugin": "All plugins",
+			"type": "All types",
+			"reset": "Clear filters"
+		},
+		"range": {
+			"today": "Today",
+			"days": "Last {{n}} days"
+		},
+		"stats": {
+			"total": "Total events",
+			"inRange": "In the selected period",
+			"fireSmoke": "Fire / smoke",
+			"fireSmokeHint": "{{fire}} fire · {{smoke}} smoke",
+			"today": "Today",
+			"avgScore": "Average confidence",
+			"byDay": "Events per day",
+			"byType": "Share by type",
+			"byStation": "Events per station",
+			"count": "{{count}} events"
+		},
+		"highlight": {
+			"people": "People in zone",
+			"crowd": "People (threshold {{threshold}})",
+			"parked": "Parked for",
+			"plate": "License plate",
+			"noPlate": "Plate not read"
 		}
 	}
 }
