@@ -48,7 +48,10 @@
 			"permGuide": "Hướng dẫn phân quyền",
 			"audit": "Nhật ký thao tác",
 			"settings": "Cài đặt",
-			"profile": "Hồ sơ cá nhân"
+			"profile": "Hồ sơ cá nhân",
+			"aiStation": "Trạm AI",
+			"aiStationList": "Danh sách trạm",
+			"aiEvent": "Sự kiện AI"
 		},
 		"settings": {
 			"title": "Tuỳ chỉnh giao diện",
@@ -596,6 +599,8 @@
 		"fromRole": "Quyền này thuộc vai trò, không gỡ lẻ được",
 		"notGrantable": "Bạn không có quyền này nên không cấp được",
 		"guide": {
+			"ai_station.read": "Mở trang Trạm AI và Sự kiện AI: xem trạng thái trạm, camera, plugin, cảnh báo và ảnh bằng chứng trong phạm vi.",
+			"ai_station.manage": "Thêm / đổi tên / xoá trạm AI và cấp lại mã ghép nối Vigil (mã cũ hết hiệu lực ngay).",
 			"audit.read": "Mở trang Nhật ký thao tác: xem ai đã làm gì, lúc nào, kết quả ra sao, và xuất Excel. Chỉ thấy thao tác của người trong phạm vi tổ chức / đơn vị mình.",
 			"dashboard.access": "Thẻ vào trang quản trị web. Thiếu quyền này thì không đăng nhập được web (chỉ dùng App), dù có các quyền khác. Mở trang Tổng quan.",
 			"device.read": "Xem danh sách phương tiện, thông tin xe, cán bộ phụ trách và danh mục loại phương tiện trong phạm vi.",
@@ -628,6 +633,7 @@
 			"user.permission.grant": "Cấp / thu hồi quyền lẻ cho tài khoản khác (chỉ những quyền mình đang có). Mở trang Hướng dẫn phân quyền."
 		},
 		"module": {
+			"ai_station": "Trạm AI",
 			"audit": "Nhật ký",
 			"dashboard": "Tổng quan",
 			"device": "Phương tiện",
@@ -757,6 +763,223 @@
 			"all": "Toàn hệ thống",
 			"subtree": "Đơn vị mình và cấp dưới",
 			"one": "Chỉ đơn vị mình"
+		}
+	},
+	"aiStation": {
+		"description": "Máy phân tích video Vigil đặt tại hiện trường, gửi cảnh báo về CMC",
+		"mockBanner": "Đang hiển thị dữ liệu giả lập: CMC API chưa có dịch vụ trạm AI. Thao tác thêm, sửa, xoá chỉ lưu tạm trong trình duyệt.",
+		"create": "Thêm trạm",
+		"searchPlaceholder": "Tìm theo tên, mã trạm, vị trí",
+		"empty": "Chưa có trạm AI nào",
+		"notFound": "Không tìm thấy trạm",
+		"state": {
+			"online": "Trực tuyến",
+			"offline": "Mất kết nối",
+			"unpaired": "Chưa ghép nối"
+		},
+		"lastSeen": "lần cuối {{time}}",
+		"neverSeen": "Chưa kết nối lần nào",
+		"camerasLive": "{{live}}/{{total}} camera đang chạy",
+		"noAlarm": "Không có cảnh báo",
+		"alarmCount": "{{n}} cảnh báo",
+		"statusAt": "Bản tin trạng thái lúc {{time}}",
+		"view": {
+			"table": "Bảng",
+			"grid": "Thẻ"
+		},
+		"field": {
+			"name": "Tên trạm",
+			"id": "Mã trạm",
+			"location": "Vị trí",
+			"tenant": "Đơn vị quản lý",
+			"version": "Phiên bản",
+			"hardware": "Phần cứng (GPU/CPU)",
+			"cameras": "Camera",
+			"alarms": "Cảnh báo",
+			"eventsToday": "Sự kiện hôm nay",
+			"hostname": "Tên máy",
+			"configRevision": "Phiên bản cấu hình"
+		},
+		"accel": {
+			"cuda": "NVIDIA CUDA",
+			"tensorrt": "NVIDIA TensorRT",
+			"openvino": "Intel OpenVINO",
+			"directml": "DirectML",
+			"cpu": "Chỉ dùng CPU"
+		},
+		"summary": {
+			"online": "Trạm trực tuyến",
+			"withAlarm": "{{n}} trạm đang có cảnh báo",
+			"cameras": "Camera đang chạy",
+			"eventsToday": "Sự kiện hôm nay",
+			"offline": "Trạm mất kết nối"
+		},
+		"form": {
+			"createTitle": "Thêm trạm AI",
+			"editTitle": "Đổi tên / vị trí trạm",
+			"createSubmit": "Tạo trạm và lấy mã",
+			"nameRequired": "Nhập tên trạm",
+			"namePlaceholder": "VD: Trạm kho A — Đông Anh",
+			"locationPlaceholder": "Địa chỉ hoặc mô tả nơi đặt máy",
+			"tenantHint": "Bỏ trống = thuộc đơn vị của bạn."
+		},
+		"token": {
+			"title": "Mã ghép nối trạm",
+			"for": "Mã dùng cho trạm",
+			"copy": "Sao chép",
+			"copied": "Đã sao chép mã ghép nối",
+			"copyFailed": "Không sao chép được, hãy bôi đen mã và sao chép thủ công",
+			"copyServer": "sao chép địa chỉ",
+			"serverCopied": "Đã sao chép địa chỉ máy chủ",
+			"once": "Mã chỉ hiện MỘT lần. Hãy sao chép và nhập vào Vigil ngay; nếu làm mất, cấp lại mã mới ở trang chi tiết trạm.",
+			"stepsTitle": "Nhập mã vào Vigil (3 bước)",
+			"step1": "Trên máy đặt camera, mở phần mềm Vigil → Cài đặt → CMC.",
+			"step2": "Điền địa chỉ máy chủ {{server}} và dán mã ghép nối ở trên.",
+			"step3": "Bấm “Kết nối”. Vài giây sau trạm chuyển sang Trực tuyến tại đây.",
+			"done": "Đã lưu mã, đóng"
+		},
+		"created": "Đã tạo trạm",
+		"updated": "Đã cập nhật trạm",
+		"rotate": "Cấp lại mã ghép nối",
+		"rotateConfirm": "Cấp lại mã ghép nối cho “{{name}}”?",
+		"rotateDesc": "Mã cũ hết hiệu lực ngay. Trạm đang kết nối sẽ phải nhập mã mới thì mới kết nối lại được.",
+		"rename": "Đổi tên / vị trí",
+		"delete": "Xoá trạm",
+		"more": "Thao tác khác",
+		"deleteConfirm": "Xoá trạm “{{name}}”?",
+		"deleteDesc": "Trạm bị ngắt khỏi CMC và toàn bộ sự kiện của trạm cũng bị xoá. Không thể hoàn tác.",
+		"viewEvents": "Xem sự kiện",
+		"info": "Thông tin trạm",
+		"resources": "Tài nguyên máy",
+		"notPairedTitle": "Trạm chưa ghép nối",
+		"notPairedHint": "Bấm “Cấp lại mã ghép nối” để lấy mã mới, rồi nhập vào Vigil (Cài đặt → CMC) trên máy trạm.",
+		"offlineHint": "Trạm đang mất kết nối với CMC. Thông tin bên dưới là bản tin cuối cùng trạm gửi lên; sự kiện phát sinh khi mất mạng sẽ được trạm gửi bù khi kết nối lại.",
+		"noCameras": "Trạm chưa báo danh sách camera",
+		"noPlugins": "Trạm chưa báo danh mục plugin (chưa ghép nối hoặc chưa khởi động)",
+		"tab": {
+			"cameras": "Camera ({{n}})",
+			"plugins": "Plugin ({{n}})",
+			"events": "Sự kiện"
+		},
+		"camState": {
+			"live": "Đang chạy",
+			"connecting": "Đang kết nối",
+			"error": "Lỗi",
+			"off": "Tắt"
+		},
+		"cam": {
+			"name": "Camera",
+			"resolution": "Độ phân giải",
+			"plugins": "Plugin đang bật",
+			"noPlugin": "Chưa gán plugin"
+		},
+		"plugin": {
+			"displayName": "Plugin",
+			"on": "Đang bật",
+			"off": "Đang tắt",
+			"offOnStation": "Plugin đang tắt trên trạm",
+			"model": "Model",
+			"eventTypes": "Loại sự kiện",
+			"usedBy": "Số camera dùng"
+		}
+	},
+	"aiEvent": {
+		"description": "Cảnh báo do các trạm AI phát hiện từ camera",
+		"detailTitle": "Chi tiết sự kiện",
+		"empty": "Không có sự kiện nào khớp bộ lọc",
+		"noImage": "Không có ảnh bằng chứng",
+		"noObjects": "Không có đối tượng",
+		"showBoxes": "Hiện khung nhận diện",
+		"openImage": "Mở ảnh gốc",
+		"zoneOf": "Vùng: {{zone}}",
+		"ms": "{{n}} ms",
+		"type": {
+			"people_count": "Số người trong vùng",
+			"crowd": "Đám đông",
+			"fire": "Phát hiện lửa",
+			"smoke": "Phát hiện khói",
+			"illegal_parking": "Đỗ xe sai quy định",
+			"red_light": "Vượt đèn đỏ",
+			"wrong_way": "Đi ngược chiều"
+		},
+		"plugin": {
+			"people_counting": "Đếm người",
+			"crowd_detection": "Phát hiện đám đông",
+			"smoke_fire_detection": "Phát hiện khói lửa",
+			"parking_violation_detection": "Đậu xe vi phạm",
+			"traffic_violation_detection": "Vi phạm giao thông"
+		},
+		"cls": {
+			"person": "Người",
+			"car": "Ô tô",
+			"truck": "Xe tải",
+			"bus": "Xe buýt",
+			"motorbike": "Xe máy",
+			"fire": "Lửa",
+			"smoke": "Khói"
+		},
+		"extraKey": {
+			"count": "Số người",
+			"threshold": "Ngưỡng cảnh báo",
+			"sustained_secs": "Kéo dài",
+			"zone_name": "Vùng",
+			"frames": "Số khung hình liên tiếp",
+			"max_score": "Điểm cao nhất",
+			"vehicle_class": "Loại xe",
+			"parked_secs": "Thời gian đỗ",
+			"plate_text": "Biển số"
+		},
+		"summary": {
+			"people": "{{count}} người",
+			"crowd": "{{n}} người · ngưỡng {{threshold}} · kéo dài {{dur}}",
+			"parking": "{{vehicle}} · đỗ {{dur}}",
+			"plate": "Biển số {{plate}}",
+			"frames": "{{n}} khung hình liên tiếp"
+		},
+		"field": {
+			"time": "Thời điểm",
+			"type": "Loại sự kiện",
+			"station": "Trạm",
+			"camera": "Camera",
+			"zone": "Vùng",
+			"plugin": "Plugin",
+			"score": "Độ tin cậy",
+			"object": "Đối tượng",
+			"extra": "Thông tin thêm",
+			"eventId": "Mã sự kiện",
+			"frameKey": "Khoá ảnh lưu trữ",
+			"latency": "Độ trễ gửi"
+		},
+		"filter": {
+			"station": "Tất cả trạm",
+			"camera": "Tất cả camera",
+			"cameraNeedStation": "Chọn trạm để lọc camera",
+			"plugin": "Tất cả plugin",
+			"type": "Tất cả loại",
+			"reset": "Bỏ lọc"
+		},
+		"range": {
+			"today": "Hôm nay",
+			"days": "{{n}} ngày gần nhất"
+		},
+		"stats": {
+			"total": "Tổng sự kiện",
+			"inRange": "Trong khoảng thời gian đã chọn",
+			"fireSmoke": "Cháy / khói",
+			"fireSmokeHint": "{{fire}} cháy · {{smoke}} khói",
+			"today": "Hôm nay",
+			"avgScore": "Độ tin cậy trung bình",
+			"byDay": "Sự kiện theo ngày",
+			"byType": "Tỷ lệ theo loại",
+			"byStation": "Sự kiện theo trạm",
+			"count": "{{count}} sự kiện"
+		},
+		"highlight": {
+			"people": "Số người trong vùng",
+			"crowd": "Số người (ngưỡng {{threshold}})",
+			"parked": "Thời gian đỗ",
+			"plate": "Biển số xe",
+			"noPlate": "Chưa đọc được biển số"
 		}
 	}
 }
