@@ -15,6 +15,7 @@ import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { fmtDateTime } from "@/utils/format";
+import { eventTypeLabel, pluginLabel } from "../ai-event/components/event-meta";
 import EventTable from "../ai-event/components/event-table";
 import { PairingTokenModal, StationFormModal } from "./components/station-modals";
 import {
@@ -69,8 +70,7 @@ export default function AiStationDetailPage() {
 	if (!st) return <EmptyState text={t("aiStation.notFound")} />;
 
 	const state = stationState(st);
-	const pluginName = (n: string) =>
-		st.plugins.find((p) => p.name === n)?.display_name ?? t(`aiEvent.plugin.${n}`, { defaultValue: n });
+	const pluginName = (n: string) => st.plugins.find((p) => p.name === n)?.display_name ?? pluginLabel(t, n);
 
 	const confirmRotate = () =>
 		modal.confirm({
@@ -178,7 +178,7 @@ export default function AiStationDetailPage() {
 				<span className="flex flex-wrap gap-1">
 					{ts.map((x) => (
 						<Tag key={x} className="m-0">
-							{t(`aiEvent.type.${x}`, { defaultValue: x })}
+							{eventTypeLabel(t, x)}
 						</Tag>
 					))}
 				</span>

@@ -45,53 +45,93 @@ const sleep = (ms = between(180, 420)) => new Promise((r) => setTimeout(r, ms));
 
 // ── Danh mục plugin (giống nhau trên mọi trạm, khác nhau ở bật/tắt) ───────────────────────
 
+const HUMAN_MODEL = "human_det_v6.onnx";
+const VEHICLE_MODEL = "vehicle_det_v6.onnx";
+
+/** Đúng 5 plugin Vigil thật. */
 const PLUGIN_CATALOG: PluginInfo[] = [
 	{
-		name: "smoke_fire_detection",
-		version: "1.2.0",
-		display_name: "Phát hiện khói lửa",
-		description: "Phát hiện ngọn lửa và khói trong khung hình, cảnh báo khi vượt ngưỡng tin cậy.",
-		enabled: true,
-		event_types: ["fire", "smoke"],
-		model: "yolov8s-firesmoke.onnx",
-		params_schema: { min_score: { type: "number", default: 0.6 }, cooldown_s: { type: "integer", default: 30 } },
-	},
-	{
-		name: "object_detection",
-		version: "1.0.3",
-		display_name: "Nhận diện vật thể",
-		description: "Nhận diện người, xe máy, ô tô, xe tải trong vùng giám sát.",
-		enabled: true,
-		event_types: ["object_detected"],
-		model: "yolov8n.onnx",
-		params_schema: { classes: { type: "array", default: ["person", "car", "motorbike", "truck"] } },
-	},
-	{
 		name: "people_counting",
-		version: "0.9.1",
+		version: "1.0.0",
 		display_name: "Đếm người",
-		description: "Đếm số người trong vùng và lượt vào / ra qua vạch, cảnh báo khi đông quá ngưỡng.",
+		description: "Đếm số người đang có trong vùng đã vẽ.",
 		enabled: true,
 		event_types: ["people_count"],
-		model: "yolov8n-person.onnx + ByteTrack",
-		params_schema: { max_people: { type: "integer", default: 30 } },
+		model: HUMAN_MODEL,
+		params_schema: { min_score: { type: "number", default: 0.5 }, report_interval_s: { type: "integer", default: 60 } },
 	},
 	{
-		name: "zone_intrusion",
-		version: "0.4.0",
-		display_name: "Xâm nhập vùng cấm",
-		description: "Cảnh báo khi có người hoặc phương tiện đi vào vùng cấm đã vẽ.",
-		enabled: false,
-		event_types: ["object_detected"],
-		model: "yolov8n.onnx",
+		name: "crowd_detection",
+		version: "1.0.0",
+		display_name: "Phát hiện đám đông",
+		description: "Cảnh báo khi số người trong vùng vượt ngưỡng và kéo dài quá thời gian cho phép.",
+		enabled: true,
+		event_types: ["crowd"],
+		model: HUMAN_MODEL,
+		params_schema: { threshold: { type: "integer", default: 20 }, sustained_secs: { type: "integer", default: 30 } },
+	},
+	{
+		name: "smoke_fire_detection",
+		version: "1.1.0",
+		display_name: "Phát hiện khói lửa",
+		description: "Phát hiện lửa và khói, cảnh báo khi xuất hiện liên tiếp nhiều khung hình.",
+		enabled: true,
+		event_types: ["fire", "smoke"],
+		model: "fire_smoke_yolo.onnx",
+		params_schema: { min_score: { type: "number", default: 0.55 }, min_frames: { type: "integer", default: 5 } },
+	},
+	{
+		name: "parking_violation_detection",
+		version: "1.0.0",
+		display_name: "Đậu xe vi phạm",
+		description: "Phát hiện ô tô, xe tải, xe buýt dừng đỗ trong vùng cấm quá thời gian cho phép.",
+		enabled: true,
+		event_types: ["illegal_parking"],
+		model: VEHICLE_MODEL,
+		params_schema: { max_parked_secs: { type: "integer", default: 120 } },
+	},
+	{
+		name: "traffic_violation_detection",
+		version: "0.1.0",
+		display_name: "Vi phạm giao thông",
+		description: "Phát hiện xe vượt đèn đỏ, đi ngược chiều và đọc biển số (đang thử nghiệm).",
+		enabled: true,
+		event_types: ["red_light", "wrong_way"],
+		model: VEHICLE_MODEL,
 	},
 ];
 
-const PLUGIN_EVENT: Record<string, string[]> = {
-	smoke_fire_detection: ["fire", "smoke"],
-	object_detection: ["object_detected"],
-	people_counting: ["people_count"],
+/** Loại sự kiện mỗi plugin sinh ra, kèm trọng số (loại hay gặp hơn có trọng số lớn hơn). */
+const PLUGIN_EVENT: Record<string, [string, number][]> = {
+	people_counting: [["people_count", 1]],
+	crowd_detection: [["crowd", 1]],
+	smoke_fire_detection: [
+		["smoke", 0.65],
+		["fire", 0.35],
+	],
+	parking_violation_detection: [["illegal_parking", 1]],
+	traffic_violation_detection: [
+		["red_light", 0.6],
+		["wrong_way", 0.4],
+	],
 };
+/** Tần suất tương đối giữa các plugin trên cùng camera. */
+const PLUGIN_RATE: Record<string, number> = {
+	people_counting: 3,
+	crowd_detection: 1,
+	smoke_fire_detection: 1,
+	parking_violation_detection: 2,
+	traffic_violation_detection: 2.5,
+};
+
+function weighted<T>(items: [T, number][]): T {
+	let r = rand() * items.reduce((n, [, w]) => n + w, 0);
+	for (const [v, w] of items) {
+		r -= w;
+		if (r < 0) return v;
+	}
+	return items[items.length - 1][0];
+}
 
 // ── Trạm + camera ──────────────────────────────────────────────────────────────────────────
 
@@ -141,13 +181,13 @@ const SEED: SeedStation[] = [
 		gpu: "NVIDIA GeForce RTX 3060",
 		offlineMinutes: null,
 		paired: true,
-		disabledPlugins: ["zone_intrusion"],
-		zones: ["Kho", "Bãi xe", "Cổng"],
+		disabledPlugins: ["traffic_violation_detection", "crowd_detection"],
+		zones: ["Cổng", "Kho", "Bãi xe", "Hành lang"],
 		createdDaysAgo: 41,
 		cameras: [
-			cam(1, "Cổng chính", "live", ["object_detection", "people_counting"]),
+			cam(1, "Cổng chính", "live", ["people_counting", "parking_violation_detection"]),
 			cam(2, "Kho hàng dãy B", "live", ["smoke_fire_detection"]),
-			cam(3, "Bãi xe sau", "live", ["object_detection", "smoke_fire_detection"], "2560x1440"),
+			cam(3, "Bãi xe sau", "live", ["parking_violation_detection", "smoke_fire_detection"], "2560x1440"),
 			cam(4, "Hành lang kỹ thuật", "error", ["smoke_fire_detection"], "1280x720"),
 		],
 	},
@@ -163,12 +203,12 @@ const SEED: SeedStation[] = [
 		offlineMinutes: null,
 		paired: true,
 		disabledPlugins: [],
-		zones: ["Làn vào", "Làn ra", "Vùng cấm"],
+		zones: ["Làn vào", "Làn ra", "Sảnh bảo vệ"],
 		createdDaysAgo: 28,
 		cameras: [
-			cam(1, "Làn xe vào", "live", ["object_detection"]),
-			cam(2, "Làn xe ra", "live", ["object_detection"]),
-			cam(3, "Nhà bảo vệ", "live", ["people_counting", "zone_intrusion"], "1280x720"),
+			cam(1, "Làn xe vào", "live", ["traffic_violation_detection"]),
+			cam(2, "Làn xe ra", "live", ["traffic_violation_detection", "parking_violation_detection"]),
+			cam(3, "Nhà bảo vệ", "live", ["people_counting", "crowd_detection"], "1280x720"),
 		],
 	},
 	{
@@ -182,11 +222,11 @@ const SEED: SeedStation[] = [
 		gpu: null,
 		offlineMinutes: 47,
 		paired: true,
-		disabledPlugins: ["zone_intrusion", "object_detection"],
+		disabledPlugins: ["traffic_violation_detection", "parking_violation_detection"],
 		zones: ["Khu A", "Khu B"],
 		createdDaysAgo: 19,
 		cameras: [
-			cam(1, "Lối vào khu A", "off", ["people_counting", "smoke_fire_detection"]),
+			cam(1, "Lối vào khu A", "off", ["people_counting", "crowd_detection", "smoke_fire_detection"]),
 			cam(2, "Kho lạnh", "off", ["smoke_fire_detection"], "1280x720"),
 		],
 	},
@@ -201,12 +241,12 @@ const SEED: SeedStation[] = [
 		gpu: "Intel Iris Xe Graphics",
 		offlineMinutes: null,
 		paired: true,
-		disabledPlugins: ["zone_intrusion"],
+		disabledPlugins: ["traffic_violation_detection"],
 		zones: ["Sảnh chờ", "Bãi đỗ"],
 		createdDaysAgo: 9,
 		cameras: [
-			cam(1, "Sảnh chờ tầng 1", "live", ["people_counting", "smoke_fire_detection"]),
-			cam(2, "Bãi đỗ xe khách", "connecting", ["object_detection"]),
+			cam(1, "Sảnh chờ tầng 1", "live", ["people_counting", "crowd_detection", "smoke_fire_detection"]),
+			cam(2, "Bãi đỗ xe khách", "connecting", ["parking_violation_detection"]),
 		],
 	},
 ];
@@ -252,7 +292,7 @@ function drawObject(o: AiObject): string {
 	const w = o.bbox.w * W;
 	const h = o.bbox.h * H;
 	const cx = x + w / 2;
-	switch (o.class) {
+	switch (o.class.toLowerCase()) {
 		case "fire":
 			return `<path d="M${cx} ${y} C ${x + w} ${y + h * 0.45}, ${x + w} ${y + h}, ${cx} ${y + h} C ${x} ${y + h}, ${x} ${y + h * 0.45}, ${cx} ${y} Z" fill="#ff7a1a" opacity="0.92"/><path d="M${cx} ${y + h * 0.35} C ${x + w * 0.8} ${y + h * 0.65}, ${x + w * 0.75} ${y + h}, ${cx} ${y + h} C ${x + w * 0.25} ${y + h}, ${x + w * 0.2} ${y + h * 0.65}, ${cx} ${y + h * 0.35} Z" fill="#ffd34d"/>`;
 		case "smoke":
@@ -261,7 +301,8 @@ function drawObject(o: AiObject): string {
 			return `<g fill="#1d2329"><circle cx="${cx}" cy="${y + h * 0.13}" r="${Math.min(w, h) * 0.18}"/><rect x="${x + w * 0.22}" y="${y + h * 0.27}" width="${w * 0.56}" height="${h * 0.73}" rx="${w * 0.2}"/></g>`;
 		case "car":
 		case "truck":
-			return `<g><rect x="${x}" y="${y + h * 0.3}" width="${w}" height="${h * 0.55}" rx="${h * 0.12}" fill="${o.class === "truck" ? "#6d5a3c" : "#2f5d8a"}"/><rect x="${x + w * 0.2}" y="${y}" width="${w * 0.55}" height="${h * 0.38}" rx="${h * 0.1}" fill="#3f6f9a"/><circle cx="${x + w * 0.22}" cy="${y + h * 0.86}" r="${h * 0.13}" fill="#111"/><circle cx="${x + w * 0.78}" cy="${y + h * 0.86}" r="${h * 0.13}" fill="#111"/></g>`;
+		case "bus":
+			return `<g><rect x="${x}" y="${y + h * 0.3}" width="${w}" height="${h * 0.55}" rx="${h * 0.12}" fill="${o.class === "truck" ? "#6d5a3c" : o.class === "bus" ? "#2f7a4f" : "#2f5d8a"}"/><rect x="${x + w * 0.2}" y="${y}" width="${w * 0.55}" height="${h * 0.38}" rx="${h * 0.1}" fill="#3f6f9a"/><circle cx="${x + w * 0.22}" cy="${y + h * 0.86}" r="${h * 0.13}" fill="#111"/><circle cx="${x + w * 0.78}" cy="${y + h * 0.86}" r="${h * 0.13}" fill="#111"/></g>`;
 		default:
 			return `<g><rect x="${x + w * 0.1}" y="${y + h * 0.35}" width="${w * 0.8}" height="${h * 0.35}" rx="${h * 0.1}" fill="#7a3b3b"/><circle cx="${x + w * 0.2}" cy="${y + h * 0.82}" r="${h * 0.16}" fill="#111"/><circle cx="${x + w * 0.8}" cy="${y + h * 0.82}" r="${h * 0.16}" fill="#111"/><circle cx="${cx}" cy="${y + h * 0.15}" r="${h * 0.14}" fill="#1d2329"/></g>`;
 	}
@@ -301,16 +342,25 @@ function bbox(cls: string): BBox {
 		person: [0.04, 0.07],
 		car: [0.12, 0.2],
 		truck: [0.16, 0.24],
+		bus: [0.2, 0.28],
 		motorbike: [0.05, 0.08],
 	};
-	const [a, b] = size[cls] ?? [0.06, 0.1];
+	const c = cls.toLowerCase();
+	const [a, b] = size[c] ?? [0.06, 0.1];
 	const w = between(a, b);
-	const h = cls === "person" ? w * between(2.2, 2.8) * (W / H) * 0.56 : w * between(0.55, 0.95) * (W / H);
-	const y = cls === "smoke" ? between(0.12, 0.35) : between(0.45, 0.92 - h);
+	const h = c === "person" ? w * between(2.2, 2.8) * (W / H) * 0.56 : w * between(0.55, 0.95) * (W / H);
+	const y = c === "smoke" ? between(0.12, 0.35) : between(0.45, 0.92 - h);
 	return { x: round(between(0.03, 0.97 - w)), y: round(Math.max(0.06, y)), w: round(w), h: round(Math.min(h, 0.9)) };
 }
 
-function makeObjects(type: string): { objects: AiObject[]; extra: Record<string, unknown> | null; score: number } {
+const PLATE_SERIES = ["30A", "30E", "30G", "30H", "29A", "29C", "29D", "51F", "51G", "88A", "99A", "29LD"];
+/** Biển số VN dạng "30A-123.45". */
+const plate = () => `${pick(PLATE_SERIES)}-${int(100, 999)}.${String(int(0, 99)).padStart(2, "0")}`;
+
+function makeObjects(
+	type: string,
+	zone: string,
+): { objects: AiObject[]; extra: Record<string, unknown> | null; score: number } {
 	let track = int(1, 900);
 	const obj = (cls: string, lo: number, hi: number): AiObject => ({
 		track_id: track++,
@@ -318,30 +368,56 @@ function makeObjects(type: string): { objects: AiObject[]; extra: Record<string,
 		bbox: bbox(cls),
 		score: round(between(lo, hi), 2),
 	});
-	if (type === "fire") {
-		const objects = [obj("fire", 0.62, 0.97)];
-		if (rand() < 0.5) objects.push(obj("smoke", 0.5, 0.9));
-		return { objects, extra: { area_ratio: round(between(0.004, 0.03), 4) }, score: objects[0].score };
-	}
-	if (type === "smoke") {
-		const objects = [obj("smoke", 0.55, 0.93)];
-		return { objects, extra: { density: pick(["nhẹ", "vừa", "dày"]) }, score: objects[0].score };
+	const people = (n: number) => Array.from({ length: n }, () => obj("person", 0.55, 0.95));
+	const avg = (os: AiObject[]) => round(os.reduce((s, o) => s + o.score, 0) / os.length, 2);
+
+	if (type === "fire" || type === "smoke") {
+		const main = obj(type === "fire" ? "Fire" : "Smoke", 0.58, 0.96);
+		const objects = [main];
+		if (type === "fire" && rand() < 0.5) objects.push(obj("Smoke", 0.5, 0.9));
+		const max = round(Math.min(0.99, main.score + between(0, 0.04)), 2);
+		return { objects, extra: { frames: int(5, 42), max_score: max, zone_name: zone }, score: main.score };
 	}
 	if (type === "people_count") {
-		const n = int(3, 9);
-		const objects = Array.from({ length: n }, () => obj("person", 0.55, 0.95));
-		const count = n + int(8, 34);
-		const into = int(count, count + 40);
+		const count = int(2, 18);
+		const objects = people(Math.min(count, 9));
+		return { objects, extra: { count, zone_name: zone }, score: avg(objects) };
+	}
+	if (type === "crowd") {
+		const threshold = pick([15, 20, 25]);
+		const count = threshold + int(1, 22);
+		const objects = people(int(8, 14));
 		return {
 			objects,
-			extra: { count, in: into, out: into - count, threshold: 30 },
-			score: round(objects.reduce((s, o) => s + o.score, 0) / n, 2),
+			extra: { count, threshold, sustained_secs: int(30, 420), zone_name: zone },
+			score: avg(objects),
 		};
 	}
-	const cls = pick(["person", "car", "motorbike", "truck", "person", "car"]);
-	const objects = [obj(cls, 0.58, 0.97)];
-	if (rand() < 0.35) objects.push(obj(pick(["person", "motorbike"]), 0.5, 0.9));
-	return { objects, extra: { classes: [...new Set(objects.map((o) => o.class))] }, score: objects[0].score };
+	if (type === "illegal_parking") {
+		const cls = weighted<string>([
+			["car", 6],
+			["truck", 2],
+			["bus", 1],
+		]);
+		const o = obj(cls, 0.62, 0.97);
+		return {
+			objects: [o],
+			extra: { vehicle_class: cls, parked_secs: int(125, 2400), zone_name: zone },
+			score: o.score,
+		};
+	}
+	// red_light / wrong_way
+	const cls = weighted<string>([
+		["car", 5],
+		["motorbike", 4],
+		["truck", 1],
+	]);
+	const o = obj(cls, 0.6, 0.96);
+	return {
+		objects: [o],
+		extra: { plate_text: plate(), vehicle_class: cls, zone_name: zone },
+		score: o.score,
+	};
 }
 
 /** Giờ trong ngày có nhiều sự kiện hơn (đông người ban ngày, lửa khói rải đều). */
@@ -372,12 +448,11 @@ function generateEvents(): AiEvent[] {
 				const camera = pick(st.cameras);
 				const plugins = camera.plugins.filter((p) => PLUGIN_EVENT[p] && !st.disabledPlugins.includes(p));
 				if (!plugins.length) continue;
-				const plugin = pick(plugins);
-				// Lửa hiếm hơn khói.
-				const type = plugin === "smoke_fire_detection" ? (rand() < 0.35 ? "fire" : "smoke") : PLUGIN_EVENT[plugin][0];
-				const { objects, extra, score } = makeObjects(type);
+				const plugin = weighted(plugins.map((p) => [p, PLUGIN_RATE[p] ?? 1] as [string, number]));
+				const type = weighted(PLUGIN_EVENT[plugin]);
 				// Mỗi camera nhìn một vùng cố định.
 				const zoneIdx = (camera.id - 1) % st.zones.length;
+				const { objects, extra, score } = makeObjects(type, st.zones[zoneIdx]);
 				const event_id = uuidv7(ms);
 				const base: Omit<AiEvent, "image_url"> = {
 					v: 1,

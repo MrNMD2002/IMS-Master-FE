@@ -891,36 +891,47 @@
 		"zoneOf": "Zone: {{zone}}",
 		"ms": "{{n}} ms",
 		"type": {
-			"fire": "Fire",
-			"smoke": "Smoke",
-			"object_detected": "Object detected",
-			"people_count": "People count"
+			"people_count": "People in zone",
+			"crowd": "Crowd",
+			"fire": "Fire detected",
+			"smoke": "Smoke detected",
+			"illegal_parking": "Illegal parking",
+			"red_light": "Red-light running",
+			"wrong_way": "Wrong-way driving"
 		},
 		"plugin": {
-			"smoke_fire_detection": "Smoke & fire detection",
-			"object_detection": "Object detection",
 			"people_counting": "People counting",
-			"zone_intrusion": "Zone intrusion"
+			"crowd_detection": "Crowd detection",
+			"smoke_fire_detection": "Smoke & fire detection",
+			"parking_violation_detection": "Parking violation",
+			"traffic_violation_detection": "Traffic violation"
 		},
 		"cls": {
 			"person": "Person",
 			"car": "Car",
-			"motorbike": "Motorbike",
 			"truck": "Truck",
+			"bus": "Bus",
+			"motorbike": "Motorbike",
 			"fire": "Fire",
 			"smoke": "Smoke"
 		},
 		"extraKey": {
-			"count": "People in zone",
-			"in": "Entries",
-			"out": "Exits",
+			"count": "People",
 			"threshold": "Alert threshold",
-			"area_ratio": "Fire area ratio",
-			"density": "Smoke density",
-			"classes": "Object classes"
+			"sustained_secs": "Sustained",
+			"zone_name": "Zone",
+			"frames": "Consecutive frames",
+			"max_score": "Max score",
+			"vehicle_class": "Vehicle type",
+			"parked_secs": "Parked for",
+			"plate_text": "Plate"
 		},
 		"summary": {
-			"people": "{{count}} people · in {{in}} / out {{out}}"
+			"people": "{{count}} people",
+			"crowd": "{{n}} people · threshold {{threshold}} · for {{dur}}",
+			"parking": "{{vehicle}} · parked {{dur}}",
+			"plate": "Plate {{plate}}",
+			"frames": "{{n}} consecutive frames"
 		},
 		"field": {
 			"time": "Time",
@@ -959,6 +970,13 @@
 			"byType": "Share by type",
 			"byStation": "Events per station",
 			"count": "{{count}} events"
+		},
+		"highlight": {
+			"people": "People in zone",
+			"crowd": "People (threshold {{threshold}})",
+			"parked": "Parked for",
+			"plate": "License plate",
+			"noPlate": "Plate not read"
 		}
 	}
 }

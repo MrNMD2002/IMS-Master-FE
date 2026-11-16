@@ -6,9 +6,18 @@ import { Link } from "react-router";
 import type { AiEvent, AiObject } from "#/vigil";
 import aiStationService from "@/api/services/aiStationService";
 import { Icon } from "@/components/icon";
-import { fmtDateTime, fmtFromNow } from "@/utils/format";
+import { fmtDateTime, fmtDuration, fmtFromNow } from "@/utils/format";
 import EventImage from "./event-image";
-import { classColor, EventTypeTag, eventMeta, useClassLabel } from "./event-meta";
+import {
+	classColor,
+	classLabel,
+	EventHighlight,
+	EventTypeTag,
+	eventMeta,
+	PlateText,
+	pluginLabel,
+	useClassLabel,
+} from "./event-meta";
 
 const fmtExtra = (v: unknown): string => {
 	if (v === null || v === undefined) return "—";
@@ -37,6 +46,14 @@ export default function EventDetailModal({ event, onClose }: { event: AiEvent | 
 	const wallS = e ? e.captured_at.wall_us / 1e6 : 0;
 	const latency = e ? Math.max(0, Math.round((e.sent_at - e.captured_at.wall_us) / 1000)) : 0;
 	const extra = Object.entries(e?.extra ?? {});
+	/** Định dạng giá trị `extra` theo khoá: giây → thời lượng, điểm → %, biển số → tấm biển. */
+	const renderExtra = (k: string, v: unknown) => {
+		if (k === "vehicle_class" && typeof v === "string") return classLabel(t, v);
+		if ((k === "parked_secs" || k === "sustained_secs") && typeof v === "number") return fmtDuration(v, t);
+		if (k === "max_score" && typeof v === "number") return `${Math.round(v * 100)}%`;
+		if (k === "plate_text" && typeof v === "string") return <PlateText plate={v} />;
+		return fmtExtra(v);
+	};
 
 	return (
 		<Modal
@@ -124,6 +141,7 @@ export default function EventDetailModal({ event, onClose }: { event: AiEvent | 
 					</div>
 
 					<div className="flex flex-col gap-4">
+						<EventHighlight event={e} />
 						<div className="rounded-xl border p-4">
 							<p className="mb-1 text-sm text-text-secondary">{t("aiEvent.field.score")}</p>
 							<div className="flex items-center gap-3">
@@ -151,7 +169,7 @@ export default function EventDetailModal({ event, onClose }: { event: AiEvent | 
 							</Descriptions.Item>
 							{e.zone_name && <Descriptions.Item label={t("aiEvent.field.zone")}>{e.zone_name}</Descriptions.Item>}
 							<Descriptions.Item label={t("aiEvent.field.plugin")}>
-								{t(`aiEvent.plugin.${e.plugin}`, { defaultValue: e.plugin })}
+								{pluginLabel(t, e.plugin)}
 								<p className="font-mono text-xs text-text-secondary">{e.plugin}</p>
 							</Descriptions.Item>
 							<Descriptions.Item label={t("aiEvent.field.latency")}>
@@ -165,7 +183,7 @@ export default function EventDetailModal({ event, onClose }: { event: AiEvent | 
 								<Descriptions column={1} size="small" bordered>
 									{extra.map(([k, v]) => (
 										<Descriptions.Item key={k} label={t(`aiEvent.extraKey.${k}`, { defaultValue: k })}>
-											{k === "classes" && Array.isArray(v) ? v.map((c) => label(String(c))).join(", ") : fmtExtra(v)}
+											{renderExtra(k, v)}
 										</Descriptions.Item>
 									))}
 								</Descriptions>
