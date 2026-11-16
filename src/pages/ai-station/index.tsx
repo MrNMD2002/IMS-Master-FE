@@ -22,7 +22,6 @@ import {
 	CameraCount,
 	MockNotice,
 	StationOnline,
-	StatusDot,
 	stationState,
 } from "./components/station-status";
 
@@ -259,10 +258,7 @@ function StationCard({ station: s, onClick }: { station: AiStation; onClick: () 
 					<Icon icon="solar:server-square-cloud-bold-duotone" size={24} />
 				</span>
 				<div className="min-w-0 flex-1">
-					<p className="flex items-center gap-2 font-semibold">
-						<StatusDot state={state} />
-						<span className="truncate">{s.name}</span>
-					</p>
+					<p className="truncate font-semibold">{s.name}</p>
 					<p className="truncate text-xs text-text-secondary">
 						<span className="font-mono">{s.id}</span>
 						{s.location && ` · ${s.location}`}
