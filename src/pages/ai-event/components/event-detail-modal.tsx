@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import type { AiEvent, AiObject } from "#/vigil";
-import aiStationService from "@/api/services/aiStationService";
+import aiStationService, { eventImageUrl } from "@/api/services/aiStationService";
 import { Icon } from "@/components/icon";
 import { fmtDateTime, fmtDuration, fmtFromNow } from "@/utils/format";
 import EventImage from "./event-image";
@@ -34,7 +34,7 @@ export default function EventDetailModal({ event, onClose }: { event: AiEvent | 
 	const label = useClassLabel();
 	const [showBoxes, setShowBoxes] = useState(true);
 
-	// Lấy lại chi tiết để có `image_url` ký mới (link MinIO có hạn).
+	// Lấy lại chi tiết mới nhất (danh sách có thể đã cũ).
 	const { data, isLoading } = useQuery({
 		queryKey: ["ai-event", "detail", event?.event_id],
 		queryFn: () => aiStationService.getEvent(event?.event_id as string),
@@ -93,15 +93,22 @@ export default function EventDetailModal({ event, onClose }: { event: AiEvent | 
 								</label>
 							</span>
 							{e.image_url && !e.image_url.startsWith("data:") && (
-								<a
-									href={e.image_url}
-									target="_blank"
-									rel="noreferrer"
+								<button
+									type="button"
 									className="inline-flex items-center gap-1 text-primary"
+									onClick={() => {
+										// Mở tab trước (trong cử chỉ bấm) rồi gán ảnh — tránh bị chặn popup.
+										const win = window.open("", "_blank");
+										eventImageUrl(e.image_url as string)
+											.then((r) => {
+												if (win) win.location.href = r.url;
+											})
+											.catch(() => win?.close());
+									}}
 								>
 									<Icon icon="solar:square-top-down-linear" size={16} />
 									{t("aiEvent.openImage")}
-								</a>
+								</button>
 							)}
 						</div>
 						<Table<AiObject>
