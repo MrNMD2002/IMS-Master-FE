@@ -22,6 +22,8 @@ export const P = {
 	INCIDENT_READ_ALL: "incident.read.all",
 	AUDIT_READ: "audit.read",
 	DASHBOARD_ACCESS: "dashboard.access",
+	AI_STATION_READ: "ai_station.read",
+	AI_STATION_MANAGE: "ai_station.manage",
 	// Cờ hệ thống đánh dấu tài khoản App (cán bộ trên xe).
 	SCOPE_DEVICE: "scope.device",
 	PLATFORM_BYPASS: "platform.bypass",
@@ -45,9 +47,6 @@ export const INCIDENT_READ_GATE = [P.INCIDENT_READ, P.INCIDENT_READ_ALL];
  */
 export const FLEXIBLE_ROLE = "custom";
 
-/**
- * Trạm AI (Vigil): CMC API chưa có mã quyền riêng → tạm dùng quyền phương tiện.
- * Khi backend thêm `ai_station.read` / `ai_station.manage` thì chỉ đổi hai hằng này.
- */
-export const AI_STATION_READ_GATE = [P.DEVICE_READ];
-export const AI_STATION_MANAGE = P.DEVICE_MANAGE;
+/** Trạm AI (Vigil): xem trạm + sự kiện / tạo, sửa, xoá, cấp mã ghép nối. */
+export const AI_STATION_READ_GATE = [P.AI_STATION_READ, P.AI_STATION_MANAGE];
+export const AI_STATION_MANAGE = P.AI_STATION_MANAGE;
