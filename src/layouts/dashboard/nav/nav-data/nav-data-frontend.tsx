@@ -1,6 +1,6 @@
 import { Icon } from "@/components/icon";
 import type { NavProps } from "@/components/nav";
-import { INCIDENT_READ_GATE, P, TENANT_READ_GATE } from "@/constants/permission";
+import { AI_STATION_READ_GATE, INCIDENT_READ_GATE, P, TENANT_READ_GATE } from "@/constants/permission";
 
 /** Menu trái. `auth` = cần ít nhất một trong các quyền. */
 export const frontendNavData: NavProps["data"] = [
@@ -18,6 +18,16 @@ export const frontendNavData: NavProps["data"] = [
 				path: "/monitoring",
 				icon: <Icon icon="solar:map-point-wave-bold-duotone" size="24" />,
 				auth: [P.GPS_READ],
+			},
+			{
+				title: "sys.nav.aiStation",
+				path: "/ai",
+				icon: <Icon icon="solar:server-square-cloud-bold-duotone" size="24" />,
+				auth: AI_STATION_READ_GATE,
+				children: [
+					{ title: "sys.nav.aiStationList", path: "/ai/stations", auth: AI_STATION_READ_GATE },
+					{ title: "sys.nav.aiEvent", path: "/ai/events", auth: AI_STATION_READ_GATE },
+				],
 			},
 			{
 				title: "sys.nav.incident",
