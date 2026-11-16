@@ -44,3 +44,10 @@ export const INCIDENT_READ_GATE = [P.INCIDENT_READ, P.INCIDENT_READ_ALL];
  * riêng. Khớp `FLEXIBLE_ROLE` ở `app/shared/permisson_constant.py`.
  */
 export const FLEXIBLE_ROLE = "custom";
+
+/**
+ * Trạm AI (Vigil): CMC API chưa có mã quyền riêng → tạm dùng quyền phương tiện.
+ * Khi backend thêm `ai_station.read` / `ai_station.manage` thì chỉ đổi hai hằng này.
+ */
+export const AI_STATION_READ_GATE = [P.DEVICE_READ];
+export const AI_STATION_MANAGE = P.DEVICE_MANAGE;
