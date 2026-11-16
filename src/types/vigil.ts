@@ -6,8 +6,16 @@
 
 export type AccelKind = "cuda" | "tensorrt" | "openvino" | "directml" | "cpu";
 export type CameraState = "live" | "connecting" | "error" | "off";
-export type AiEventType = "fire" | "smoke" | "object_detected" | "people_count";
-export const AI_EVENT_TYPES: AiEventType[] = ["fire", "smoke", "object_detected", "people_count"];
+export type AiEventType = "people_count" | "crowd" | "fire" | "smoke" | "illegal_parking" | "red_light" | "wrong_way";
+export const AI_EVENT_TYPES: AiEventType[] = [
+	"people_count",
+	"crowd",
+	"fire",
+	"smoke",
+	"illegal_parking",
+	"red_light",
+	"wrong_way",
+];
 
 /** `StationStatus` — bản tin `cmc/vigil/<station_id>/status` mới nhất. */
 export interface StationStatus {

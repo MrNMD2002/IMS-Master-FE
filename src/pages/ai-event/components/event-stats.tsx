@@ -7,7 +7,7 @@ import { Chart, useChart } from "@/components/chart";
 import StatCard from "@/components/cmc/stat-card";
 import { useSettings } from "@/store/settingStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
-import { eventMeta } from "./event-meta";
+import { eventMeta, eventTypeLabel } from "./event-meta";
 
 /** Thẻ số liệu + biểu đồ theo ngày / loại / trạm cho trang Sự kiện AI. */
 export default function EventStats({
@@ -61,13 +61,13 @@ export default function EventStats({
 		grid: { strokeDashArray: 3 },
 	});
 	const daySeries = types.map((x) => ({
-		name: t(`aiEvent.type.${x}`, { defaultValue: x }),
+		name: eventTypeLabel(t, x),
 		data: days.map((d) => d.by_type[x] ?? 0),
 	}));
 
 	const byType = (data?.by_type ?? []).filter((x) => x.total > 0);
 	const typeChart = useChart({
-		labels: byType.map((x) => t(`aiEvent.type.${x.event_type}`, { defaultValue: x.event_type })),
+		labels: byType.map((x) => eventTypeLabel(t, x.event_type)),
 		colors: byType.map((x) => eventMeta(x.event_type).color),
 		stroke: { colors: ["var(--card, #fff)"], width: 2 },
 		legend: { show: true, position: "bottom", horizontalAlign: "center" },

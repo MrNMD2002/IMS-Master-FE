@@ -10,7 +10,7 @@ import { Icon } from "@/components/icon";
 import { fmtDateTime, fmtFromNow } from "@/utils/format";
 import EventDetailModal from "./event-detail-modal";
 import EventImage from "./event-image";
-import { EventTypeTag, ScoreText, useEventSummary } from "./event-meta";
+import { EventTypeTag, pluginLabel, ScoreText, useEventSummary } from "./event-meta";
 
 /**
  * Bảng sự kiện AI có ảnh thu nhỏ, phân trang phía máy chủ; bấm dòng mở chi tiết.
@@ -67,7 +67,16 @@ export default function EventTable({
 			render: (_, e) => (
 				<div className="flex min-w-[150px] flex-col items-start gap-1">
 					<EventTypeTag type={e.event_type} />
-					<span className="max-w-[220px] truncate text-xs text-text-secondary">{summary(e)}</span>
+					<span
+						className={
+							// Số người là thông tin chính của hai loại này → in đậm, to hơn.
+							e.event_type === "people_count" || e.event_type === "crowd"
+								? "max-w-[260px] truncate text-sm font-semibold"
+								: "max-w-[260px] truncate text-xs text-text-secondary"
+						}
+					>
+						{summary(e)}
+					</span>
 				</div>
 			),
 		},
@@ -96,7 +105,7 @@ export default function EventTable({
 		{
 			title: t("aiEvent.field.plugin"),
 			dataIndex: "plugin",
-			render: (p: string) => <span className="text-sm">{t(`aiEvent.plugin.${p}`, { defaultValue: p })}</span>,
+			render: (p: string) => <span className="text-sm">{pluginLabel(t, p)}</span>,
 		},
 		{
 			title: t("aiEvent.field.score"),

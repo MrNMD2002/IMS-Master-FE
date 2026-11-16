@@ -11,7 +11,7 @@ import { Icon } from "@/components/icon";
 import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
 import { MockNotice } from "../ai-station/components/station-status";
-import { KNOWN_PLUGINS } from "./components/event-meta";
+import { eventTypeLabel, KNOWN_PLUGINS, pluginLabel } from "./components/event-meta";
 import EventStats from "./components/event-stats";
 import EventTable from "./components/event-table";
 
@@ -110,7 +110,7 @@ export default function AiEventPage() {
 							placeholder={t("aiEvent.filter.plugin")}
 							value={plugin}
 							onChange={setPlugin}
-							options={KNOWN_PLUGINS.map((p) => ({ value: p, label: t(`aiEvent.plugin.${p}`) }))}
+							options={KNOWN_PLUGINS.map((p) => ({ value: p, label: pluginLabel(t, p) }))}
 						/>
 						<Select
 							allowClear
@@ -118,7 +118,7 @@ export default function AiEventPage() {
 							placeholder={t("aiEvent.filter.type")}
 							value={eventType}
 							onChange={setEventType}
-							options={AI_EVENT_TYPES.map((x) => ({ value: x, label: t(`aiEvent.type.${x}`) }))}
+							options={AI_EVENT_TYPES.map((x) => ({ value: x, label: eventTypeLabel(t, x) }))}
 						/>
 						<RangePicker
 							allowClear={false}

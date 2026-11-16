@@ -891,36 +891,47 @@
 		"zoneOf": "Vùng: {{zone}}",
 		"ms": "{{n}} ms",
 		"type": {
-			"fire": "Cháy",
-			"smoke": "Khói",
-			"object_detected": "Phát hiện vật thể",
-			"people_count": "Đếm người"
+			"people_count": "Số người trong vùng",
+			"crowd": "Đám đông",
+			"fire": "Phát hiện lửa",
+			"smoke": "Phát hiện khói",
+			"illegal_parking": "Đỗ xe sai quy định",
+			"red_light": "Vượt đèn đỏ",
+			"wrong_way": "Đi ngược chiều"
 		},
 		"plugin": {
-			"smoke_fire_detection": "Phát hiện khói lửa",
-			"object_detection": "Nhận diện vật thể",
 			"people_counting": "Đếm người",
-			"zone_intrusion": "Xâm nhập vùng cấm"
+			"crowd_detection": "Phát hiện đám đông",
+			"smoke_fire_detection": "Phát hiện khói lửa",
+			"parking_violation_detection": "Đậu xe vi phạm",
+			"traffic_violation_detection": "Vi phạm giao thông"
 		},
 		"cls": {
 			"person": "Người",
 			"car": "Ô tô",
-			"motorbike": "Xe máy",
 			"truck": "Xe tải",
+			"bus": "Xe buýt",
+			"motorbike": "Xe máy",
 			"fire": "Lửa",
 			"smoke": "Khói"
 		},
 		"extraKey": {
-			"count": "Số người trong vùng",
-			"in": "Lượt vào",
-			"out": "Lượt ra",
+			"count": "Số người",
 			"threshold": "Ngưỡng cảnh báo",
-			"area_ratio": "Tỷ lệ diện tích lửa",
-			"density": "Mật độ khói",
-			"classes": "Lớp đối tượng"
+			"sustained_secs": "Kéo dài",
+			"zone_name": "Vùng",
+			"frames": "Số khung hình liên tiếp",
+			"max_score": "Điểm cao nhất",
+			"vehicle_class": "Loại xe",
+			"parked_secs": "Thời gian đỗ",
+			"plate_text": "Biển số"
 		},
 		"summary": {
-			"people": "{{count}} người · vào {{in}} / ra {{out}}"
+			"people": "{{count}} người",
+			"crowd": "{{n}} người · ngưỡng {{threshold}} · kéo dài {{dur}}",
+			"parking": "{{vehicle}} · đỗ {{dur}}",
+			"plate": "Biển số {{plate}}",
+			"frames": "{{n}} khung hình liên tiếp"
 		},
 		"field": {
 			"time": "Thời điểm",
@@ -959,6 +970,13 @@
 			"byType": "Tỷ lệ theo loại",
 			"byStation": "Sự kiện theo trạm",
 			"count": "{{count}} sự kiện"
+		},
+		"highlight": {
+			"people": "Số người trong vùng",
+			"crowd": "Số người (ngưỡng {{threshold}})",
+			"parked": "Thời gian đỗ",
+			"plate": "Biển số xe",
+			"noPlate": "Chưa đọc được biển số"
 		}
 	}
 }
