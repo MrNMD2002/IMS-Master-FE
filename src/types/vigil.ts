@@ -78,6 +78,8 @@ export interface AiStation {
 	events_today: number;
 	/** Đã ghép nối chưa (mã đã được Vigil dùng). */
 	paired: boolean;
+	/** Lần ghép nối đầu (UTC). */
+	paired_at?: string | null;
 	created_at: string;
 }
 
@@ -89,7 +91,8 @@ export interface AiStationDetail extends AiStation {
 }
 
 export interface AiStationCreateReq {
-	name: string;
+	/** Bỏ trống = tên đặt trên Vigil lúc ghép nối. */
+	name?: string;
 	location?: string;
 	tenant_id?: number | null;
 }

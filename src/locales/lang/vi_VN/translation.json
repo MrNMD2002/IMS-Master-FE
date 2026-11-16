@@ -798,7 +798,8 @@
 			"alarms": "Cảnh báo",
 			"eventsToday": "Sự kiện hôm nay",
 			"hostname": "Tên máy",
-			"configRevision": "Phiên bản cấu hình"
+			"configRevision": "Phiên bản cấu hình",
+			"pairedAt": "Ghép nối lúc"
 		},
 		"accel": {
 			"cuda": "NVIDIA CUDA",
@@ -821,7 +822,9 @@
 			"nameRequired": "Nhập tên trạm",
 			"namePlaceholder": "VD: Trạm kho A — Đông Anh",
 			"locationPlaceholder": "Địa chỉ hoặc mô tả nơi đặt máy",
-			"tenantHint": "Bỏ trống = thuộc đơn vị của bạn."
+			"tenantHint": "Người dùng của đơn vị này (và đơn vị cấp trên) xem được trạm và sự kiện AI của trạm. Bỏ trống = đơn vị của bạn.",
+			"nameHint": "Có thể bỏ trống — trạm lấy tên đặt trên Vigil lúc ghép nối.",
+			"tenantLabel": "Đơn vị quản lý trạm"
 		},
 		"token": {
 			"title": "Mã ghép nối trạm",
@@ -831,12 +834,15 @@
 			"copyFailed": "Không sao chép được, hãy bôi đen mã và sao chép thủ công",
 			"copyServer": "sao chép địa chỉ",
 			"serverCopied": "Đã sao chép địa chỉ máy chủ",
-			"once": "Mã chỉ hiện MỘT lần. Hãy sao chép và nhập vào Vigil ngay; nếu làm mất, cấp lại mã mới ở trang chi tiết trạm.",
-			"stepsTitle": "Nhập mã vào Vigil (3 bước)",
-			"step1": "Trên máy đặt camera, mở phần mềm Vigil → Cài đặt → CMC.",
-			"step2": "Điền địa chỉ máy chủ {{server}} và dán mã ghép nối ở trên.",
-			"step3": "Bấm “Kết nối”. Vài giây sau trạm chuyển sang Trực tuyến tại đây.",
-			"done": "Đã lưu mã, đóng"
+			"once": "Mã ghép nối chỉ hiện MỘT lần. Hãy sao chép vào Vigil ngay; nếu làm mất, cấp mã mới ở trang chi tiết trạm (mã trạm giữ nguyên).",
+			"stepsTitle": "Nhập vào Vigil (3 bước)",
+			"step1": "Trên máy đặt camera, mở Vigil → Cài đặt → Kết nối CMC, chọn chế độ Nối CMC.",
+			"step2": "Điền địa chỉ CMC, mã trạm và mã ghép nối ở trên (mỗi dòng có nút Sao chép).",
+			"step3": "Đặt tên trạm rồi bấm “Lưu và ghép nối”. Vài giây sau trạm chuyển sang Trực tuyến tại đây, mang tên đặt trên Vigil.",
+			"done": "Đã lưu mã, đóng",
+			"code": "Mã ghép nối",
+			"server": "Địa chỉ CMC",
+			"idCopied": "Đã sao chép mã trạm"
 		},
 		"created": "Đã tạo trạm",
 		"updated": "Đã cập nhật trạm",
@@ -881,7 +887,8 @@
 			"model": "Model",
 			"eventTypes": "Loại sự kiện",
 			"usedBy": "Số camera dùng"
-		}
+		},
+		"notPaired": "Chưa ghép nối"
 	},
 	"aiEvent": {
 		"description": "Cảnh báo do các trạm AI phát hiện từ camera",

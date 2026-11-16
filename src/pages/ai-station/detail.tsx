@@ -284,6 +284,9 @@ export default function AiStationDetailPage() {
 								{st.location || "—"}
 							</Descriptions.Item>
 							<Descriptions.Item label={t("common.createdAt")}>{fmtDateTime(st.created_at)}</Descriptions.Item>
+							<Descriptions.Item label={t("aiStation.field.pairedAt")}>
+								{st.paired_at ? fmtDateTime(st.paired_at) : t("aiStation.notPaired")}
+							</Descriptions.Item>
 							<Descriptions.Item label={t("aiStation.field.configRevision")}>
 								{s ? s.config_revision : "—"}
 							</Descriptions.Item>
