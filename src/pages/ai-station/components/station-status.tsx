@@ -30,30 +30,35 @@ export function StatusDot({ state, className }: { state: StationState; className
 	);
 }
 
-/** "● Trực tuyến · lần cuối 12 giây trước". */
-export function StationOnline({ station, compact }: { station: AiStation; compact?: boolean }) {
+const STATE_VARIANT: Record<StationState, "success" | "error" | "secondary"> = {
+	online: "success",
+	offline: "error",
+	unpaired: "secondary",
+};
+
+/** Nhãn trạng thái trạm — cùng kiểu Badge có chấm như trạng thái phương tiện / sự vụ. */
+export function StationStateBadge({ station }: { station: AiStation }) {
 	const { t } = useTranslation();
 	const state = stationState(station);
-	const label = t(`aiStation.state.${state}`);
+	return (
+		<Badge variant={STATE_VARIANT[state]}>
+			<span className="h-1.5 w-1.5 rounded-full bg-current" />
+			{t(`aiStation.state.${state}`)}
+		</Badge>
+	);
+}
+
+/** Nhãn trạng thái + "lần cuối 12 giây trước" ở dòng dưới. */
+export function StationOnline({ station, compact }: { station: AiStation; compact?: boolean }) {
+	const { t } = useTranslation();
 	const seen = station.last_seen
 		? t("aiStation.lastSeen", { time: fmtFromNow(station.last_seen) })
 		: t("aiStation.neverSeen");
 	return (
 		<Tooltip title={station.last_seen ? fmtDateTime(station.last_seen, "DD/MM/YYYY HH:mm:ss") : undefined}>
-			<span className="inline-flex min-w-0 items-center gap-2">
-				<StatusDot state={state} />
-				<span className="min-w-0">
-					<span
-						className={cn(
-							"block text-sm font-medium",
-							state === "online" && "text-success",
-							state === "offline" && "text-error",
-						)}
-					>
-						{label}
-					</span>
-					{!compact && <span className="block truncate text-xs text-text-secondary">{seen}</span>}
-				</span>
+			<span className="inline-flex min-w-0 flex-col items-start gap-0.5">
+				<StationStateBadge station={station} />
+				{!compact && <span className="truncate text-xs text-text-secondary">{seen}</span>}
 			</span>
 		</Tooltip>
 	);
@@ -148,8 +153,8 @@ export function UsageBar({ label, value }: { label: string; value?: number | nul
 }
 
 /** Nhắc rằng trang đang chạy bằng dữ liệu giả. */
-export function MockNotice() {
+export function MockNotice({ className = "mb-4" }: { className?: string }) {
 	const { t } = useTranslation();
 	if (!isVigilMock) return null;
-	return <Alert type="info" showIcon className="mb-3" message={t("aiStation.mockBanner")} />;
+	return <Alert type="info" showIcon className={className} message={t("aiStation.mockBanner")} />;
 }

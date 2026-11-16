@@ -29,10 +29,11 @@ export default function EventStats({
 	const days = data?.by_day ?? [];
 	const today = dayjs().format("YYYY-MM-DD");
 	const todayCount = days.find((d) => d.day === today)?.total;
-	// Loại có trong dữ liệu (giữ thứ tự chuẩn, loại lạ xếp cuối).
+	// Chỉ những loại có trong dữ liệu (giữ thứ tự chuẩn, loại lạ xếp cuối) để chú thích khỏi thừa.
+	const present = new Set((data?.by_type ?? []).filter((x) => x.total > 0).map((x) => x.event_type));
 	const types = [
-		...AI_EVENT_TYPES,
-		...(data?.by_type ?? []).map((x) => x.event_type).filter((x) => !AI_EVENT_TYPES.includes(x as never)),
+		...AI_EVENT_TYPES.filter((x) => present.has(x)),
+		...[...present].filter((x) => !AI_EVENT_TYPES.includes(x as never)),
 	];
 
 	const dayChart = useChart({

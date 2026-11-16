@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { App, Descriptions, Dropdown, Skeleton, Table, Tabs, Tag, Tooltip, Typography } from "antd";
+import { Alert, App, Descriptions, Skeleton, Table, Tabs, Tag, Tooltip, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,12 +8,13 @@ import { toast } from "sonner";
 import type { AiStationWithToken, PluginInfo, StationCamera } from "#/vigil";
 import aiStationService from "@/api/services/aiStationService";
 import EmptyState from "@/components/cmc/empty-state";
-import PageHeader from "@/components/cmc/page-header";
+import { STICKY_PAGE_BAR } from "@/components/cmc/page-header";
 import { Icon } from "@/components/icon";
 import { AI_STATION_MANAGE } from "@/constants/permission";
 import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
+import { cn } from "@/utils";
 import { fmtDateTime } from "@/utils/format";
 import { eventTypeLabel, pluginLabel } from "../ai-event/components/event-meta";
 import EventTable from "../ai-event/components/event-table";
@@ -23,7 +24,7 @@ import {
 	CameraStateBadge,
 	MockNotice,
 	StationOnline,
-	StatusDot,
+	StationStateBadge,
 	stationState,
 	UsageBar,
 } from "./components/station-status";
@@ -195,86 +196,60 @@ export default function AiStationDetailPage() {
 	const s = st.status;
 
 	return (
-		<>
-			<PageHeader
-				icon="solar:server-square-cloud-bold-duotone"
-				title={
-					<span className="flex items-center gap-2">
-						<StatusDot state={state} />
-						{st.name}
-					</span>
-				}
-				description={
-					<>
-						<span className="font-mono">{st.id}</span>
-						{st.location && ` · ${st.location}`}
-					</>
-				}
-				actions={
-					<>
-						<Button variant="outline" onClick={() => navigate("/ai/stations")}>
-							<Icon icon="solar:arrow-left-linear" size={18} />
-							{t("common.back")}
-						</Button>
-						<Button variant="outline" onClick={() => navigate(`/ai/events?station=${st.id}`)}>
-							<Icon icon="solar:bell-bing-linear" size={18} />
-							{t("aiStation.viewEvents")}
-						</Button>
-						{canManage && (
-							<>
-								<Button onClick={confirmRotate} disabled={rotate.isPending}>
-									<Icon icon="solar:key-minimalistic-square-linear" size={18} />
-									{t("aiStation.rotate")}
-								</Button>
-								<Dropdown
-									trigger={["click"]}
-									menu={{
-										items: [
-											{
-												key: "edit",
-												icon: <Icon icon="solar:pen-linear" size={16} />,
-												label: t("aiStation.rename"),
-												onClick: () => setEditing(true),
-											},
-											{ type: "divider" },
-											{
-												key: "delete",
-												danger: true,
-												icon: <Icon icon="solar:trash-bin-trash-linear" size={16} />,
-												label: t("aiStation.delete"),
-												onClick: confirmDelete,
-											},
-										],
-									}}
-								>
-									<Button variant="outline" size="icon" aria-label={t("aiStation.more")}>
-										<Icon icon="solar:menu-dots-bold" size={18} />
-									</Button>
-								</Dropdown>
-							</>
-						)}
-					</>
-				}
-			/>
-			<MockNotice />
-
-			{state === "unpaired" && (
-				<div className="mb-4 flex items-start gap-3 rounded-xl border border-info/40 bg-info/10 p-4 text-sm">
-					<Icon icon="solar:link-round-angle-bold-duotone" size={22} className="shrink-0 text-info" />
-					<div className="flex-1">
-						<p className="font-semibold">{t("aiStation.notPairedTitle")}</p>
-						<p className="text-text-secondary">{t("aiStation.notPairedHint")}</p>
+		<div className="flex flex-col gap-4">
+			{/* Đầu trang như trang chi tiết sự vụ: nút quay lại + tên + trạng thái, ghim khi cuộn. */}
+			<div className={cn(STICKY_PAGE_BAR, "flex flex-wrap items-start justify-between gap-3")}>
+				<div className="flex min-w-0 items-start gap-3">
+					<Button variant="outline" size="icon" onClick={() => navigate("/ai/stations")} title={t("common.back")}>
+						<Icon icon="solar:arrow-left-linear" size={18} />
+					</Button>
+					<div className="min-w-0">
+						<div className="flex flex-wrap items-center gap-2">
+							<h1 className="text-xl font-bold">{st.name}</h1>
+							<StationStateBadge station={st} />
+						</div>
+						<p className="text-sm text-text-secondary">
+							<span className="font-mono">{st.id}</span>
+							{st.location && ` · ${st.location}`}
+						</p>
 					</div>
 				</div>
-			)}
-			{state === "offline" && (
-				<div className="mb-4 flex items-start gap-3 rounded-xl border border-error/40 bg-error/10 p-4 text-sm">
-					<Icon icon="solar:plug-circle-bold-duotone" size={22} className="shrink-0 text-error" />
-					<p className="flex-1">{t("aiStation.offlineHint")}</p>
+				<div className="flex flex-wrap gap-2">
+					<Button variant="outline" onClick={() => navigate(`/ai/events?station=${st.id}`)}>
+						<Icon icon="solar:bell-bing-linear" size={18} />
+						{t("aiStation.viewEvents")}
+					</Button>
+					{canManage && (
+						<>
+							<Button variant="outline" onClick={() => setEditing(true)}>
+								<Icon icon="solar:pen-linear" size={18} />
+								{t("aiStation.rename")}
+							</Button>
+							<Button onClick={confirmRotate} disabled={rotate.isPending}>
+								<Icon icon="solar:key-minimalistic-square-linear" size={18} />
+								{t("aiStation.rotate")}
+							</Button>
+							<Button variant="ghost" className="text-error" onClick={confirmDelete} disabled={remove.isPending}>
+								<Icon icon="solar:trash-bin-trash-linear" size={18} />
+								{t("common.delText")}
+							</Button>
+						</>
+					)}
 				</div>
-			)}
+			</div>
+			<MockNotice className="mb-0" />
 
-			<div className="mb-4 grid grid-cols-1 gap-4 xl:grid-cols-3">
+			{state === "unpaired" && (
+				<Alert
+					type="info"
+					showIcon
+					message={t("aiStation.notPairedTitle")}
+					description={t("aiStation.notPairedHint")}
+				/>
+			)}
+			{state === "offline" && <Alert type="error" showIcon message={t("aiStation.offlineHint")} />}
+
+			<div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
 				<Card className="xl:col-span-2">
 					<CardHeader>
 						<CardTitle>{t("aiStation.info")}</CardTitle>
@@ -414,6 +389,6 @@ export default function AiStationDetailPage() {
 
 			<StationFormModal station={editing ? st : undefined} onClose={() => setEditing(false)} />
 			<PairingTokenModal result={token} onClose={() => setToken(null)} />
-		</>
+		</div>
 	);
 }
