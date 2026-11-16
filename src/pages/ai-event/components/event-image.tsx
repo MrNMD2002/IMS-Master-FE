@@ -1,11 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { AiObject } from "#/vigil";
+import { eventImageUrl } from "@/api/services/aiStationService";
 import { Icon } from "@/components/icon";
 import { cn } from "@/utils";
 import { classColor, useClassLabel } from "./event-meta";
 
 const pct = (v: number) => `${Math.min(100, Math.max(0, v * 100))}%`;
+
+/** Tải ảnh bằng chứng kèm token (xem `eventImageUrl`), thu hồi blob URL khi đổi ảnh / gỡ. */
+export function useEventImage(src: string | null) {
+	const [url, setUrl] = useState<string | null>(null);
+	const [failed, setFailed] = useState(false);
+	useEffect(() => {
+		setFailed(false);
+		setUrl(null);
+		if (!src) return;
+		let alive = true;
+		let blobUrl: string | null = null;
+		eventImageUrl(src)
+			.then((r) => {
+				if (r.blob) blobUrl = r.url;
+				if (alive) setUrl(r.url);
+				else if (r.blob) URL.revokeObjectURL(r.url);
+			})
+			.catch(() => alive && setFailed(true));
+		return () => {
+			alive = false;
+			if (blobUrl) URL.revokeObjectURL(blobUrl);
+		};
+	}, [src]);
+	return { url, failed, loading: !!src && !url && !failed };
+}
 
 /**
  * Ảnh bằng chứng + khung bbox vẽ đè. bbox chuẩn hoá 0..1 nên đặt theo % trên chính khung ảnh —
@@ -28,9 +54,13 @@ export default function EventImage({
 }) {
 	const { t } = useTranslation();
 	const label = useClassLabel();
+	const { url, failed: loadFailed, loading } = useEventImage(src);
 	const [failed, setFailed] = useState(false);
 
-	if (!src || failed) {
+	if (loading) {
+		return <div className={cn("aspect-video w-full animate-pulse rounded-md bg-muted", className)} />;
+	}
+	if (!url || failed || loadFailed) {
 		return (
 			<div
 				className={cn(
@@ -47,7 +77,7 @@ export default function EventImage({
 	return (
 		<div className={cn("relative w-full overflow-hidden rounded-md bg-black", className)}>
 			<img
-				src={src}
+				src={url}
 				alt={alt ?? ""}
 				loading="lazy"
 				className="block h-auto w-full select-none"
