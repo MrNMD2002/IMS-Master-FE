@@ -9,8 +9,8 @@ type GlobalConfig = {
 	/** Base URL của CMC API, vd `/cmc/api` */
 	apiBaseUrl: string;
 	/**
-	 * Trạm AI (Vigil) dùng dữ liệu giả trong trình duyệt thay vì gọi API. Mặc định BẬT vì CMC API
-	 * chưa có `/ai-stations`, `/ai-events`; đặt `VITE_AI_STATION_MOCK=false` khi backend sẵn sàng.
+	 * Trạm AI (Vigil) dùng dữ liệu giả trong trình duyệt thay vì gọi API. Mặc định TẮT (CMC API đã
+	 * có `/ai-stations`, `/ai-events`); đặt `VITE_AI_STATION_MOCK=true` để demo không cần trạm thật.
 	 */
 	vigilMock: boolean;
 };
@@ -22,5 +22,5 @@ export const GLOBAL_CONFIG: GlobalConfig = {
 	defaultRoute: import.meta.env.VITE_APP_DEFAULT_ROUTE || "/dashboard",
 	publicPath: import.meta.env.VITE_APP_PUBLIC_PATH || "/",
 	apiBaseUrl: import.meta.env.VITE_APP_API_BASE_URL || "/cmc/api",
-	vigilMock: import.meta.env.VITE_AI_STATION_MOCK !== "false",
+	vigilMock: import.meta.env.VITE_AI_STATION_MOCK === "true",
 };

@@ -1,9 +1,10 @@
 /**
  * API Trạm AI (Vigil) — hợp đồng `Vigil-Master/docs/cmc-contract.md` mục 4.
  *
- * `GLOBAL_CONFIG.vigilMock` (biến `VITE_AI_STATION_MOCK`, mặc định bật) chọn dữ liệu giả trong
+ * `GLOBAL_CONFIG.vigilMock` (biến `VITE_AI_STATION_MOCK=true`, mặc định tắt) chọn dữ liệu giả trong
  * trình duyệt thay cho CMC API. Trang chỉ gọi qua đây nên bỏ mock không phải sửa trang.
  */
+import type { AxiosResponse } from "axios";
 import type { Paged, PageQuery } from "#/api";
 import type {
 	AiEvent,
@@ -45,6 +46,18 @@ const real = {
 };
 
 const aiStationService: typeof real = GLOBAL_CONFIG.vigilMock ? vigilMock : real;
+
+/**
+ * Ảnh bằng chứng → URL hiển thị được. API trả `image_url` là đường dẫn tương đối
+ * (`/ai-events/{id}/image?kind=frame`) có kiểm quyền: thẻ `<img>` không gửi được header nên phải
+ * tải kèm token rồi `URL.createObjectURL` (giống ảnh hiện trường sự vụ). Người gọi tự
+ * `URL.revokeObjectURL` khi xong. Ảnh của dữ liệu giả (`data:` / `http`) dùng thẳng.
+ */
+export const eventImageUrl = async (src: string): Promise<{ url: string; blob: boolean }> => {
+	if (!src.startsWith("/")) return { url: src, blob: false };
+	const res = await apiClient.get<AxiosResponse<Blob>>({ url: src, responseType: "blob", raw: true, silent: true });
+	return { url: URL.createObjectURL(res.data), blob: true };
+};
 
 export const isVigilMock = GLOBAL_CONFIG.vigilMock;
 export default aiStationService;
