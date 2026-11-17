@@ -142,7 +142,7 @@
 		"mobilizedCount": "{{count}} on a mission",
 		"processing": "Incidents in progress",
 		"pendingApproval": "Awaiting confirmation",
-		"liveMap": "Vehicle map",
+		"liveMap": "Vehicle & camera map",
 		"openMap": "Open map",
 		"incidentByStatus": "Incidents by status",
 		"totalIncidents": "Total",
@@ -235,7 +235,8 @@
 				"source": "2024"
 			}
 		],
-		"nextQuote": "Another quote"
+		"nextQuote": "Another quote",
+		"cameraCount": "{{count}} cameras"
 	},
 	"monitor": {
 		"vehicles": "Vehicles",
@@ -1214,7 +1215,10 @@
 			"sourceHint": "Address the AI station pulls from — the station must be able to reach the camera.",
 			"sourcePushHint": "Name / source changes are pushed to every station processing this camera (stations must be online).",
 			"locationPlaceholder": "e.g. North gate, building A",
-			"tenantHint": "Leave empty = your unit."
+			"tenantHint": "Leave empty = your unit.",
+			"point": "Position on map",
+			"pointHint": "Search an address or click the map to place the camera; drag the pin to adjust. Cameras with a position show on the Overview map.",
+			"clearPoint": "Clear position"
 		},
 		"assign": {
 			"action": "Assign to AI station",
