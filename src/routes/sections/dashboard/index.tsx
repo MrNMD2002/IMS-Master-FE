@@ -14,6 +14,8 @@ const pages: RouteObject[] = [
 	{ path: "ai/stations", element: Component("/pages/ai-station") },
 	{ path: "ai/stations/:id", element: Component("/pages/ai-station/detail") },
 	{ path: "ai/events", element: Component("/pages/ai-event") },
+	{ path: "ai/p/:slug", element: Component("/pages/ai-plugin") },
+	{ path: "ai/p/:slug/stats", element: Component("/pages/ai-plugin/stats") },
 	{ path: "devices", element: Component("/pages/device") },
 	{ path: "organization", element: Component("/pages/tenant") },
 	{ path: "users", element: Component("/pages/user") },
