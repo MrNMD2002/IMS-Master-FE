@@ -897,6 +897,21 @@
 			"usedBy": "Cameras using"
 		},
 		"notPaired": "Not paired",
+		"live": {
+			"open": "Live view",
+			"title": "Live · {{name}}",
+			"connecting": "Opening stream from station…",
+			"ended": "Stream stopped (station disconnected or camera lost)",
+			"retry": "Reconnect",
+			"boxes": "Show AI detection boxes",
+			"transcoded": "re-encoded by station",
+			"lag": "Buffer lag {{s}} s",
+			"lagHint": "Browser buffer lag; catches up automatically above 0.6 s",
+			"hint": "Closing this window stops the stream",
+			"unsupported": "This browser cannot play this H.264 stream",
+			"network": "Live stream connection lost",
+			"cameraOff": "Camera is off"
+		},
 		"command": {
 			"name": {
 				"camera_enable": "Turn camera on",
