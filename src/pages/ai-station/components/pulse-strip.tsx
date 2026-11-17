@@ -8,7 +8,7 @@ const TIMEOUT_MS = 90_000;
 const WINDOW_MS = 120_000;
 
 /**
- * Dải nhịp tim (theo trang AI agent của Sentinel): mỗi lần trạm báo `status` (~30 s) là một
+ * Dải nhịp tim: mỗi lần trạm báo `status` (~30 s) là một
  * vạch. API chỉ trả mốc `last_seen` gần nhất nên vạch nào cũng là dữ liệu thật quan sát được
  * trong phiên xem — không vẽ lịch sử giả. Im quá 90 s thì dải phẳng xám.
  */

@@ -34,7 +34,7 @@ export const frontendNavData: NavProps["data"] = [
 			},
 		],
 	},
-	// Giám sát AI — theo cách Sentinel CMS chia menu: trạm + từng chức năng (plugin) có
+	// Giám sát AI — chia menu theo chức năng: trạm + từng chức năng (plugin) có
 	// "Danh sách" và "Thống kê" riêng, gom theo lĩnh vực An ninh / Giao thông.
 	{
 		name: "sys.nav.group.ai",

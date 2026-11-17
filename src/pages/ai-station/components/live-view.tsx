@@ -12,11 +12,11 @@ import { classColor, classLabel } from "../../ai-event/components/event-meta";
 /**
  * Xem trực tiếp camera của trạm (hợp đồng `Vigil-Master/docs/cmc-contract.md` mục 5).
  *
- * Học từ Sentinel (LL-HLS + hls.js `lowLatencyMode`), nhưng camera nằm sau mạng của trạm nên
+ * Không dùng LL-HLS vì camera nằm sau mạng của trạm nên
  * không có máy chủ media kéo RTSP: trạm đẩy fMP4 H.264 lên CMC qua WebSocket, CMC chuyển nguyên
  * cho trình duyệt, trình duyệt nạp thẳng vào MSE — không cắt đoạn HLS, không playlist, trễ < 1 s.
  * Giữ trễ thấp: bộ đệm vượt ngưỡng thì nhảy tới gần cuối, hơi trễ thì phát nhanh 5 %. Khung nhận
- * diện AI (trạm gửi 4 lần/s) vẽ đè bằng canvas, như lớp phủ AI của Sentinel.
+ * diện AI (trạm gửi 4 lần/s) vẽ đè bằng canvas.
  */
 
 const KIND_INIT = 0;

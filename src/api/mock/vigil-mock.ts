@@ -47,8 +47,8 @@ const sleep = (ms = between(180, 420)) => new Promise((r) => setTimeout(r, ms));
 
 // ── Danh mục plugin (giống nhau trên mọi trạm, khác nhau ở bật/tắt) ───────────────────────
 
-const HUMAN_MODEL = "mbfsn_human_det_v6.onnx";
-const VEHICLE_MODEL = "mbfsn_vehicle_det_v6.onnx";
+const HUMAN_MODEL = "human_det_v6.onnx";
+const VEHICLE_MODEL = "vehicle_det_v6.onnx";
 
 /** Đúng 5 plugin Vigil thật. */
 const PLUGIN_CATALOG: PluginInfo[] = [

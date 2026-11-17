@@ -6,7 +6,7 @@ import { cn } from "@/utils";
 import { useEventImage } from "./event-image";
 import { PlateText } from "./event-meta";
 
-/** `extra.plate` trạm gửi khi khoanh được biển số (model `mbfsn_lp_det_v8`). */
+/** `extra.plate` trạm gửi khi khoanh được biển số (model `lp_det_v8`). */
 export interface PlateInfo {
 	lines?: number;
 	kind?: string;

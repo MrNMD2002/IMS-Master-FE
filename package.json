@@ -1,7 +1,8 @@
 {
 	"name": "command-center-web",
 	"description": "Command Center — Web quản trị hệ thống định vị và xử lý sự vụ",
-	"author": "MrNMD2002",
+	"author": "Nguyễn Minh Dũng (https://github.com/MrNMD2002)",
+	"license": "UNLICENSED",
 	"private": true,
 	"version": "0.1.0",
 	"type": "module",

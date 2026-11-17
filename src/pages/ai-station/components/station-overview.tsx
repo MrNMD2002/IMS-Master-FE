@@ -66,7 +66,7 @@ function HealthCard({
 	);
 }
 
-/** Tab Tổng quan: 4 ô sức khoẻ + "giá camera" + cảnh báo (bố cục trang AI agent của Sentinel). */
+/** Tab Tổng quan: 4 ô sức khoẻ + "giá camera" + cảnh báo. */
 export default function StationOverview({
 	station: st,
 	onInspectCameras,
