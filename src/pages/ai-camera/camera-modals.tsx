@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Checkbox, Form, Input, InputNumber, Modal, Popconfirm, Select, Switch, Tooltip } from "antd";
+import { Checkbox, Form, Input, Modal, Popconfirm, Select, Switch, Tooltip } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -7,10 +7,13 @@ import { toast } from "sonner";
 import type { Camera, CameraChange, CameraInput, CameraPushResult } from "#/camera";
 import aiStationService from "@/api/services/aiStationService";
 import cameraService from "@/api/services/cameraService";
+import AddressSearch from "@/components/cmc/address-search";
+import LocationPicker from "@/components/cmc/location-picker";
 import TenantSelect from "@/components/cmc/tenant-select";
 import { Icon } from "@/components/icon";
 import { Button } from "@/ui/button";
 import { cn } from "@/utils";
+import { reverseGeocode } from "@/utils/geocode";
 import { stationState } from "../ai-station/components/station-status";
 
 /** Màu chấm trạng thái camera trên trạm. */
@@ -45,6 +48,15 @@ export function CameraFormModal({ camera, onClose }: { camera: Camera | null | u
 	const [form] = Form.useForm<FormValues>();
 	const open = camera !== undefined;
 	const editing = !!camera;
+	const lat = Form.useWatch("latitude", form);
+	const lng = Form.useWatch("longitude", form);
+
+	/** Chọn điểm (tìm địa chỉ / bấm / kéo ghim) → lưu toạ độ, điền mô tả vị trí từ địa chỉ như tạo sự vụ. */
+	const pick = async (la: number, ln: number) => {
+		form.setFieldsValue({ latitude: Number(la.toFixed(7)), longitude: Number(ln.toFixed(7)) });
+		const addr = await reverseGeocode(la, ln);
+		if (addr) form.setFieldsValue({ location: addr.split(",").slice(0, 2).join(",").trim().slice(0, 255) });
+	};
 	// Nguồn đầy đủ (có mật khẩu) chỉ lấy khi mở để sửa.
 	const detail = useQuery({
 		queryKey: ["camera", "detail", camera?.id],
@@ -126,17 +138,37 @@ export function CameraFormModal({ camera, onClose }: { camera: Camera | null | u
 				>
 					<Input className="font-mono" placeholder="rtsp://user:pass@192.168.1.10:554/stream1" />
 				</Form.Item>
+				<Form.Item label={t("aiCamera.form.point")} extra={t("aiCamera.form.pointHint")}>
+					<div className="flex flex-col gap-2">
+						<AddressSearch onSelect={(r) => pick(r.lat, r.lng)} />
+						<LocationPicker lat={lat} lng={lng} onChange={pick} height={220} />
+						{lat != null && lng != null && (
+							<div className="flex items-center justify-between text-xs text-text-secondary">
+								<span className="font-mono">
+									{lat.toFixed(6)}, {lng.toFixed(6)}
+								</span>
+								<Button
+									type="button"
+									variant="link"
+									size="sm"
+									className="h-auto p-0 text-xs"
+									onClick={() => form.setFieldsValue({ latitude: null, longitude: null })}
+								>
+									{t("aiCamera.form.clearPoint")}
+								</Button>
+							</div>
+						)}
+					</div>
+				</Form.Item>
+				<Form.Item name="latitude" hidden>
+					<Input />
+				</Form.Item>
+				<Form.Item name="longitude" hidden>
+					<Input />
+				</Form.Item>
 				<Form.Item name="location" label={t("aiCamera.field.location")} rules={[{ max: 255 }]}>
 					<Input placeholder={t("aiCamera.form.locationPlaceholder")} />
 				</Form.Item>
-				<div className="grid grid-cols-2 gap-3">
-					<Form.Item name="latitude" label={t("aiCamera.field.latitude")}>
-						<InputNumber className="w-full" min={-90} max={90} step={0.000001} placeholder="21.0285" />
-					</Form.Item>
-					<Form.Item name="longitude" label={t("aiCamera.field.longitude")}>
-						<InputNumber className="w-full" min={-180} max={180} step={0.000001} placeholder="105.8542" />
-					</Form.Item>
-				</div>
 				<Form.Item name="note" label={t("aiCamera.field.note")} rules={[{ max: 2000 }]}>
 					<Input.TextArea rows={2} />
 				</Form.Item>
