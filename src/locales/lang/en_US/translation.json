@@ -1075,7 +1075,8 @@
 			"crowd_detection": "Crowds above the head-count threshold that persist",
 			"zone_intrusion": "People or vehicles entering a drawn restricted zone",
 			"people_counting": "People in the zone at each station report",
-			"parking_violation_detection": "Vehicles parked too long in a no-parking zone"
+			"parking_violation_detection": "Vehicles parked too long in a no-parking zone",
+			"traffic_violation_detection": "Vehicles crossing the stop line on red and driving against the allowed direction"
 		},
 		"col": {
 			"people": "People",
@@ -1085,7 +1086,12 @@
 			"dwell": "Dwell time",
 			"vehicle": "Vehicle",
 			"parked": "Parked for",
-			"day": "Day"
+			"day": "Day",
+			"plate": "Plate",
+			"noPlate": "Not read",
+			"detail": "Detail",
+			"redFor": "Red for {{s}} s",
+			"angle": "Off by {{deg}}°"
 		},
 		"kpi": {
 			"perDay": "≈ {{n}} events / day",
@@ -1099,7 +1105,9 @@
 			"maxDwell": "Longest dwell",
 			"avgParked": "Average parking",
 			"maxParked": "Longest parking",
-			"peakHour": "Peak hour"
+			"peakHour": "Peak hour",
+			"redLight": "Red-light running",
+			"wrongWay": "Wrong way"
 		},
 		"chart": {
 			"byDay": "Daily trend",
