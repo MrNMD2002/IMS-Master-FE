@@ -1075,7 +1075,8 @@
 			"crowd_detection": "Đám đông vượt ngưỡng số người và kéo dài",
 			"zone_intrusion": "Người hoặc phương tiện đi vào vùng cấm đã vẽ",
 			"people_counting": "Số người trong vùng theo từng lần trạm báo",
-			"parking_violation_detection": "Phương tiện đỗ quá thời gian cho phép trong vùng cấm đỗ"
+			"parking_violation_detection": "Phương tiện đỗ quá thời gian cho phép trong vùng cấm đỗ",
+			"traffic_violation_detection": "Xe vượt vạch dừng khi đèn đỏ và xe đi ngược hướng cho phép (vẽ vạch dừng, khung đèn, mũi tên trên trạm)"
 		},
 		"col": {
 			"people": "Số người",
@@ -1085,7 +1086,12 @@
 			"dwell": "Thời gian lưu",
 			"vehicle": "Phương tiện",
 			"parked": "Thời gian đỗ",
-			"day": "Ngày"
+			"day": "Ngày",
+			"plate": "Biển số",
+			"noPlate": "Chưa đọc biển",
+			"detail": "Chi tiết",
+			"redFor": "Đèn đã đỏ {{s}} s",
+			"angle": "Lệch hướng {{deg}}°"
 		},
 		"kpi": {
 			"perDay": "≈ {{n}} sự kiện / ngày",
@@ -1099,7 +1105,9 @@
 			"maxDwell": "Lưu lại lâu nhất",
 			"avgParked": "Đỗ trung bình",
 			"maxParked": "Đỗ lâu nhất",
-			"peakHour": "Giờ cao điểm"
+			"peakHour": "Giờ cao điểm",
+			"redLight": "Vượt đèn đỏ",
+			"wrongWay": "Đi ngược chiều"
 		},
 		"chart": {
 			"byDay": "Xu hướng theo ngày",
