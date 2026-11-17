@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import type { AiStationDetail } from "#/vigil";
 import EmptyState from "@/components/cmc/empty-state";
 import { Icon } from "@/components/icon";
+import { isAiPluginShown } from "@/constants/ai-plugins";
 import { cn } from "@/utils";
 import { pluginLabel } from "../../ai-event/components/event-meta";
 import { CameraControls } from "./station-commands";
@@ -98,9 +99,9 @@ export default function StationCameras({
 										<span className="font-mono tabular-nums">
 											{c.state === "live" ? `${c.fps.toFixed(1)} fps · ${c.resolution.replace("x", " × ")}` : "—"}
 										</span>
-										{c.plugins.length ? (
+										{c.plugins.some(isAiPluginShown) ? (
 											<span className="flex flex-wrap gap-1">
-												{c.plugins.map((p) => {
+												{c.plugins.filter(isAiPluginShown).map((p) => {
 													const off = st.plugins.find((x) => x.name === p)?.enabled === false;
 													return (
 														<Tooltip key={p} title={off ? t("aiStation.plugin.offOnStation") : p}>

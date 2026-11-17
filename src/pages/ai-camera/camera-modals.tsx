@@ -11,6 +11,7 @@ import AddressSearch from "@/components/cmc/address-search";
 import LocationPicker from "@/components/cmc/location-picker";
 import TenantSelect from "@/components/cmc/tenant-select";
 import { Icon } from "@/components/icon";
+import { isAiPluginShown } from "@/constants/ai-plugins";
 import { Button } from "@/ui/button";
 import { cn } from "@/utils";
 import { reverseGeocode } from "@/utils/geocode";
@@ -283,15 +284,19 @@ export function StationsModal({
 			search: `${s.name} ${s.id} ${s.location ?? ""}`,
 		};
 	});
-	const pluginOpts = (detail.data?.plugins ?? []).map((p) => ({
-		value: p.name,
-		label: (
-			<span>
-				{p.display_name || p.name}
-				{!p.enabled && <span className="ml-1 text-xs text-text-disabled">({t("aiStation.plugin.offOnStation")})</span>}
-			</span>
-		),
-	}));
+	const pluginOpts = (detail.data?.plugins ?? [])
+		.filter((p) => isAiPluginShown(p.name))
+		.map((p) => ({
+			value: p.name,
+			label: (
+				<span>
+					{p.display_name || p.name}
+					{!p.enabled && (
+						<span className="ml-1 text-xs text-text-disabled">({t("aiStation.plugin.offOnStation")})</span>
+					)}
+				</span>
+			),
+		}));
 	const busyStation = unassign.isPending ? unassign.variables : undefined;
 
 	return (
@@ -339,7 +344,9 @@ export function StationsModal({
 												.join(" · ")}
 										</p>
 										<p className="truncate text-xs text-text-secondary">
-											{l.plugins.length ? l.plugins.join(", ") : t("aiStation.cam.noPlugin")}
+											{l.plugins.some(isAiPluginShown)
+												? l.plugins.filter(isAiPluginShown).join(", ")
+												: t("aiStation.cam.noPlugin")}
 										</p>
 									</div>
 									{canManage && (

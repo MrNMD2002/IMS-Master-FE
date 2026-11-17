@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import type { AiStationDetail, CameraState } from "#/vigil";
 import { Icon } from "@/components/icon";
+import { isAiPluginShown } from "@/constants/ai-plugins";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { cn } from "@/utils";
 import { fmtDateTime } from "@/utils/format";
@@ -80,7 +81,8 @@ export default function StationOverview({
 	const s = st.status;
 	const counts = { live: 0, off: 0, error: 0 };
 	for (const c of st.cameras) counts[cameraBucket(c.state)]++;
-	const pluginsOn = st.plugins.filter((p) => p.enabled).length;
+	const shownPlugins = st.plugins.filter((p) => isAiPluginShown(p.name));
+	const pluginsOn = shownPlugins.filter((p) => p.enabled && !p.missing_models?.length).length;
 	const usage = Math.max(s?.cpu_pct ?? 0, s?.ram_pct ?? 0, s?.gpu_pct ?? 0);
 
 	return (
@@ -135,7 +137,7 @@ export default function StationOverview({
 					value={
 						<span>
 							{pluginsOn}
-							<span className="text-base font-normal text-text-secondary">/{st.plugins.length}</span>
+							<span className="text-base font-normal text-text-secondary">/{shownPlugins.length}</span>
 						</span>
 					}
 					sub={t("aiStation.overview.pluginSub", { n: st.events_today })}

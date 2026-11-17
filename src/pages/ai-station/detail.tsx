@@ -10,6 +10,7 @@ import aiStationService from "@/api/services/aiStationService";
 import EmptyState from "@/components/cmc/empty-state";
 import { STICKY_PAGE_BAR } from "@/components/cmc/page-header";
 import { Icon } from "@/components/icon";
+import { isAiPluginShown } from "@/constants/ai-plugins";
 import { AI_STATION_MANAGE } from "@/constants/permission";
 import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
@@ -186,7 +187,8 @@ export default function AiStationDetailPage() {
 	];
 
 	const s = st.status;
-	const pluginsOn = st.plugins.filter((p) => p.enabled && !p.missing_models?.length).length;
+	const shownPlugins = st.plugins.filter((p) => isAiPluginShown(p.name));
+	const pluginsOn = shownPlugins.filter((p) => p.enabled && !p.missing_models?.length).length;
 	const tabLabel = (icon: string, text: string, count?: number) => (
 		<span className="inline-flex items-center gap-1.5">
 			<Icon icon={icon} size={16} />
@@ -325,7 +327,7 @@ export default function AiStationDetailPage() {
 										scroll={{ x: "max-content" }}
 										pagination={false}
 										columns={pluginColumns}
-										dataSource={st.plugins}
+										dataSource={shownPlugins}
 										locale={{ emptyText: <EmptyState text={t("aiStation.noPlugins")} /> }}
 									/>
 								</CardContent>

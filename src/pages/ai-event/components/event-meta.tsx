@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import type { AiEvent } from "#/vigil";
 import { Icon } from "@/components/icon";
+import { isAiPluginShown } from "@/constants/ai-plugins";
 import { cn } from "@/utils";
 import { fmtDuration } from "@/utils/format";
 
@@ -12,7 +13,7 @@ import { fmtDuration } from "@/utils/format";
  * biết thì rơi về tên gốc do trạm gửi lên.
  */
 
-/** 5 plugin Vigil thật (tên kỹ thuật). */
+/** Plugin Vigil thật (tên kỹ thuật) — chỉ những plugin đang mở trên CMC (`ENABLED_AI_PLUGINS`). */
 export const KNOWN_PLUGINS = [
 	"people_counting",
 	"crowd_detection",
@@ -20,7 +21,7 @@ export const KNOWN_PLUGINS = [
 	"zone_intrusion",
 	"parking_violation_detection",
 	"traffic_violation_detection",
-];
+].filter(isAiPluginShown);
 
 export const pluginLabel = (t: TFunction, name: string) => t(`aiEvent.plugin.${name}`, { defaultValue: name });
 export const eventTypeLabel = (t: TFunction, type: string) => t(`aiEvent.type.${type}`, { defaultValue: type });

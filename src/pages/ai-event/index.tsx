@@ -4,12 +4,13 @@ import dayjs, { type Dayjs } from "dayjs";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
-import { AI_EVENT_TYPES, type AiEventQuery } from "#/vigil";
+import type { AiEventQuery } from "#/vigil";
 import aiStationService from "@/api/services/aiStationService";
 import PageHeader from "@/components/cmc/page-header";
 import { Icon } from "@/components/icon";
 import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
+import { SHOWN_EVENT_TYPES } from "../ai-plugin/plugins";
 import { MockNotice } from "../ai-station/components/station-status";
 import { eventTypeLabel, KNOWN_PLUGINS, pluginLabel } from "./components/event-meta";
 import EventStats from "./components/event-stats";
@@ -118,7 +119,7 @@ export default function AiEventPage() {
 							placeholder={t("aiEvent.filter.type")}
 							value={eventType}
 							onChange={setEventType}
-							options={AI_EVENT_TYPES.map((x) => ({ value: x, label: eventTypeLabel(t, x) }))}
+							options={SHOWN_EVENT_TYPES.map((x) => ({ value: x, label: eventTypeLabel(t, x) }))}
 						/>
 						<RangePicker
 							allowClear={false}
