@@ -865,7 +865,8 @@
 		"tab": {
 			"cameras": "Camera ({{n}})",
 			"plugins": "Plugin ({{n}})",
-			"events": "Sự kiện"
+			"events": "Sự kiện",
+			"commands": "Lệnh điều khiển"
 		},
 		"camState": {
 			"live": "Đang chạy",
@@ -888,7 +889,39 @@
 			"eventTypes": "Loại sự kiện",
 			"usedBy": "Số camera dùng"
 		},
-		"notPaired": "Chưa ghép nối"
+		"notPaired": "Chưa ghép nối",
+		"command": {
+			"name": {
+				"camera_enable": "Bật camera",
+				"camera_disable": "Tắt camera",
+				"camera_restart": "Khởi động lại camera",
+				"snapshot": "Chụp ảnh"
+			},
+			"status": {
+				"ok": "Thành công",
+				"error": "Lỗi",
+				"timeout": "Chưa trả lời",
+				"pending": "Đang chờ"
+			},
+			"col": {
+				"time": "Thời gian",
+				"command": "Lệnh",
+				"by": "Người gửi",
+				"result": "Kết quả",
+				"control": "Điều khiển"
+			},
+			"done": "{{what}} {{camera}}: trạm đã làm xong",
+			"failed": "{{what}} thất bại: {{error}}",
+			"timeout": "{{what}} {{camera}}: trạm chưa trả lời — xem kết quả ở tab Lệnh điều khiển",
+			"offline": "Trạm đang mất kết nối — không gửi lệnh được",
+			"noPermission": "Cần quyền quản lý trạm AI",
+			"turnOn": "Bật camera",
+			"turnOff": "Tắt camera",
+			"snapshotTitle": "Ảnh chụp — {{camera}}",
+			"noImage": "Không tải được ảnh",
+			"viewImage": "Xem ảnh",
+			"empty": "Chưa gửi lệnh nào tới trạm này"
+		}
 	},
 	"aiEvent": {
 		"description": "Cảnh báo do các trạm AI phát hiện từ camera",

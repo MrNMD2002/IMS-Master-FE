@@ -1,0 +1,215 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Modal, Switch, Table, Tag, Tooltip } from "antd";
+import type { ColumnsType } from "antd/es/table";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import type { AiCommand, AiCommandName, AiStation, StationCamera } from "#/vigil";
+import aiStationService from "@/api/services/aiStationService";
+import EmptyState from "@/components/cmc/empty-state";
+import { Icon } from "@/components/icon";
+import { Button } from "@/ui/button";
+import { fmtDateTime } from "@/utils/format";
+import { useEventImage } from "../../ai-event/components/event-image";
+
+const STATUS_COLOR: Record<AiCommand["status"], string> = {
+	ok: "success",
+	error: "error",
+	timeout: "warning",
+	pending: "processing",
+};
+
+/** Gửi lệnh + báo kết quả; dùng chung cho các nút trên một dòng camera. */
+function useSendCommand(station: AiStation, onSnapshot: (c: AiCommand) => void) {
+	const { t } = useTranslation();
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: (v: { cmd: AiCommandName; camera: StationCamera }) =>
+			aiStationService.sendCommand(station.id, { cmd: v.cmd, camera_id: v.camera.id }),
+		onSuccess: (c, v) => {
+			const what = t(`aiStation.command.name.${v.cmd}`);
+			if (c.status === "ok") {
+				toast.success(t("aiStation.command.done", { what, camera: v.camera.name }));
+				if (c.cmd === "snapshot") onSnapshot(c);
+			} else if (c.status === "timeout") {
+				toast.warning(t("aiStation.command.timeout", { what, camera: v.camera.name }));
+			} else {
+				toast.error(t("aiStation.command.failed", { what, error: c.error ?? "" }));
+			}
+			qc.invalidateQueries({ queryKey: ["ai-station", "detail", station.id] });
+			qc.invalidateQueries({ queryKey: ["ai-station", "commands", station.id] });
+		},
+	});
+}
+
+/**
+ * Cột điều khiển của một camera: công tắc bật/tắt + khởi động lại + chụp ảnh.
+ * Trạm mất kết nối / không có quyền quản lý → khoá, có chú thích.
+ */
+export function CameraControls({
+	station,
+	camera,
+	online,
+	canManage,
+}: {
+	station: AiStation;
+	camera: StationCamera;
+	online: boolean;
+	canManage: boolean;
+}) {
+	const { t } = useTranslation();
+	const [snapshot, setSnapshot] = useState<AiCommand | null>(null);
+	const send = useSendCommand(station, setSnapshot);
+	const busy = send.isPending ? send.variables?.cmd : undefined;
+	const locked = !online || !canManage;
+	const why = !canManage ? t("aiStation.command.noPermission") : t("aiStation.command.offline");
+
+	return (
+		<div className="flex items-center gap-1.5">
+			<Tooltip title={locked ? why : camera.enabled ? t("aiStation.command.turnOff") : t("aiStation.command.turnOn")}>
+				<Switch
+					size="small"
+					checked={camera.enabled}
+					disabled={locked || !!busy}
+					loading={busy === "camera_enable" || busy === "camera_disable"}
+					onChange={(on) => send.mutate({ cmd: on ? "camera_enable" : "camera_disable", camera })}
+				/>
+			</Tooltip>
+			<Tooltip title={locked ? why : t("aiStation.command.name.camera_restart")}>
+				<Button
+					variant="ghost"
+					size="icon"
+					disabled={locked || !camera.enabled || !!busy}
+					onClick={() => send.mutate({ cmd: "camera_restart", camera })}
+					aria-label={t("aiStation.command.name.camera_restart")}
+				>
+					<Icon
+						icon="solar:restart-linear"
+						size={18}
+						className={busy === "camera_restart" ? "animate-spin" : undefined}
+					/>
+				</Button>
+			</Tooltip>
+			<Tooltip title={locked ? why : t("aiStation.command.name.snapshot")}>
+				<Button
+					variant="ghost"
+					size="icon"
+					disabled={locked || !!busy}
+					onClick={() => send.mutate({ cmd: "snapshot", camera })}
+					aria-label={t("aiStation.command.name.snapshot")}
+				>
+					<Icon icon={busy === "snapshot" ? "svg-spinners:180-ring" : "solar:camera-linear"} size={18} />
+				</Button>
+			</Tooltip>
+			<SnapshotModal command={snapshot} onClose={() => setSnapshot(null)} />
+		</div>
+	);
+}
+
+/** Ảnh chụp theo lệnh — tải kèm token như ảnh sự kiện. */
+export function SnapshotModal({ command, onClose }: { command: AiCommand | null; onClose: () => void }) {
+	const { t } = useTranslation();
+	const { url, failed, loading } = useEventImage(command?.image_url ?? null);
+	const res = command?.result as { width?: number; height?: number } | undefined;
+	return (
+		<Modal
+			open={!!command}
+			onCancel={onClose}
+			footer={null}
+			width={880}
+			title={
+				command && (
+					<span className="flex items-center gap-2">
+						<Icon icon="solar:camera-bold-duotone" size={22} className="text-primary" />
+						{t("aiStation.command.snapshotTitle", { camera: command.camera_name ?? `#${command.camera_id}` })}
+					</span>
+				)
+			}
+		>
+			{command && (
+				<div className="flex flex-col gap-2 pt-2">
+					{loading && <div className="aspect-video w-full animate-pulse rounded-md bg-muted" />}
+					{url && <img src={url} alt="" className="w-full rounded-md bg-black object-contain" />}
+					{failed && <EmptyState text={t("aiStation.command.noImage")} />}
+					<p className="text-xs text-text-secondary">
+						{fmtDateTime(command.acked_at ?? command.created_at)}
+						{res?.width && res?.height ? ` · ${res.width} × ${res.height}` : ""}
+						{command.created_by_name ? ` · ${command.created_by_name}` : ""}
+					</p>
+				</div>
+			)}
+		</Modal>
+	);
+}
+
+/** Tab "Lệnh điều khiển": ai gửi lệnh gì, lúc nào, trạm trả lời ra sao. */
+export function CommandHistory({ stationId }: { stationId: string }) {
+	const { t } = useTranslation();
+	const [snapshot, setSnapshot] = useState<AiCommand | null>(null);
+	const { data = [], isLoading } = useQuery({
+		queryKey: ["ai-station", "commands", stationId],
+		queryFn: () => aiStationService.listCommands(stationId),
+		refetchInterval: 10_000,
+	});
+
+	const columns: ColumnsType<AiCommand> = [
+		{
+			title: t("aiStation.command.col.time"),
+			dataIndex: "created_at",
+			render: (v: string) => <span className="whitespace-nowrap text-sm">{fmtDateTime(v)}</span>,
+		},
+		{
+			title: t("aiStation.command.col.command"),
+			dataIndex: "cmd",
+			render: (cmd: AiCommandName) => t(`aiStation.command.name.${cmd}`, { defaultValue: cmd }),
+		},
+		{
+			title: t("aiStation.cam.name"),
+			dataIndex: "camera_name",
+			render: (v: string | null, c) => v ?? (c.camera_id != null ? `#${c.camera_id}` : "—"),
+		},
+		{
+			title: t("aiStation.command.col.by"),
+			dataIndex: "created_by_name",
+			render: (v: string | null) => v ?? "—",
+		},
+		{
+			title: t("aiStation.command.col.result"),
+			dataIndex: "status",
+			render: (s: AiCommand["status"], c) => (
+				<div className="flex flex-col gap-0.5">
+					<Tag className="m-0 w-fit" color={STATUS_COLOR[s]}>
+						{t(`aiStation.command.status.${s}`)}
+					</Tag>
+					{c.error && s !== "ok" && <span className="max-w-[320px] text-xs text-text-secondary">{c.error}</span>}
+				</div>
+			),
+		},
+		{
+			key: "image",
+			render: (_, c) =>
+				c.image_url ? (
+					<Button variant="ghost" size="sm" onClick={() => setSnapshot(c)}>
+						<Icon icon="solar:gallery-linear" size={16} />
+						{t("aiStation.command.viewImage")}
+					</Button>
+				) : null,
+		},
+	];
+
+	return (
+		<>
+			<Table<AiCommand>
+				rowKey="id"
+				size="middle"
+				loading={isLoading}
+				scroll={{ x: "max-content" }}
+				pagination={false}
+				columns={columns}
+				dataSource={data}
+				locale={{ emptyText: <EmptyState text={t("aiStation.command.empty")} /> }}
+			/>
+			<SnapshotModal command={snapshot} onClose={() => setSnapshot(null)} />
+		</>
+	);
+}

@@ -865,7 +865,8 @@
 		"tab": {
 			"cameras": "Cameras ({{n}})",
 			"plugins": "Plugins ({{n}})",
-			"events": "Events"
+			"events": "Events",
+			"commands": "Commands"
 		},
 		"camState": {
 			"live": "Live",
@@ -888,7 +889,39 @@
 			"eventTypes": "Event types",
 			"usedBy": "Cameras using"
 		},
-		"notPaired": "Not paired"
+		"notPaired": "Not paired",
+		"command": {
+			"name": {
+				"camera_enable": "Turn camera on",
+				"camera_disable": "Turn camera off",
+				"camera_restart": "Restart camera",
+				"snapshot": "Take snapshot"
+			},
+			"status": {
+				"ok": "Done",
+				"error": "Failed",
+				"timeout": "No reply",
+				"pending": "Waiting"
+			},
+			"col": {
+				"time": "Time",
+				"command": "Command",
+				"by": "Sent by",
+				"result": "Result",
+				"control": "Control"
+			},
+			"done": "{{what}} {{camera}}: done by the station",
+			"failed": "{{what}} failed: {{error}}",
+			"timeout": "{{what}} {{camera}}: no reply yet — see the Commands tab",
+			"offline": "Station is offline — commands cannot be sent",
+			"noPermission": "Requires AI station management permission",
+			"turnOn": "Turn camera on",
+			"turnOff": "Turn camera off",
+			"snapshotTitle": "Snapshot — {{camera}}",
+			"noImage": "Could not load the image",
+			"viewImage": "View image",
+			"empty": "No commands sent to this station yet"
+		}
 	},
 	"aiEvent": {
 		"description": "Alerts raised by AI stations from camera feeds",
