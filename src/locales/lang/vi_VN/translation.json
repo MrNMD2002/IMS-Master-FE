@@ -866,7 +866,11 @@
 			"cameras": "Camera ({{n}})",
 			"plugins": "Plugin ({{n}})",
 			"events": "Sự kiện",
-			"commands": "Lệnh điều khiển"
+			"commands": "Lệnh điều khiển",
+			"overview": "Tổng quan",
+			"camerasPlain": "Camera",
+			"pluginsPlain": "Plugin",
+			"system": "Hệ thống"
 		},
 		"camState": {
 			"live": "Đang chạy",
@@ -921,6 +925,38 @@
 			"noImage": "Không tải được ảnh",
 			"viewImage": "Xem ảnh",
 			"empty": "Chưa gửi lệnh nào tới trạm này"
+		},
+		"pulse": {
+			"label": "Nhịp",
+			"never": "chưa nhận tín hiệu",
+			"since": "{{since}} trước",
+			"silent": "im lặng {{since}}",
+			"sec": "{{n}} giây",
+			"min": "{{n}} phút",
+			"hour": "{{n}} giờ",
+			"day": "{{n}} ngày"
+		},
+		"overview": {
+			"connection": "Kết nối",
+			"lastSeen": "Tín hiệu gần nhất {{time}}",
+			"plugins": "Plugin đang bật",
+			"view": "Xem",
+			"cameraSub": "{{live}} chạy · {{off}} tắt · {{error}} có vấn đề",
+			"pluginSub": "{{n}} sự kiện hôm nay",
+			"bay": "Camera của trạm",
+			"bayHint": "Bấm vào ô để xem chi tiết"
+		},
+		"camFilter": {
+			"all": "Tất cả",
+			"live": "Đang chạy",
+			"off": "Đang tắt",
+			"error": "Có vấn đề",
+			"search": "Tìm camera theo tên hoặc số",
+			"none": "Không có camera khớp bộ lọc"
+		},
+		"card": {
+			"lastSeen": "Tín hiệu gần nhất",
+			"open": "Xem chi tiết"
 		}
 	},
 	"aiEvent": {

@@ -1,7 +1,7 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Input, Segmented, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import type { AiStation, AiStationWithToken } from "#/vigil";
@@ -15,6 +15,7 @@ import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
 import { cn } from "@/utils";
+import { fmtFromNow } from "@/utils/format";
 import { PairingTokenModal, StationFormModal } from "./components/station-modals";
 import {
 	AccelLabel,
@@ -22,6 +23,7 @@ import {
 	CameraCount,
 	MockNotice,
 	StationOnline,
+	StationStateBadge,
 	stationState,
 } from "./components/station-status";
 
@@ -30,9 +32,10 @@ const VIEW_KEY = "cmc.aiStation.view";
 
 function readView(): View {
 	try {
-		return localStorage.getItem(VIEW_KEY) === "grid" ? "grid" : "table";
+		// Mặc định dạng thẻ như danh sách AI agent của hệ tham khảo; nhớ lựa chọn của người xem.
+		return localStorage.getItem(VIEW_KEY) === "table" ? "table" : "grid";
 	} catch {
-		return "table";
+		return "grid";
 	}
 }
 
@@ -242,14 +245,38 @@ export default function AiStationListPage() {
 	);
 }
 
+/** Một dòng "nhãn — giá trị" trong thẻ trạm (bố cục thẻ AI agent của hệ tham khảo). */
+function InfoRow({
+	icon,
+	label,
+	children,
+	last,
+}: {
+	icon: string;
+	label: string;
+	children: ReactNode;
+	last?: boolean;
+}) {
+	return (
+		<div className={cn("flex items-center justify-between gap-3 py-2", !last && "border-b border-border/50")}>
+			<span className="inline-flex items-center gap-2 text-sm text-text-secondary">
+				<Icon icon={icon} size={16} className="text-primary" />
+				{label}
+			</span>
+			<span className="min-w-0 truncate text-right text-sm font-medium">{children}</span>
+		</div>
+	);
+}
+
 function StationCard({ station: s, onClick }: { station: AiStation; onClick: () => void }) {
 	const { t } = useTranslation();
 	const state = stationState(s);
+	const load = s.cameras_total ? (s.cameras_live / s.cameras_total) * 100 : 0;
 	return (
 		<Card
 			onClick={onClick}
 			className={cn(
-				"cursor-pointer gap-4 px-5 py-5 transition-shadow hover:shadow-md",
+				"group cursor-pointer gap-3 px-5 py-5 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md",
 				state === "offline" && "border-error/40",
 			)}
 		>
@@ -258,37 +285,45 @@ function StationCard({ station: s, onClick }: { station: AiStation; onClick: () 
 					<Icon icon="solar:server-square-cloud-bold-duotone" size={24} />
 				</span>
 				<div className="min-w-0 flex-1">
-					<p className="truncate font-semibold">{s.name}</p>
+					<p className="truncate font-semibold group-hover:text-primary">{s.name}</p>
 					<p className="truncate text-xs text-text-secondary">
 						<span className="font-mono">{s.id}</span>
 						{s.location && ` · ${s.location}`}
 					</p>
 				</div>
-				{s.version && <span className="shrink-0 font-mono text-xs text-text-secondary">v{s.version}</span>}
-			</div>
-			<StationOnline station={s} />
-			<div className="grid grid-cols-3 gap-2 rounded-lg bg-muted/50 p-3 text-center">
-				<div>
-					<p className="text-xs text-text-secondary">{t("aiStation.field.cameras")}</p>
-					<p className="font-semibold">
-						{s.cameras_live}
-						<span className="font-normal text-text-secondary">/{s.cameras_total}</span>
-					</p>
-				</div>
-				<div>
-					<p className="text-xs text-text-secondary">{t("aiStation.field.eventsToday")}</p>
-					<p className="font-semibold">{s.events_today}</p>
-				</div>
-				<div>
-					<p className="text-xs text-text-secondary">{t("aiStation.field.alarms")}</p>
-					<p className={cn("font-semibold", s.alarms.length > 0 && "text-warning-dark dark:text-warning")}>
-						{s.alarms.length}
-					</p>
-				</div>
-			</div>
-			<div className="flex items-center justify-between gap-2">
-				<AccelLabel accel={s.accel} gpu={s.gpu} />
 				{s.alarms.length > 0 && <AlarmCell alarms={s.alarms} />}
+			</div>
+			<div>
+				<InfoRow icon="solar:widget-5-linear" label={t("common.statusLabel")}>
+					<StationStateBadge station={s} />
+				</InfoRow>
+				<InfoRow icon="solar:tag-linear" label={t("aiStation.field.version")}>
+					<span className="font-mono text-xs">{s.version ? `v${s.version}` : "—"}</span>
+				</InfoRow>
+				<InfoRow icon="solar:cpu-linear" label={t("aiStation.field.hardware")}>
+					<AccelLabel accel={s.accel} gpu={s.gpu} />
+				</InfoRow>
+				<InfoRow icon="solar:videocamera-record-linear" label={t("aiStation.field.cameras")}>
+					<span className="inline-flex items-center gap-2">
+						<span className="h-2 w-16 overflow-hidden rounded-full bg-muted">
+							<span className="block h-full bg-primary" style={{ width: `${load}%` }} />
+						</span>
+						{s.cameras_live}/{s.cameras_total}
+					</span>
+				</InfoRow>
+				<InfoRow icon="solar:bell-bing-linear" label={t("aiStation.field.eventsToday")}>
+					{s.events_today}
+				</InfoRow>
+				<InfoRow icon="solar:refresh-linear" label={t("aiStation.card.lastSeen")} last>
+					{s.last_seen ? fmtFromNow(s.last_seen) : t("aiStation.notPaired")}
+				</InfoRow>
+			</div>
+			<div className="flex items-center justify-between border-t border-border/50 pt-3 text-xs text-text-secondary">
+				<span className="truncate">{s.tenant_name ?? ""}</span>
+				<span className="inline-flex items-center gap-1 text-primary opacity-0 transition-opacity group-hover:opacity-100">
+					{t("aiStation.card.open")}
+					<Icon icon="solar:arrow-right-linear" size={14} />
+				</span>
 			</div>
 		</Card>
 	);

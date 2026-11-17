@@ -1,11 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Alert, App, Descriptions, Skeleton, Table, Tabs, Tag, Tooltip, Typography } from "antd";
+import { Alert, App, Descriptions, Dropdown, Skeleton, Table, Tabs, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import { toast } from "sonner";
-import type { AiStationWithToken, PluginInfo, StationCamera } from "#/vigil";
+import type { AiStationWithToken, PluginInfo } from "#/vigil";
 import aiStationService from "@/api/services/aiStationService";
 import EmptyState from "@/components/cmc/empty-state";
 import { STICKY_PAGE_BAR } from "@/components/cmc/page-header";
@@ -13,24 +13,26 @@ import { Icon } from "@/components/icon";
 import { AI_STATION_MANAGE } from "@/constants/permission";
 import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
+import { Card, CardContent } from "@/ui/card";
 import { cn } from "@/utils";
 import { fmtDateTime } from "@/utils/format";
-import { eventTypeLabel, pluginLabel } from "../ai-event/components/event-meta";
+import { eventTypeLabel } from "../ai-event/components/event-meta";
 import EventTable from "../ai-event/components/event-table";
-import { CameraControls, CommandHistory } from "./components/station-commands";
+import PulseStrip from "./components/pulse-strip";
+import StationCameras from "./components/station-cameras";
+import { CommandHistory } from "./components/station-commands";
 import { PairingTokenModal, StationFormModal } from "./components/station-modals";
-import {
-	AccelLabel,
-	CameraStateBadge,
-	MockNotice,
-	StationOnline,
-	StationStateBadge,
-	stationState,
-	UsageBar,
-} from "./components/station-status";
+import StationOverview, { type CameraFilter } from "./components/station-overview";
+import { AccelLabel, MockNotice, StationOnline, StationStateBadge, stationState } from "./components/station-status";
 
-/** Chi tiết một trạm AI: thông tin, tài nguyên, camera, plugin, sự kiện. */
+const TABS = ["overview", "cameras", "plugins", "commands", "events", "system"] as const;
+type TabKey = (typeof TABS)[number];
+
+/**
+ * Chi tiết một trạm AI — bố cục theo trang AI agent của hệ tham khảo: khối đầu trang (tên, trạng
+ * thái, thao tác) + dải nhịp tim, rồi các tab Tổng quan / Camera / Plugin / Lệnh / Sự kiện /
+ * Hệ thống. Tab đang mở nằm trên URL (`?tab=`) để tải lại / chia sẻ link vẫn đúng tab.
+ */
 export default function AiStationDetailPage() {
 	const { t } = useTranslation();
 	const { modal } = App.useApp();
@@ -39,15 +41,27 @@ export default function AiStationDetailPage() {
 	const can = useCan();
 	const canManage = can(AI_STATION_MANAGE);
 	const id = useParams().id as string;
+	const [params, setParams] = useSearchParams();
+	const tab: TabKey = TABS.includes(params.get("tab") as TabKey) ? (params.get("tab") as TabKey) : "overview";
+	const setTab = (k: string) =>
+		setParams(
+			(p) => {
+				p.set("tab", k);
+				return p;
+			},
+			{ replace: true },
+		);
 
 	const [editing, setEditing] = useState(false);
 	const [token, setToken] = useState<AiStationWithToken | null>(null);
-	const [tab, setTab] = useState("cameras");
+	const [camFilter, setCamFilter] = useState<CameraFilter>("all");
+	const [camSearch, setCamSearch] = useState("");
 
 	const { data: st, isLoading } = useQuery({
 		queryKey: ["ai-station", "detail", id],
 		queryFn: () => aiStationService.getStation(id),
-		refetchInterval: 15_000,
+		// Trạm báo trạng thái ~30 s/lần; làm mới 10 s để dải nhịp tim bắt kịp.
+		refetchInterval: 10_000,
 		enabled: !!id,
 	});
 
@@ -72,7 +86,6 @@ export default function AiStationDetailPage() {
 	if (!st) return <EmptyState text={t("aiStation.notFound")} />;
 
 	const state = stationState(st);
-	const pluginName = (n: string) => st.plugins.find((p) => p.name === n)?.display_name ?? pluginLabel(t, n);
 
 	const confirmRotate = () =>
 		modal.confirm({
@@ -92,64 +105,10 @@ export default function AiStationDetailPage() {
 			onOk: () => remove.mutateAsync(),
 		});
 
-	const cameraColumns: ColumnsType<StationCamera> = [
-		{
-			title: t("aiStation.cam.name"),
-			dataIndex: "name",
-			render: (_, c) => (
-				<div className="flex items-center gap-3">
-					<span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-text-secondary">
-						<Icon icon="solar:videocamera-record-bold-duotone" size={20} />
-					</span>
-					<div>
-						<p className="font-medium">{c.name}</p>
-						<p className="text-xs text-text-secondary">#{c.id}</p>
-					</div>
-				</div>
-			),
-		},
-		{ title: t("common.statusLabel"), dataIndex: "state", render: (s) => <CameraStateBadge state={s} /> },
-		{
-			title: "FPS",
-			dataIndex: "fps",
-			align: "right",
-			render: (v: number, c) => (
-				<span className="font-mono tabular-nums">{c.state === "live" ? v.toFixed(1) : "—"}</span>
-			),
-		},
-		{
-			title: t("aiStation.cam.resolution"),
-			dataIndex: "resolution",
-			render: (v) => <span className="font-mono text-sm">{v.replace("x", " × ")}</span>,
-		},
-		{
-			title: t("aiStation.cam.plugins"),
-			dataIndex: "plugins",
-			render: (ps: string[]) =>
-				ps.length ? (
-					<span className="flex flex-wrap gap-1">
-						{ps.map((p) => {
-							const off = st.plugins.find((x) => x.name === p)?.enabled === false;
-							return (
-								<Tooltip key={p} title={off ? t("aiStation.plugin.offOnStation") : p}>
-									<Tag className="m-0" color={off ? undefined : "processing"} bordered={!off}>
-										<span className={off ? "line-through opacity-60" : undefined}>{pluginName(p)}</span>
-									</Tag>
-								</Tooltip>
-							);
-						})}
-					</span>
-				) : (
-					<span className="text-sm text-text-disabled">{t("aiStation.cam.noPlugin")}</span>
-				),
-		},
-		{
-			title: t("aiStation.command.col.control"),
-			key: "control",
-			fixed: "right",
-			render: (_, c) => <CameraControls station={st} camera={c} online={st.online} canManage={canManage} />,
-		},
-	];
+	const inspectCameras = (f: CameraFilter) => {
+		setCamFilter(f);
+		setTab("cameras");
+	};
 
 	const pluginColumns: ColumnsType<PluginInfo> = [
 		{
@@ -201,47 +160,86 @@ export default function AiStationDetailPage() {
 	];
 
 	const s = st.status;
+	const pluginsOn = st.plugins.filter((p) => p.enabled).length;
+	const tabLabel = (icon: string, text: string, count?: number) => (
+		<span className="inline-flex items-center gap-1.5">
+			<Icon icon={icon} size={16} />
+			{text}
+			{count != null && <span className="font-mono text-[11px] tabular-nums text-text-secondary">{count}</span>}
+		</span>
+	);
 
 	return (
 		<div className="flex flex-col gap-4">
-			{/* Đầu trang như trang chi tiết sự vụ: nút quay lại + tên + trạng thái, ghim khi cuộn. */}
-			<div className={cn(STICKY_PAGE_BAR, "flex flex-wrap items-start justify-between gap-3")}>
-				<div className="flex min-w-0 items-start gap-3">
-					<Button variant="outline" size="icon" onClick={() => navigate("/ai/stations")} title={t("common.back")}>
-						<Icon icon="solar:arrow-left-linear" size={18} />
-					</Button>
-					<div className="min-w-0">
-						<div className="flex flex-wrap items-center gap-2">
-							<h1 className="text-xl font-bold">{st.name}</h1>
-							<StationStateBadge station={st} />
+			{/* Đầu trang ghim khi cuộn: tên, trạng thái, mã trạm, thao tác + dải nhịp tim. */}
+			<div className={cn(STICKY_PAGE_BAR, "pb-0")}>
+				<div className="rounded-lg border border-border/60 bg-background">
+					<div className="flex flex-wrap items-start justify-between gap-3 px-4 py-3 sm:px-5">
+						<div className="flex min-w-0 items-start gap-3">
+							<Button variant="outline" size="icon" onClick={() => navigate("/ai/stations")} title={t("common.back")}>
+								<Icon icon="solar:arrow-left-linear" size={18} />
+							</Button>
+							<span className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:flex">
+								<Icon icon="solar:server-square-cloud-bold-duotone" size={24} />
+							</span>
+							<div className="min-w-0">
+								<div className="flex flex-wrap items-center gap-2">
+									<h1 className="text-xl font-bold">{st.name}</h1>
+									<StationStateBadge station={st} />
+								</div>
+								<p className="flex flex-wrap items-center gap-x-2 text-sm text-text-secondary">
+									<Typography.Text copyable={{ text: st.id }} className="font-mono text-sm text-text-secondary">
+										{st.id}
+									</Typography.Text>
+									{st.version && <span className="font-mono">· v{st.version}</span>}
+									{st.tenant_name && <span>· {st.tenant_name}</span>}
+									{st.location && <span>· {st.location}</span>}
+								</p>
+							</div>
 						</div>
-						<p className="text-sm text-text-secondary">
-							<span className="font-mono">{st.id}</span>
-							{st.location && ` · ${st.location}`}
-						</p>
+						<div className="flex flex-wrap gap-2">
+							<Button variant="outline" onClick={() => setTab("events")}>
+								<Icon icon="solar:bell-bing-linear" size={18} />
+								{t("aiStation.viewEvents")}
+							</Button>
+							{canManage && (
+								<>
+									<Button variant="outline" onClick={() => setEditing(true)}>
+										<Icon icon="solar:pen-linear" size={18} />
+										{t("aiStation.rename")}
+									</Button>
+									<Dropdown
+										trigger={["click"]}
+										menu={{
+											items: [
+												{
+													key: "rotate",
+													icon: <Icon icon="solar:key-minimalistic-square-linear" size={16} />,
+													label: t("aiStation.rotate"),
+													disabled: rotate.isPending,
+													onClick: confirmRotate,
+												},
+												{ type: "divider" },
+												{
+													key: "delete",
+													danger: true,
+													icon: <Icon icon="solar:trash-bin-trash-linear" size={16} />,
+													label: t("common.delText"),
+													disabled: remove.isPending,
+													onClick: confirmDelete,
+												},
+											],
+										}}
+									>
+										<Button variant="outline" size="icon" aria-label={t("aiStation.more")}>
+											<Icon icon="solar:menu-dots-bold" size={18} />
+										</Button>
+									</Dropdown>
+								</>
+							)}
+						</div>
 					</div>
-				</div>
-				<div className="flex flex-wrap gap-2">
-					<Button variant="outline" onClick={() => navigate(`/ai/events?station=${st.id}`)}>
-						<Icon icon="solar:bell-bing-linear" size={18} />
-						{t("aiStation.viewEvents")}
-					</Button>
-					{canManage && (
-						<>
-							<Button variant="outline" onClick={() => setEditing(true)}>
-								<Icon icon="solar:pen-linear" size={18} />
-								{t("aiStation.rename")}
-							</Button>
-							<Button onClick={confirmRotate} disabled={rotate.isPending}>
-								<Icon icon="solar:key-minimalistic-square-linear" size={18} />
-								{t("aiStation.rotate")}
-							</Button>
-							<Button variant="ghost" className="text-error" onClick={confirmDelete} disabled={remove.isPending}>
-								<Icon icon="solar:trash-bin-trash-linear" size={18} />
-								{t("common.delText")}
-							</Button>
-						</>
-					)}
+					<PulseStrip lastSeen={st.last_seen} online={st.online} />
 				</div>
 			</div>
 			<MockNotice className="mb-0" />
@@ -256,120 +254,45 @@ export default function AiStationDetailPage() {
 			)}
 			{state === "offline" && <Alert type="error" showIcon message={t("aiStation.offlineHint")} />}
 
-			<div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
-				<Card className="xl:col-span-2">
-					<CardHeader>
-						<CardTitle>{t("aiStation.info")}</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<Descriptions column={{ xs: 1, md: 2 }} size="small" bordered>
-							<Descriptions.Item label={t("common.statusLabel")}>
-								<StationOnline station={st} />
-							</Descriptions.Item>
-							<Descriptions.Item label={t("aiStation.field.id")}>
-								<Typography.Text copyable className="font-mono">
-									{st.id}
-								</Typography.Text>
-							</Descriptions.Item>
-							<Descriptions.Item label={t("aiStation.field.version")}>
-								{st.version ? <span className="font-mono">v{st.version}</span> : "—"}
-							</Descriptions.Item>
-							<Descriptions.Item label={t("aiStation.field.hostname")}>
-								<span className="font-mono">{s?.hostname || "—"}</span>
-							</Descriptions.Item>
-							<Descriptions.Item label={t("aiStation.field.hardware")}>
-								<AccelLabel accel={st.accel} gpu={st.gpu} />
-							</Descriptions.Item>
-							<Descriptions.Item label={t("aiStation.field.cameras")}>
-								{t("aiStation.camerasLive", { live: st.cameras_live, total: st.cameras_total })}
-							</Descriptions.Item>
-							<Descriptions.Item label={t("aiStation.field.tenant")}>{st.tenant_name || "—"}</Descriptions.Item>
-							<Descriptions.Item label={t("aiStation.field.eventsToday")}>
-								<b>{st.events_today}</b>
-							</Descriptions.Item>
-							<Descriptions.Item label={t("aiStation.field.location")} span={{ xs: 1, md: 2 }}>
-								{st.location || "—"}
-							</Descriptions.Item>
-							<Descriptions.Item label={t("common.createdAt")}>{fmtDateTime(st.created_at)}</Descriptions.Item>
-							<Descriptions.Item label={t("aiStation.field.pairedAt")}>
-								{st.paired_at ? fmtDateTime(st.paired_at) : t("aiStation.notPaired")}
-							</Descriptions.Item>
-							<Descriptions.Item label={t("aiStation.field.configRevision")}>
-								{s ? s.config_revision : "—"}
-							</Descriptions.Item>
-						</Descriptions>
-					</CardContent>
-				</Card>
-				<Card>
-					<CardHeader>
-						<CardTitle>{t("aiStation.resources")}</CardTitle>
-					</CardHeader>
-					<CardContent className="flex flex-col gap-4">
-						<UsageBar label="CPU" value={s?.cpu_pct} />
-						<UsageBar label="RAM" value={s?.ram_pct} />
-						<UsageBar label="GPU" value={s?.gpu_pct} />
-						<div>
-							<p className="mb-1.5 text-xs text-text-secondary">{t("aiStation.field.alarms")}</p>
-							{st.alarms.length ? (
-								<ul className="m-0 flex list-none flex-col gap-1.5 p-0">
-									{st.alarms.map((a) => (
-										<li
-											key={a}
-											className="flex items-start gap-2 rounded-md bg-warning/10 px-2.5 py-1.5 text-sm text-warning-dark dark:text-warning"
-										>
-											<Icon icon="solar:danger-triangle-bold" size={16} className="mt-0.5 shrink-0" />
-											{a}
-										</li>
-									))}
-								</ul>
-							) : (
-								<p className="text-sm text-text-disabled">{t("aiStation.noAlarm")}</p>
-							)}
-						</div>
-						{s && (
-							<p className="text-xs text-text-disabled">
-								{t("aiStation.statusAt", { time: fmtDateTime(s.ts / 1000, "DD/MM/YYYY HH:mm:ss") })}
-							</p>
-						)}
-					</CardContent>
-				</Card>
-			</div>
-
-			<Card className="gap-0 py-3">
-				<CardContent className="px-4 sm:px-6">
-					<Tabs
-						activeKey={tab}
-						onChange={setTab}
-						items={[
-							{
-								key: "cameras",
-								label: (
-									<span className="inline-flex items-center gap-1.5">
-										<Icon icon="solar:videocamera-record-linear" size={16} />
-										{t("aiStation.tab.cameras", { n: st.cameras.length })}
-									</span>
-								),
-								children: (
-									<Table<StationCamera>
-										rowKey="id"
-										size="middle"
-										scroll={{ x: "max-content" }}
-										pagination={false}
-										columns={cameraColumns}
-										dataSource={st.cameras}
-										locale={{ emptyText: <EmptyState text={t("aiStation.noCameras")} /> }}
+			<Tabs
+				activeKey={tab}
+				onChange={setTab}
+				items={[
+					{
+						key: "overview",
+						label: tabLabel("solar:widget-5-linear", t("aiStation.tab.overview")),
+						children: (
+							<StationOverview
+								station={st}
+								onInspectCameras={inspectCameras}
+								onInspectPlugins={() => setTab("plugins")}
+							/>
+						),
+					},
+					{
+						key: "cameras",
+						label: tabLabel("solar:videocamera-record-linear", t("aiStation.tab.camerasPlain"), st.cameras.length),
+						children: (
+							<Card className="py-4">
+								<CardContent className="px-4 sm:px-6">
+									<StationCameras
+										station={st}
+										filter={camFilter}
+										onFilterChange={setCamFilter}
+										search={camSearch}
+										onSearchChange={setCamSearch}
+										canManage={canManage}
 									/>
-								),
-							},
-							{
-								key: "plugins",
-								label: (
-									<span className="inline-flex items-center gap-1.5">
-										<Icon icon="solar:widget-add-linear" size={16} />
-										{t("aiStation.tab.plugins", { n: st.plugins.length })}
-									</span>
-								),
-								children: (
+								</CardContent>
+							</Card>
+						),
+					},
+					{
+						key: "plugins",
+						label: tabLabel("solar:widget-add-linear", t("aiStation.tab.pluginsPlain"), pluginsOn),
+						children: (
+							<Card className="py-3">
+								<CardContent className="px-4 sm:px-6">
 									<Table<PluginInfo>
 										rowKey="name"
 										size="middle"
@@ -379,33 +302,81 @@ export default function AiStationDetailPage() {
 										dataSource={st.plugins}
 										locale={{ emptyText: <EmptyState text={t("aiStation.noPlugins")} /> }}
 									/>
-								),
-							},
-							{
-								key: "commands",
-								label: (
-									<span className="inline-flex items-center gap-1.5">
-										<Icon icon="solar:command-linear" size={16} />
-										{t("aiStation.tab.commands")}
-									</span>
-								),
-								children: tab === "commands" && <CommandHistory stationId={st.id} />,
-							},
-							{
-								key: "events",
-								label: (
-									<span className="inline-flex items-center gap-1.5">
-										<Icon icon="solar:bell-bing-linear" size={16} />
-										{t("aiStation.tab.events")}
-									</span>
-								),
-								// Chỉ dựng khi mở tab để khỏi tải sự kiện thừa.
-								children: tab === "events" && <EventTable filters={{ station_id: st.id }} hideStation />,
-							},
-						]}
-					/>
-				</CardContent>
-			</Card>
+								</CardContent>
+							</Card>
+						),
+					},
+					{
+						key: "commands",
+						label: tabLabel("solar:command-linear", t("aiStation.tab.commands")),
+						children: tab === "commands" && (
+							<Card className="py-3">
+								<CardContent className="px-4 sm:px-6">
+									<CommandHistory stationId={st.id} />
+								</CardContent>
+							</Card>
+						),
+					},
+					{
+						key: "events",
+						label: tabLabel("solar:bell-bing-linear", t("aiStation.tab.events")),
+						// Chỉ dựng khi mở tab để khỏi tải sự kiện thừa.
+						children: tab === "events" && (
+							<Card className="py-3">
+								<CardContent className="px-4 sm:px-6">
+									<EventTable filters={{ station_id: st.id }} hideStation />
+								</CardContent>
+							</Card>
+						),
+					},
+					{
+						key: "system",
+						label: tabLabel("solar:settings-linear", t("aiStation.tab.system")),
+						children: (
+							<Card className="py-4">
+								<CardContent className="px-4 sm:px-6">
+									<Descriptions column={{ xs: 1, md: 2 }} size="small" bordered>
+										<Descriptions.Item label={t("common.statusLabel")}>
+											<StationOnline station={st} />
+										</Descriptions.Item>
+										<Descriptions.Item label={t("aiStation.field.id")}>
+											<Typography.Text copyable className="font-mono">
+												{st.id}
+											</Typography.Text>
+										</Descriptions.Item>
+										<Descriptions.Item label={t("aiStation.field.version")}>
+											{st.version ? <span className="font-mono">v{st.version}</span> : "—"}
+										</Descriptions.Item>
+										<Descriptions.Item label={t("aiStation.field.hostname")}>
+											<span className="font-mono">{s?.hostname || "—"}</span>
+										</Descriptions.Item>
+										<Descriptions.Item label={t("aiStation.field.hardware")}>
+											<AccelLabel accel={st.accel} gpu={st.gpu} />
+										</Descriptions.Item>
+										<Descriptions.Item label={t("aiStation.field.cameras")}>
+											{t("aiStation.camerasLive", { live: st.cameras_live, total: st.cameras_total })}
+										</Descriptions.Item>
+										<Descriptions.Item label={t("aiStation.field.tenant")}>{st.tenant_name || "—"}</Descriptions.Item>
+										<Descriptions.Item label={t("aiStation.field.eventsToday")}>
+											<b>{st.events_today}</b>
+										</Descriptions.Item>
+										<Descriptions.Item label={t("aiStation.field.location")} span={{ xs: 1, md: 2 }}>
+											{st.location || "—"}
+										</Descriptions.Item>
+										<Descriptions.Item label={t("common.createdAt")}>{fmtDateTime(st.created_at)}</Descriptions.Item>
+										<Descriptions.Item label={t("aiStation.field.pairedAt")}>
+											{st.paired_at ? fmtDateTime(st.paired_at) : t("aiStation.notPaired")}
+										</Descriptions.Item>
+										<Descriptions.Item label={t("aiStation.field.configRevision")}>
+											{s ? s.config_revision : "—"}
+										</Descriptions.Item>
+									</Descriptions>
+								</CardContent>
+							</Card>
+						),
+					},
+				]}
+			/>
 
 			<StationFormModal station={editing ? st : undefined} onClose={() => setEditing(false)} />
 			<PairingTokenModal result={token} onClose={() => setToken(null)} />
