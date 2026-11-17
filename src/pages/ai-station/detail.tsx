@@ -23,6 +23,7 @@ import StationCameras from "./components/station-cameras";
 import { CommandHistory } from "./components/station-commands";
 import { PairingTokenModal, StationFormModal } from "./components/station-modals";
 import StationOverview, { type CameraFilter } from "./components/station-overview";
+import StationRetention from "./components/station-retention";
 import { AccelLabel, MockNotice, StationOnline, StationStateBadge, stationState } from "./components/station-status";
 
 const TABS = ["overview", "cameras", "plugins", "commands", "events", "system"] as const;
@@ -371,6 +372,9 @@ export default function AiStationDetailPage() {
 											{s ? s.config_revision : "—"}
 										</Descriptions.Item>
 									</Descriptions>
+									<div className="mt-5 border-t pt-5">
+										<StationRetention station={st} canManage={canManage} />
+									</div>
 								</CardContent>
 							</Card>
 						),
