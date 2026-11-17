@@ -695,6 +695,10 @@ export const vigilMock = {
 		events = events.filter((e) => e.station_id !== id);
 	},
 
+	async liveTicket(_id: string, _cameraId: number): Promise<{ ticket: string; ws_path: string }> {
+		throw new Error("Dữ liệu giả không có luồng xem trực tiếp");
+	},
+
 	async sendCommand(
 		id: string,
 		req: { cmd: AiCommandName; camera_id?: number; args?: Record<string, unknown> },
