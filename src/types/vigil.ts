@@ -152,6 +152,8 @@ export interface AiEvent {
 	evidence: { frame_key: string | null; crop_key: string | null };
 	extra?: Record<string, unknown> | null;
 	image_url: string | null;
+	/** Ảnh cắt (biển số xe vi phạm) — link ký sẵn như `image_url`. */
+	crop_url?: string | null;
 }
 
 export interface AiEventQuery {
