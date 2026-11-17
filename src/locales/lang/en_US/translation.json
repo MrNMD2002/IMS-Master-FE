@@ -35,7 +35,10 @@
 			"group": {
 				"operation": "Operations",
 				"management": "Management",
-				"system": "System"
+				"system": "System",
+				"ai": "AI monitoring",
+				"ai_security": "Security",
+				"ai_traffic": "Traffic"
 			},
 			"dashboard": "Dashboard",
 			"monitoring": "Live monitoring",
@@ -866,7 +869,11 @@
 			"cameras": "Cameras ({{n}})",
 			"plugins": "Plugins ({{n}})",
 			"events": "Events",
-			"commands": "Commands"
+			"commands": "Commands",
+			"overview": "Overview",
+			"camerasPlain": "Cameras",
+			"pluginsPlain": "Plugins",
+			"system": "System"
 		},
 		"camState": {
 			"live": "Live",
@@ -921,6 +928,38 @@
 			"noImage": "Could not load the image",
 			"viewImage": "View image",
 			"empty": "No commands sent to this station yet"
+		},
+		"pulse": {
+			"label": "Pulse",
+			"never": "no signal yet",
+			"since": "{{since}} ago",
+			"silent": "silent for {{since}}",
+			"sec": "{{n}}s",
+			"min": "{{n}}m",
+			"hour": "{{n}}h",
+			"day": "{{n}}d"
+		},
+		"overview": {
+			"connection": "Connection",
+			"lastSeen": "Last signal {{time}}",
+			"plugins": "Plugins enabled",
+			"view": "View",
+			"cameraSub": "{{live}} live · {{off}} off · {{error}} with issues",
+			"pluginSub": "{{n}} events today",
+			"bay": "Station cameras",
+			"bayHint": "Click a tile for details"
+		},
+		"camFilter": {
+			"all": "All",
+			"live": "Live",
+			"off": "Off",
+			"error": "With issues",
+			"search": "Search camera by name or number",
+			"none": "No camera matches the filter"
+		},
+		"card": {
+			"lastSeen": "Last signal",
+			"open": "Open"
 		}
 	},
 	"aiEvent": {
@@ -940,14 +979,16 @@
 			"smoke": "Smoke detected",
 			"illegal_parking": "Illegal parking",
 			"red_light": "Red-light running",
-			"wrong_way": "Wrong-way driving"
+			"wrong_way": "Wrong-way driving",
+			"zone_intrusion": "Zone intrusion"
 		},
 		"plugin": {
 			"people_counting": "People counting",
 			"crowd_detection": "Crowd detection",
 			"smoke_fire_detection": "Smoke & fire detection",
 			"parking_violation_detection": "Parking violation",
-			"traffic_violation_detection": "Traffic violation"
+			"traffic_violation_detection": "Traffic violation",
+			"zone_intrusion": "Zone intrusion"
 		},
 		"cls": {
 			"person": "Person",
@@ -974,7 +1015,8 @@
 			"crowd": "{{n}} people · threshold {{threshold}} · for {{dur}}",
 			"parking": "{{vehicle}} · parked {{dur}}",
 			"plate": "Plate {{plate}}",
-			"frames": "{{n}} consecutive frames"
+			"frames": "{{n}} consecutive frames",
+			"dwell": "Stayed {{dur}}"
 		},
 		"field": {
 			"time": "Time",
@@ -1020,6 +1062,50 @@
 			"parked": "Parked for",
 			"plate": "License plate",
 			"noPlate": "Plate not read"
+		}
+	},
+	"aiPlugin": {
+		"notFound": "No such function",
+		"view": {
+			"list": "List",
+			"stats": "Statistics"
+		},
+		"desc": {
+			"smoke_fire_detection": "Fire and smoke alerts from AI station cameras",
+			"crowd_detection": "Crowds above the head-count threshold that persist",
+			"zone_intrusion": "People or vehicles entering a drawn restricted zone",
+			"people_counting": "People in the zone at each station report",
+			"parking_violation_detection": "Vehicles parked too long in a no-parking zone"
+		},
+		"col": {
+			"people": "People",
+			"sustained": "Lasted",
+			"frames": "Confirming frames",
+			"objects": "Objects",
+			"dwell": "Dwell time",
+			"vehicle": "Vehicle",
+			"parked": "Parked for",
+			"day": "Day"
+		},
+		"kpi": {
+			"perDay": "≈ {{n}} events / day",
+			"fire": "Fire detected",
+			"smoke": "Smoke detected",
+			"peakPeople": "Peak head count",
+			"avgPeople": "Average per report",
+			"avgSustained": "Average duration",
+			"longest": "Longest {{dur}}",
+			"avgDwell": "Average dwell",
+			"maxDwell": "Longest dwell",
+			"avgParked": "Average parking",
+			"maxParked": "Longest parking",
+			"peakHour": "Peak hour"
+		},
+		"chart": {
+			"byDay": "Daily trend",
+			"byCamera": "By camera",
+			"byHour": "By hour of day",
+			"dailyTable": "Daily breakdown"
 		}
 	}
 }

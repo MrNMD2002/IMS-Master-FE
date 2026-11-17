@@ -19,10 +19,19 @@ import { EventTypeTag, pluginLabel, ScoreText, useEventSummary } from "./event-m
 export default function EventTable({
 	filters,
 	hideStation,
+	hidePlugin,
+	hideType,
+	extraColumns = [],
 	defaultPageSize = 10,
 }: {
 	filters: Omit<AiEventQuery, "page" | "page_size">;
 	hideStation?: boolean;
+	/** Trang riêng của một plugin: bỏ cột plugin (đã rõ). */
+	hidePlugin?: boolean;
+	/** Bỏ cột loại + tóm tắt — trang plugin thay bằng các cột số liệu riêng. */
+	hideType?: boolean;
+	/** Cột riêng của plugin, chèn sau cột camera. */
+	extraColumns?: ColumnsType<AiEvent>;
 	defaultPageSize?: number;
 }) {
 	const { t } = useTranslation();
@@ -43,6 +52,26 @@ export default function EventTable({
 		refetchInterval: 30_000,
 	});
 
+	const typeColumn = (): ColumnsType<AiEvent>[number] => ({
+		title: t("aiEvent.field.type"),
+		key: "type",
+		render: (_, e) => (
+			<div className="flex min-w-[150px] flex-col items-start gap-1">
+				<EventTypeTag type={e.event_type} />
+				<span
+					className={
+						// Số người là thông tin chính của hai loại này → in đậm, to hơn.
+						e.event_type === "people_count" || e.event_type === "crowd"
+							? "max-w-[260px] truncate text-sm font-semibold"
+							: "max-w-[260px] truncate text-xs text-text-secondary"
+					}
+				>
+					{summary(e)}
+				</span>
+			</div>
+		),
+	});
+
 	const columns: ColumnsType<AiEvent> = [
 		{
 			key: "thumb",
@@ -61,25 +90,7 @@ export default function EventTable({
 				</div>
 			),
 		},
-		{
-			title: t("aiEvent.field.type"),
-			key: "type",
-			render: (_, e) => (
-				<div className="flex min-w-[150px] flex-col items-start gap-1">
-					<EventTypeTag type={e.event_type} />
-					<span
-						className={
-							// Số người là thông tin chính của hai loại này → in đậm, to hơn.
-							e.event_type === "people_count" || e.event_type === "crowd"
-								? "max-w-[260px] truncate text-sm font-semibold"
-								: "max-w-[260px] truncate text-xs text-text-secondary"
-						}
-					>
-						{summary(e)}
-					</span>
-				</div>
-			),
-		},
+		...(hideType ? [] : [typeColumn()]),
 		...(hideStation
 			? []
 			: [
@@ -102,11 +113,16 @@ export default function EventTable({
 				</div>
 			),
 		},
-		{
-			title: t("aiEvent.field.plugin"),
-			dataIndex: "plugin",
-			render: (p: string) => <span className="text-sm">{pluginLabel(t, p)}</span>,
-		},
+		...extraColumns,
+		...(hidePlugin
+			? []
+			: [
+					{
+						title: t("aiEvent.field.plugin"),
+						dataIndex: "plugin",
+						render: (p: string) => <span className="text-sm">{pluginLabel(t, p)}</span>,
+					},
+				]),
 		{
 			title: t("aiEvent.field.score"),
 			dataIndex: "score",
