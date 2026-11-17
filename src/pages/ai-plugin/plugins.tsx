@@ -2,7 +2,7 @@ import type { ColumnsType } from "antd/es/table";
 import type { TFunction } from "i18next";
 import type { AiEvent, AiEventStats } from "#/vigil";
 import { fmtDuration } from "@/utils/format";
-import { classLabel, EventTypeTag } from "../ai-event/components/event-meta";
+import { classLabel, EventTypeTag, PlateText } from "../ai-event/components/event-meta";
 
 /**
  * Trang riêng của từng plugin Vigil (theo cách hệ tham khảo chia menu theo chức năng: mỗi chức
@@ -212,6 +212,59 @@ export const PLUGIN_PAGES: PluginPage[] = [
 				tone: "error",
 			},
 		],
+	},
+	{
+		name: "traffic_violation_detection",
+		slug: "traffic-violation",
+		group: "traffic",
+		icon: "mdi:traffic-light",
+		types: ["red_light", "wrong_way"],
+		columns: (t) => [
+			{
+				title: t("aiEvent.field.type"),
+				key: "type",
+				render: (_, e) => <EventTypeTag type={e.event_type} />,
+			},
+			{
+				title: t("aiPlugin.col.plate"),
+				key: "plate",
+				render: (_, e) => {
+					const plate = str(e.extra?.plate_text);
+					return plate ? (
+						<PlateText plate={plate} />
+					) : (
+						<span className="text-xs text-text-disabled">{t("aiPlugin.col.noPlate")}</span>
+					);
+				},
+			},
+			{
+				title: t("aiPlugin.col.vehicle"),
+				key: "vehicle",
+				render: (_, e) => (
+					<span className="text-sm">{classLabel(t, str(e.extra?.vehicle_class) ?? e.objects[0]?.class ?? "—")}</span>
+				),
+			},
+			{
+				title: t("aiPlugin.col.detail"),
+				key: "detail",
+				render: (_, e) => {
+					const red = num(e.extra?.red_for_secs);
+					const angle = num(e.extra?.angle_deg);
+					if (e.event_type === "red_light" && red != null)
+						return <span className="text-sm">{t("aiPlugin.col.redFor", { s: red })}</span>;
+					if (e.event_type === "wrong_way" && angle != null)
+						return <span className="text-sm">{t("aiPlugin.col.angle", { deg: angle })}</span>;
+					return dash;
+				},
+			},
+		],
+		kpis: (s, t) => {
+			const by = (k: string) => (s ? (s.by_type.find((x) => x.event_type === k)?.total ?? 0) : undefined);
+			return [
+				{ title: t("aiPlugin.kpi.redLight"), value: by("red_light"), icon: "mdi:traffic-light", tone: "error" },
+				{ title: t("aiPlugin.kpi.wrongWay"), value: by("wrong_way"), icon: "mdi:car-arrow-left", tone: "warning" },
+			];
+		},
 	},
 ];
 
