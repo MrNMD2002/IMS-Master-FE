@@ -13,6 +13,7 @@ import DispatchDialog from "@/components/cmc/dispatch-dialog";
 import EmptyState from "@/components/cmc/empty-state";
 import IncidentFormDrawer from "@/components/cmc/incident-form-drawer";
 import BaseMap from "@/components/cmc/map/base-map";
+import CameraMarkers, { useMapCameras } from "@/components/cmc/map/camera-markers";
 import MapControls from "@/components/cmc/map/map-controls";
 import {
 	hqIcon,
@@ -26,7 +27,7 @@ import {
 import OrgUnitFilter from "@/components/cmc/org-unit-filter";
 import { IncidentStatusBadge } from "@/components/cmc/status";
 import { Icon } from "@/components/icon";
-import { INCIDENT_READ_GATE, P } from "@/constants/permission";
+import { AI_STATION_READ_GATE, INCIDENT_READ_GATE, P } from "@/constants/permission";
 import { useDeviceTypes } from "@/hooks/use-cmc-options";
 import { type LiveVehicle, useLiveVehicles } from "@/hooks/use-live-vehicles";
 import { useCan } from "@/store/userStore";
@@ -65,6 +66,7 @@ export default function MonitoringPage() {
 	const [search, setSearch] = useState("");
 	const [selectedId, setSelectedId] = useState<number | null>(null);
 	const [showLabels, setShowLabels] = useState(true);
+	const [showCameras, setShowCameras] = useState(true);
 
 	const [picking, setPicking] = useState(params.get("create") === "1");
 	const [pickPoint, setPickPoint] = useState<{ lat: number; lng: number } | null>(null);
@@ -84,6 +86,10 @@ export default function MonitoringPage() {
 
 	const canIncident = can(...INCIDENT_READ_GATE);
 	const canManage = can(P.INCIDENT_MANAGE);
+	const canCamera = can(...AI_STATION_READ_GATE);
+	// Camera đã đặt vị trí (theo tổ chức đang lọc) — bấm ghim để xem trực tiếp.
+	const cameras = useMapCameras(tenantId, canCamera);
+	const shownCameras = canCamera && showCameras ? cameras : [];
 	const { types } = useDeviceTypes();
 
 	const { vehicles, dataUpdatedAt, refetch } = useLiveVehicles({
@@ -158,10 +164,11 @@ export default function MonitoringPage() {
 	// Lần đầu: có trụ sở → ghim vào trụ sở; chưa khai báo trụ sở → khung ôm hết xe.
 	const fitted = useRef(false);
 	const fitAll = () => {
-		const pts = [...vehicles.map((v) => [v.latitude, v.longitude]), ...incidents.map((i) => [i.lat, i.lng])] as [
-			number,
-			number,
-		][];
+		const pts = [
+			...vehicles.map((v) => [v.latitude, v.longitude]),
+			...incidents.map((i) => [i.lat, i.lng]),
+			...shownCameras.map((c) => [c.latitude, c.longitude]),
+		] as [number, number][];
 		if (pts.length && mapRef.current) mapRef.current.fitBounds(L.latLngBounds(pts), { padding: [60, 60], maxZoom: 15 });
 	};
 	// biome-ignore lint/correctness/useExhaustiveDependencies: chỉ chạy tới khi căn xong lần đầu
@@ -275,6 +282,8 @@ export default function MonitoringPage() {
 						</Popup>
 					</Marker>
 				))}
+
+				<CameraMarkers cameras={shownCameras} />
 
 				{pickPoint && formOpen && <Marker position={[pickPoint.lat, pickPoint.lng]} icon={pickIcon()} />}
 
@@ -461,6 +470,12 @@ export default function MonitoringPage() {
 								<input type="checkbox" checked={showLabels} onChange={(e) => setShowLabels(e.target.checked)} />
 								{t("monitor.showLabels")}
 							</label>
+							{canCamera && (
+								<label className="flex items-center gap-2 text-xs text-text-secondary">
+									<input type="checkbox" checked={showCameras} onChange={(e) => setShowCameras(e.target.checked)} />
+									{t("monitor.showCameras", { count: cameras.length })}
+								</label>
+							)}
 						</div>
 						<div className="flex-1 overflow-y-auto p-2">
 							{filtered.length === 0 ? (

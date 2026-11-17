@@ -141,12 +141,12 @@ export function CameraFormModal({ camera, onClose }: { camera: Camera | null | u
 				<Form.Item label={t("aiCamera.form.point")} extra={t("aiCamera.form.pointHint")}>
 					<div className="flex flex-col gap-2">
 						<AddressSearch onSelect={(r) => pick(r.lat, r.lng)} />
-						<LocationPicker lat={lat} lng={lng} onChange={pick} height={220} />
-						{lat != null && lng != null && (
-							<div className="flex items-center justify-between text-xs text-text-secondary">
-								<span className="font-mono">
-									{lat.toFixed(6)}, {lng.toFixed(6)}
-								</span>
+						<LocationPicker
+							lat={lat}
+							lng={lng}
+							onChange={pick}
+							height={220}
+							extra={
 								<Button
 									type="button"
 									variant="link"
@@ -156,8 +156,8 @@ export function CameraFormModal({ camera, onClose }: { camera: Camera | null | u
 								>
 									{t("aiCamera.form.clearPoint")}
 								</Button>
-							</div>
-						)}
+							}
+						/>
 					</div>
 				</Form.Item>
 				<Form.Item name="latitude" hidden>
