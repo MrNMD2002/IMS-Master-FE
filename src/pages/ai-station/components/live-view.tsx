@@ -337,7 +337,13 @@ export function LiveViewModal({
 								<span className="max-w-md px-4 text-sm">
 									{status === "error" ? errorText : t("aiStation.live.ended")}
 								</span>
-								<Button size="sm" variant="secondary" onClick={() => setAttempt((a) => a + 1)}>
+								{/* Nền video luôn đen: nút viền trắng, không theo màu chủ đề (bg-secondary sáng + chữ trắng thừa hưởng = không thấy chữ). */}
+								<Button
+									size="sm"
+									variant="outline"
+									className="border-white/60 bg-white/10 text-white shadow-none hover:bg-white/25 hover:text-white"
+									onClick={() => setAttempt((a) => a + 1)}
+								>
 									<Icon icon="solar:restart-linear" size={16} />
 									{t("aiStation.live.retry")}
 								</Button>
