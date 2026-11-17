@@ -6,12 +6,21 @@
 
 export type AccelKind = "cuda" | "tensorrt" | "openvino" | "directml" | "cpu";
 export type CameraState = "live" | "connecting" | "error" | "off";
-export type AiEventType = "people_count" | "crowd" | "fire" | "smoke" | "illegal_parking" | "red_light" | "wrong_way";
+export type AiEventType =
+	| "people_count"
+	| "crowd"
+	| "fire"
+	| "smoke"
+	| "zone_intrusion"
+	| "illegal_parking"
+	| "red_light"
+	| "wrong_way";
 export const AI_EVENT_TYPES: AiEventType[] = [
 	"people_count",
 	"crowd",
 	"fire",
 	"smoke",
+	"zone_intrusion",
 	"illegal_parking",
 	"red_light",
 	"wrong_way",
@@ -166,6 +175,22 @@ export interface AiEventStats {
 	by_station: { station_id: string; station_name: string; total: number }[];
 	total: number;
 	avg_score: number | null;
+	/** Top 20 camera nhiều sự kiện nhất. */
+	by_camera?: {
+		station_id: string;
+		station_name: string | null;
+		camera_id: number;
+		camera_name: string | null;
+		total: number;
+	}[];
+	/** 24 ô theo giờ Việt Nam. */
+	by_hour?: number[];
+	/** Từ `extra.count` (đếm người, đám đông). */
+	peak_count?: number | null;
+	avg_count?: number | null;
+	/** Từ `extra.sustained_secs` / `parked_secs` / `dwell_seconds`. */
+	avg_duration_s?: number | null;
+	max_duration_s?: number | null;
 }
 
 /** Lệnh CMC gửi xuống trạm (`POST /ai-stations/{id}/commands`). */

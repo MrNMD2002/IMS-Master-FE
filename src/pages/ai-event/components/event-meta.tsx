@@ -17,6 +17,7 @@ export const KNOWN_PLUGINS = [
 	"people_counting",
 	"crowd_detection",
 	"smoke_fire_detection",
+	"zone_intrusion",
 	"parking_violation_detection",
 	"traffic_violation_detection",
 ];
@@ -43,6 +44,11 @@ export const EVENT_META: Record<string, { color: string; icon: string; tone: str
 		color: "#B7791F",
 		icon: "solar:cloud-bold-duotone",
 		tone: "bg-warning/20 text-warning-dark dark:text-warning",
+	},
+	zone_intrusion: {
+		color: "#C2410C",
+		icon: "solar:shield-warning-bold-duotone",
+		tone: "bg-[#C2410C]/15 text-[#C2410C] dark:text-[#FB923C]",
 	},
 	illegal_parking: {
 		color: "#0090AE",
@@ -151,6 +157,10 @@ export function useEventSummary() {
 			case "red_light":
 			case "wrong_way":
 				return str(x.plate_text) ? <PlateText plate={str(x.plate_text) as string} /> : t("aiEvent.highlight.noPlate");
+			case "zone_intrusion":
+				return num(x.dwell_seconds) != null
+					? t("aiEvent.summary.dwell", { dur: fmtDuration(num(x.dwell_seconds), t) })
+					: null;
 			case "fire":
 			case "smoke":
 				return num(x.frames) != null ? t("aiEvent.summary.frames", { n: num(x.frames) }) : null;
