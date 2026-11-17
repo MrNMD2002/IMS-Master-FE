@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { AiStation, StationCamera } from "#/vigil";
 import aiStationService from "@/api/services/aiStationService";
+import cameraService from "@/api/services/cameraService";
 import { Icon } from "@/components/icon";
 import { GLOBAL_CONFIG } from "@/global-config";
 import { Button } from "@/ui/button";
@@ -56,8 +57,11 @@ function wsUrl(path: string, ticket: string): string {
 	return `${abs.replace(/^http/, "ws")}${path}?ticket=${encodeURIComponent(ticket)}`;
 }
 
-/** Nối luồng, nạp vào MSE, giữ trễ thấp. `attempt` đổi = nối lại. */
-function useLivePlayer(stationId: string, cameraId: number, active: boolean, attempt: number) {
+/**
+ * Nối luồng, nạp vào MSE, giữ trễ thấp. `attempt` đổi = nối lại.
+ * `stationId` = null: máy chủ CMC tự kéo RTSP, `cameraId` là mã camera trên CMC.
+ */
+function useLivePlayer(stationId: string | null, cameraId: number, active: boolean, attempt: number) {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const boxesRef = useRef<{ at: number; boxes: LiveBox[] }>({ at: 0, boxes: [] });
 	const [status, setStatus] = useState<Status>("connecting");
@@ -149,8 +153,7 @@ function useLivePlayer(stationId: string, cameraId: number, active: boolean, att
 			);
 		};
 
-		aiStationService
-			.liveTicket(stationId, cameraId)
+		(stationId ? aiStationService.liveTicket(stationId, cameraId) : cameraService.liveTicket(cameraId))
 			.then(({ ticket, ws_path }) => {
 				if (closed) return;
 				ws = new WebSocket(wsUrl(ws_path, ticket));
@@ -275,7 +278,8 @@ export function LiveViewModal({
 	open,
 	onClose,
 }: {
-	station: Pick<AiStation, "id">;
+	/** null = máy chủ CMC tự kéo RTSP; khi đó `camera.id` là mã camera trên CMC. */
+	station: Pick<AiStation, "id"> | null;
 	camera: Pick<StationCamera, "id" | "name">;
 	open: boolean;
 	onClose: () => void;
@@ -285,7 +289,12 @@ export function LiveViewModal({
 	const [showBoxes, setShowBoxes] = useState(true);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const wrapRef = useRef<HTMLDivElement>(null);
-	const { videoRef, boxesRef, status, message, info, lag } = useLivePlayer(station.id, camera.id, open, attempt);
+	const { videoRef, boxesRef, status, message, info, lag } = useLivePlayer(
+		station?.id ?? null,
+		camera.id,
+		open,
+		attempt,
+	);
 	const label = useCallback((c: string) => classLabel(t, c), [t]);
 	useOverlay(videoRef, canvasRef, boxesRef, showBoxes, label);
 
@@ -314,6 +323,9 @@ export function LiveViewModal({
 						/>
 					</span>
 					{t("aiStation.live.title", { name: camera.name })}
+					{!station && (
+						<span className="text-xs font-normal text-text-secondary">· {t("aiStation.live.viaServer")}</span>
+					)}
 				</span>
 			}
 		>
