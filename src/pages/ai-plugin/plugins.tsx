@@ -1,6 +1,7 @@
 import type { ColumnsType } from "antd/es/table";
 import type { TFunction } from "i18next";
 import type { AiEvent, AiEventStats } from "#/vigil";
+import { isAiPluginShown } from "@/constants/ai-plugins";
 import { fmtDuration } from "@/utils/format";
 import { classLabel, EventTypeTag, PlateText } from "../ai-event/components/event-meta";
 import PlateCrop, { plateInfo } from "../ai-event/components/plate-crop";
@@ -60,7 +61,7 @@ const durationCol = (t: TFunction, key: string, title: string): ColumnsType<AiEv
 
 const durationText = (s: number | null | undefined, t: TFunction) => (s == null ? "—" : fmtDuration(s, t));
 
-export const PLUGIN_PAGES: PluginPage[] = [
+const ALL_PLUGIN_PAGES: PluginPage[] = [
 	{
 		name: "smoke_fire_detection",
 		slug: "smoke-fire",
@@ -267,5 +268,11 @@ export const PLUGIN_PAGES: PluginPage[] = [
 		},
 	},
 ];
+
+/** Trang plugin đang mở trên CMC (xem `ENABLED_AI_PLUGINS`). */
+export const PLUGIN_PAGES = ALL_PLUGIN_PAGES.filter((p) => isAiPluginShown(p.name));
+
+/** Loại sự kiện của các plugin đang mở — cho bộ lọc loại sự kiện. */
+export const SHOWN_EVENT_TYPES = PLUGIN_PAGES.flatMap((p) => p.types);
 
 export const pluginBySlug = (slug?: string) => PLUGIN_PAGES.find((p) => p.slug === slug);

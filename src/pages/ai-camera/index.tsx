@@ -12,6 +12,7 @@ import OrgUnitFilter from "@/components/cmc/org-unit-filter";
 import PageHeader from "@/components/cmc/page-header";
 import StatCard from "@/components/cmc/stat-card";
 import { Icon } from "@/components/icon";
+import { isAiPluginShown } from "@/constants/ai-plugins";
 import { AI_STATION_MANAGE } from "@/constants/permission";
 import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
@@ -129,7 +130,11 @@ export default function AiCameraPage() {
 											{l.remote_id === null && ` · ${t("aiCamera.link.pending")}`}
 										</div>
 										{l.resolution && <div>{`${l.resolution}${l.fps ? ` · ${l.fps} fps` : ""}`}</div>}
-										<div>{l.plugins.length ? l.plugins.join(", ") : t("aiStation.cam.noPlugin")}</div>
+										<div>
+											{l.plugins.some(isAiPluginShown)
+												? l.plugins.filter(isAiPluginShown).join(", ")
+												: t("aiStation.cam.noPlugin")}
+										</div>
 									</div>
 								}
 							>
@@ -141,7 +146,9 @@ export default function AiCameraPage() {
 										)}
 									/>
 									{l.station_name ?? l.station_id}
-									{l.plugins.length > 0 && <span className="text-text-secondary">· {l.plugins.length}</span>}
+									{l.plugins.some(isAiPluginShown) && (
+										<span className="text-text-secondary">· {l.plugins.filter(isAiPluginShown).length}</span>
+									)}
 								</Tag>
 							</Tooltip>
 						))}
