@@ -798,7 +798,8 @@
 			"alarms": "Alarms",
 			"eventsToday": "Events today",
 			"hostname": "Hostname",
-			"configRevision": "Config revision"
+			"configRevision": "Config revision",
+			"pairedAt": "Paired at"
 		},
 		"accel": {
 			"cuda": "NVIDIA CUDA",
@@ -821,7 +822,9 @@
 			"nameRequired": "Enter a station name",
 			"namePlaceholder": "e.g. Warehouse A — Dong Anh",
 			"locationPlaceholder": "Address or description of where the box sits",
-			"tenantHint": "Leave empty to use your own unit."
+			"tenantHint": "Users of this unit (and parent units) can see the station and its AI events. Empty = your unit.",
+			"nameHint": "Optional — the station takes the name set in Vigil when pairing.",
+			"tenantLabel": "Managing unit"
 		},
 		"token": {
 			"title": "Station pairing code",
@@ -831,12 +834,15 @@
 			"copyFailed": "Copy failed, select the code and copy it manually",
 			"copyServer": "copy address",
 			"serverCopied": "Server address copied",
-			"once": "This code is shown ONCE. Copy it into Vigil now; if lost, issue a new one from the station page.",
-			"stepsTitle": "Enter the code in Vigil (3 steps)",
-			"step1": "On the camera box, open Vigil → Settings → CMC.",
-			"step2": "Enter server address {{server}} and paste the pairing code above.",
-			"step3": "Click “Connect”. The station turns Online here within seconds.",
-			"done": "Saved it, close"
+			"once": "The pairing code is shown ONCE. Copy it into Vigil now; if lost, issue a new code from the station page (the station ID stays).",
+			"stepsTitle": "Enter in Vigil (3 steps)",
+			"step1": "On the camera box, open Vigil → Settings → CMC connection and choose CMC mode.",
+			"step2": "Fill in the CMC address, station ID and pairing code above (each row has a Copy button).",
+			"step3": "Name the station and click “Save and pair”. It turns Online here within seconds, using the name set in Vigil.",
+			"done": "Saved it, close",
+			"code": "Pairing code",
+			"server": "CMC address",
+			"idCopied": "Station ID copied"
 		},
 		"created": "Station created",
 		"updated": "Station updated",
@@ -881,7 +887,8 @@
 			"model": "Model",
 			"eventTypes": "Event types",
 			"usedBy": "Cameras using"
-		}
+		},
+		"notPaired": "Not paired"
 	},
 	"aiEvent": {
 		"description": "Alerts raised by AI stations from camera feeds",
