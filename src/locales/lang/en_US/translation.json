@@ -54,7 +54,8 @@
 			"profile": "My profile",
 			"aiStation": "AI stations",
 			"aiStationList": "Stations",
-			"aiEvent": "AI events"
+			"aiEvent": "AI events",
+			"aiCamera": "Cameras"
 		},
 		"settings": {
 			"title": "Appearance",
@@ -1155,6 +1156,81 @@
 			"byCamera": "By camera",
 			"byHour": "By hour of day",
 			"dailyTable": "Daily breakdown"
+		}
+	},
+	"aiCamera": {
+		"description": "Your unit's cameras: add RTSP cameras and assign them to one or more AI stations. Cameras added on a Vigil station show up here automatically.",
+		"create": "Add camera",
+		"searchPlaceholder": "Search by name, location…",
+		"filterStation": "Filter by station",
+		"notAssigned": "Not assigned",
+		"empty": "No cameras yet — add one or pair an AI station to import its cameras",
+		"emptyFiltered": "No cameras match the filters",
+		"created": "Camera added",
+		"updated": "Camera saved",
+		"deleted": "Camera deleted",
+		"unassigned": "Camera removed from station",
+		"deleteConfirm": "Delete camera \"{{name}}\"?",
+		"deleteHint": "It will be removed from {{n}} station(s) (stations must be online).",
+		"liveNeedsStation": "Assign to an online station to watch live",
+		"field": {
+			"name": "Camera",
+			"source": "RTSP source",
+			"location": "Location",
+			"latitude": "Latitude",
+			"longitude": "Longitude",
+			"note": "Note",
+			"tenant": "Unit",
+			"origin": "Origin",
+			"stations": "Processing AI stations"
+		},
+		"origin": {
+			"cmc": "Added on CMC",
+			"station": "From station"
+		},
+		"originHint": {
+			"cmc": "Added on the CMC web",
+			"station": "Added on a Vigil station, imported automatically"
+		},
+		"link": {
+			"online": "Station online",
+			"offline": "Station offline",
+			"pending": "waiting for station"
+		},
+		"summary": {
+			"total": "Cameras",
+			"assigned": "Assigned",
+			"running": "Running AI",
+			"error": "Signal errors"
+		},
+		"form": {
+			"createTitle": "Add camera",
+			"editTitle": "Edit camera",
+			"createSubmit": "Add",
+			"nameRequired": "Enter a camera name",
+			"namePlaceholder": "e.g. Main gate",
+			"sourceRequired": "Enter the RTSP address",
+			"sourceInvalid": "Must start with rtsp:// (or http(s)://)",
+			"sourceHint": "Address the AI station pulls from — the station must be able to reach the camera.",
+			"sourcePushHint": "Name / source changes are pushed to every station processing this camera (stations must be online).",
+			"locationPlaceholder": "e.g. North gate, building A",
+			"tenantHint": "Leave empty = your unit."
+		},
+		"assign": {
+			"action": "Assign to AI station",
+			"title": "Assign \"{{name}}\" to an AI station",
+			"hint": "The station adds this camera and runs the selected AI functions. A camera can be assigned to several stations.",
+			"station": "Station",
+			"stationPlaceholder": "Pick an online station",
+			"already": "assigned",
+			"offline": "offline",
+			"cams": "{{n}} cameras",
+			"plugins": "AI functions on this camera",
+			"pluginsHint": "Tune parameters and zones on the station page after assigning.",
+			"noPlugins": "The station has no plugins",
+			"enabled": "Enable camera now",
+			"submit": "Assign",
+			"done": "Camera assigned to station"
 		}
 	}
 }
