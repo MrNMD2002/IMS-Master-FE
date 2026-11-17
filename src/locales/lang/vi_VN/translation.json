@@ -54,7 +54,8 @@
 			"profile": "Hồ sơ cá nhân",
 			"aiStation": "Trạm AI",
 			"aiStationList": "Danh sách trạm",
-			"aiEvent": "Sự kiện AI"
+			"aiEvent": "Sự kiện AI",
+			"aiCamera": "Camera"
 		},
 		"settings": {
 			"title": "Tuỳ chỉnh giao diện",
@@ -1155,6 +1156,81 @@
 			"byCamera": "Theo camera",
 			"byHour": "Theo giờ trong ngày",
 			"dailyTable": "Chi tiết theo ngày"
+		}
+	},
+	"aiCamera": {
+		"description": "Camera của đơn vị: thêm camera RTSP rồi gán cho một hay nhiều trạm AI xử lý. Camera thêm trên trạm Vigil tự vào danh mục.",
+		"create": "Thêm camera",
+		"searchPlaceholder": "Tìm theo tên, vị trí…",
+		"filterStation": "Lọc theo trạm",
+		"notAssigned": "Chưa gán trạm",
+		"empty": "Chưa có camera nào — thêm camera hoặc ghép nối trạm AI để tự nhận camera",
+		"emptyFiltered": "Không có camera khớp bộ lọc",
+		"created": "Đã thêm camera",
+		"updated": "Đã lưu camera",
+		"deleted": "Đã xoá camera",
+		"unassigned": "Đã gỡ camera khỏi trạm",
+		"deleteConfirm": "Xoá camera \"{{name}}\"?",
+		"deleteHint": "Camera sẽ bị gỡ khỏi {{n}} trạm đang xử lý (trạm phải đang kết nối).",
+		"liveNeedsStation": "Cần gán cho trạm đang kết nối để xem trực tiếp",
+		"field": {
+			"name": "Camera",
+			"source": "Nguồn RTSP",
+			"location": "Vị trí",
+			"latitude": "Vĩ độ",
+			"longitude": "Kinh độ",
+			"note": "Ghi chú",
+			"tenant": "Đơn vị",
+			"origin": "Nguồn gốc",
+			"stations": "Trạm AI xử lý"
+		},
+		"origin": {
+			"cmc": "Thêm trên CMC",
+			"station": "Từ trạm"
+		},
+		"originHint": {
+			"cmc": "Camera thêm trên web CMC",
+			"station": "Camera thêm trên trạm Vigil, CMC tự nhận vào danh mục"
+		},
+		"link": {
+			"online": "Trạm đang kết nối",
+			"offline": "Trạm mất kết nối",
+			"pending": "đang chờ trạm nhận"
+		},
+		"summary": {
+			"total": "Tổng camera",
+			"assigned": "Đã gán trạm",
+			"running": "Đang chạy AI",
+			"error": "Lỗi tín hiệu"
+		},
+		"form": {
+			"createTitle": "Thêm camera",
+			"editTitle": "Sửa camera",
+			"createSubmit": "Thêm",
+			"nameRequired": "Nhập tên camera",
+			"namePlaceholder": "VD: Cổng chính",
+			"sourceRequired": "Nhập địa chỉ RTSP",
+			"sourceInvalid": "Địa chỉ phải bắt đầu bằng rtsp:// (hoặc http(s)://)",
+			"sourceHint": "Địa chỉ trạm AI dùng để kéo luồng — trạm phải truy cập được camera này.",
+			"sourcePushHint": "Đổi tên / nguồn sẽ được đẩy xuống mọi trạm đang xử lý camera (trạm phải đang kết nối).",
+			"locationPlaceholder": "VD: Cổng Bắc, toà A",
+			"tenantHint": "Để trống = đơn vị của bạn."
+		},
+		"assign": {
+			"action": "Gán cho trạm AI",
+			"title": "Gán \"{{name}}\" cho trạm AI",
+			"hint": "Trạm sẽ thêm camera này và chạy các chức năng AI đã chọn. Một camera gán được cho nhiều trạm.",
+			"station": "Trạm xử lý",
+			"stationPlaceholder": "Chọn trạm đang kết nối",
+			"already": "đã gán",
+			"offline": "mất kết nối",
+			"cams": "{{n}} camera",
+			"plugins": "Chức năng AI chạy trên camera",
+			"pluginsHint": "Tham số, vùng (zone) chỉnh tiếp ở trang trạm sau khi gán.",
+			"noPlugins": "Trạm chưa cài plugin nào",
+			"enabled": "Bật camera ngay",
+			"submit": "Gán",
+			"done": "Đã gán camera cho trạm"
 		}
 	}
 }

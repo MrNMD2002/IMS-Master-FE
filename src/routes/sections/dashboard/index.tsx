@@ -13,6 +13,7 @@ const pages: RouteObject[] = [
 	{ path: "ai", element: <Navigate to="/ai/stations" replace /> },
 	{ path: "ai/stations", element: Component("/pages/ai-station") },
 	{ path: "ai/stations/:id", element: Component("/pages/ai-station/detail") },
+	{ path: "ai/cameras", element: Component("/pages/ai-camera") },
 	{ path: "ai/events", element: Component("/pages/ai-event") },
 	{ path: "ai/p/:slug", element: Component("/pages/ai-plugin") },
 	{ path: "ai/p/:slug/stats", element: Component("/pages/ai-plugin/stats") },

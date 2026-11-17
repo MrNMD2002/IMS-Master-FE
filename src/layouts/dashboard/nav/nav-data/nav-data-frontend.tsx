@@ -46,6 +46,12 @@ export const frontendNavData: NavProps["data"] = [
 				auth: AI_STATION_READ_GATE,
 			},
 			{
+				title: "sys.nav.aiCamera",
+				path: "/ai/cameras",
+				icon: <Icon icon="solar:videocamera-record-bold-duotone" size="24" />,
+				auth: AI_STATION_READ_GATE,
+			},
+			{
 				title: "sys.nav.aiEvent",
 				path: "/ai/events",
 				icon: <Icon icon="solar:bell-bing-bold-duotone" size="24" />,
