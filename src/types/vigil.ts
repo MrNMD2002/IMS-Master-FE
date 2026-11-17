@@ -167,3 +167,24 @@ export interface AiEventStats {
 	total: number;
 	avg_score: number | null;
 }
+
+/** Lệnh CMC gửi xuống trạm (`POST /ai-stations/{id}/commands`). */
+export type AiCommandName = "camera_enable" | "camera_disable" | "camera_restart" | "snapshot";
+
+export interface AiCommand {
+	id: string;
+	station_id: string;
+	cmd: AiCommandName;
+	camera_id: number | null;
+	camera_name: string | null;
+	args: Record<string, unknown>;
+	/** `pending` đang chờ trạm · `timeout` trạm chưa trả lời kịp (kết quả về muộn vẫn cập nhật). */
+	status: "pending" | "ok" | "error" | "timeout";
+	error: string | null;
+	result: Record<string, unknown>;
+	/** Ảnh chụp (lệnh `snapshot`) — đường dẫn API, tải kèm token. */
+	image_url: string | null;
+	created_by_name: string | null;
+	created_at: string;
+	acked_at: string | null;
+}

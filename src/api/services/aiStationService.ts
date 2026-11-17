@@ -7,6 +7,8 @@
 import type { AxiosResponse } from "axios";
 import type { Paged, PageQuery } from "#/api";
 import type {
+	AiCommand,
+	AiCommandName,
 	AiEvent,
 	AiEventPage,
 	AiEventQuery,
@@ -39,6 +41,10 @@ const real = {
 	rotateToken: (id: string) =>
 		apiClient.post<StationTokenRes>({ url: `/ai-stations/${id}/rotate-token` }).then(splitToken),
 	deleteStation: (id: string) => apiClient.request<void>({ url: `/ai-stations/${id}`, method: "DELETE" }),
+	/** Gửi lệnh và chờ trạm trả lời (tối đa ~20 s); lỗi 409 = trạm mất kết nối. */
+	sendCommand: (id: string, data: { cmd: AiCommandName; camera_id?: number }) =>
+		apiClient.post<AiCommand>({ url: `/ai-stations/${id}/commands`, data, timeout: 30_000 }),
+	listCommands: (id: string) => apiClient.get<AiCommand[]>({ url: `/ai-stations/${id}/commands` }),
 	listEvents: (params: AiEventQuery) => apiClient.get<AiEventPage>({ url: "/ai-events", params }),
 	getEvent: (eventId: string) => apiClient.get<AiEvent>({ url: `/ai-events/${eventId}` }),
 	eventStats: (params: Omit<AiEventQuery, "page" | "page_size">) =>
