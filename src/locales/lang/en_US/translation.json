@@ -1230,7 +1230,19 @@
 			"noPlugins": "The station has no plugins",
 			"enabled": "Enable camera now",
 			"submit": "Assign",
-			"done": "Camera assigned to station"
+			"done": "Camera assigned to station",
+			"unpaired": "not paired"
+		},
+		"stationsModal": {
+			"action": "Processing stations",
+			"title": "Processing stations · {{name}}",
+			"current": "Running on {{n}} station(s)",
+			"none": "Not assigned to any station yet — assign one below.",
+			"unassign": "Remove from station",
+			"unassignTitle": "Remove the camera from \"{{station}}\"?",
+			"unassignHint": "The station deletes this camera and stops all AI on it. The camera stays in the catalog and can be assigned again anytime.",
+			"offlineHint": "Station is offline — wait until it reconnects",
+			"add": "Assign to another station"
 		}
 	}
 }
