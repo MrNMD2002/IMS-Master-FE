@@ -1024,7 +1024,8 @@
 			"max_score": "Điểm cao nhất",
 			"vehicle_class": "Loại xe",
 			"parked_secs": "Thời gian đỗ",
-			"plate_text": "Biển số"
+			"plate_text": "Biển số",
+			"plate": "Biển số"
 		},
 		"summary": {
 			"people": "{{count}} người",
@@ -1078,6 +1079,14 @@
 			"parked": "Thời gian đỗ",
 			"plate": "Biển số xe",
 			"noPlate": "Chưa đọc được biển số"
+		},
+		"plate": {
+			"lines1": "Biển 1 dòng",
+			"lines2": "Biển 2 dòng",
+			"score": "tin cậy {{score}}",
+			"noText": "Trạm chưa đọc được chữ — xem trên ảnh",
+			"textConf": "đọc chắc {{score}}",
+			"lowConf": "đọc chưa chắc ({{score}}) — đối chiếu ảnh"
 		}
 	},
 	"aiPlugin": {
