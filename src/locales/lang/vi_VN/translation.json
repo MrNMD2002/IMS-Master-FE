@@ -142,7 +142,7 @@
 		"mobilizedCount": "{{count}} xe đang làm nhiệm vụ",
 		"processing": "Sự vụ đang xử lý",
 		"pendingApproval": "Chờ xét duyệt",
-		"liveMap": "Bản đồ phương tiện",
+		"liveMap": "Bản đồ phương tiện & camera",
 		"openMap": "Mở bản đồ",
 		"incidentByStatus": "Sự vụ theo trạng thái",
 		"totalIncidents": "Tổng",
@@ -235,7 +235,8 @@
 				"source": "2024"
 			}
 		],
-		"nextQuote": "Câu khác"
+		"nextQuote": "Câu khác",
+		"cameraCount": "{{count}} camera"
 	},
 	"monitor": {
 		"vehicles": "Phương tiện",
@@ -1214,7 +1215,10 @@
 			"sourceHint": "Địa chỉ trạm AI dùng để kéo luồng — trạm phải truy cập được camera này.",
 			"sourcePushHint": "Đổi tên / nguồn sẽ được đẩy xuống mọi trạm đang xử lý camera (trạm phải đang kết nối).",
 			"locationPlaceholder": "VD: Cổng Bắc, toà A",
-			"tenantHint": "Để trống = đơn vị của bạn."
+			"tenantHint": "Để trống = đơn vị của bạn.",
+			"point": "Vị trí trên bản đồ",
+			"pointHint": "Tìm địa chỉ hoặc bấm lên bản đồ để đặt camera; kéo ghim để chỉnh. Camera có vị trí sẽ hiện trên bản đồ Tổng quan.",
+			"clearPoint": "Bỏ vị trí"
 		},
 		"assign": {
 			"action": "Gán cho trạm AI",
