@@ -866,7 +866,11 @@
 			"cameras": "Cameras ({{n}})",
 			"plugins": "Plugins ({{n}})",
 			"events": "Events",
-			"commands": "Commands"
+			"commands": "Commands",
+			"overview": "Overview",
+			"camerasPlain": "Cameras",
+			"pluginsPlain": "Plugins",
+			"system": "System"
 		},
 		"camState": {
 			"live": "Live",
@@ -921,6 +925,38 @@
 			"noImage": "Could not load the image",
 			"viewImage": "View image",
 			"empty": "No commands sent to this station yet"
+		},
+		"pulse": {
+			"label": "Pulse",
+			"never": "no signal yet",
+			"since": "{{since}} ago",
+			"silent": "silent for {{since}}",
+			"sec": "{{n}}s",
+			"min": "{{n}}m",
+			"hour": "{{n}}h",
+			"day": "{{n}}d"
+		},
+		"overview": {
+			"connection": "Connection",
+			"lastSeen": "Last signal {{time}}",
+			"plugins": "Plugins enabled",
+			"view": "View",
+			"cameraSub": "{{live}} live · {{off}} off · {{error}} with issues",
+			"pluginSub": "{{n}} events today",
+			"bay": "Station cameras",
+			"bayHint": "Click a tile for details"
+		},
+		"camFilter": {
+			"all": "All",
+			"live": "Live",
+			"off": "Off",
+			"error": "With issues",
+			"search": "Search camera by name or number",
+			"none": "No camera matches the filter"
+		},
+		"card": {
+			"lastSeen": "Last signal",
+			"open": "Open"
 		}
 	},
 	"aiEvent": {
