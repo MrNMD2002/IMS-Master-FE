@@ -7,6 +7,7 @@ import { useNavigate } from "react-router";
 import type { AiStation, AiStationWithToken } from "#/vigil";
 import aiStationService from "@/api/services/aiStationService";
 import EmptyState from "@/components/cmc/empty-state";
+import OrgUnitFilter from "@/components/cmc/org-unit-filter";
 import PageHeader from "@/components/cmc/page-header";
 import StatCard from "@/components/cmc/stat-card";
 import { Icon } from "@/components/icon";
@@ -48,6 +49,8 @@ export default function AiStationListPage() {
 
 	const [search, setSearch] = useState("");
 	const [keyword, setKeyword] = useState("");
+	/** Lọc theo tổ chức / đơn vị (API lọc cả nhánh con). */
+	const [tenantId, setTenantId] = useState<number | undefined>();
 	const [view, setViewState] = useState<View>(readView);
 	const [creating, setCreating] = useState<null | undefined>(undefined);
 	const [token, setToken] = useState<AiStationWithToken | null>(null);
@@ -62,8 +65,14 @@ export default function AiStationListPage() {
 	};
 
 	const { data, isFetching, refetch } = useQuery({
-		queryKey: ["ai-station", "list", keyword],
-		queryFn: () => aiStationService.listStations({ page: 1, page_size: 200, search: keyword || undefined }),
+		queryKey: ["ai-station", "list", keyword, tenantId],
+		queryFn: () =>
+			aiStationService.listStations({
+				page: 1,
+				page_size: 200,
+				search: keyword || undefined,
+				tenant_id: tenantId,
+			}),
 		placeholderData: keepPreviousData,
 		refetchInterval: 30_000,
 	});
@@ -158,6 +167,7 @@ export default function AiStationListPage() {
 							}}
 							onSearch={(v) => setKeyword(v.trim())}
 						/>
+						<OrgUnitFilter value={tenantId} onChange={setTenantId} />
 						<Segmented
 							className="ml-auto"
 							value={view}
@@ -220,7 +230,9 @@ export default function AiStationListPage() {
 							columns={columns}
 							dataSource={stations}
 							onRow={(s) => ({ onClick: () => open(s), className: "cursor-pointer" })}
-							locale={{ emptyText: <EmptyState text={t("aiStation.empty")} /> }}
+							locale={{
+								emptyText: <EmptyState text={t(keyword || tenantId ? "aiStation.emptyFiltered" : "aiStation.empty")} />,
+							}}
 							pagination={
 								stations.length > 20 ? { pageSize: 20, showTotal: (n) => t("common.totalItems", { total: n }) } : false
 							}
@@ -229,7 +241,7 @@ export default function AiStationListPage() {
 				</Card>
 			) : stations.length === 0 ? (
 				<Card>
-					<EmptyState text={t("aiStation.empty")} />
+					<EmptyState text={t(keyword || tenantId ? "aiStation.emptyFiltered" : "aiStation.empty")} />
 				</Card>
 			) : (
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3">
