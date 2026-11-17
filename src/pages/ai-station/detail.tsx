@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Alert, App, Descriptions, Dropdown, Skeleton, Table, Tabs, Tag, Typography } from "antd";
+import { Alert, App, Descriptions, Dropdown, Skeleton, Table, Tabs, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -16,7 +16,7 @@ import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
 import { cn } from "@/utils";
 import { fmtDateTime } from "@/utils/format";
-import { eventTypeLabel } from "../ai-event/components/event-meta";
+import { eventMeta } from "../ai-event/components/event-meta";
 import EventTable from "../ai-event/components/event-table";
 import PluginSwitch from "./components/plugin-switch";
 import PulseStrip from "./components/pulse-strip";
@@ -112,56 +112,76 @@ export default function AiStationDetailPage() {
 		setTab("cameras");
 	};
 
+	// Bảng plugin: tên + mô tả (biểu tượng theo loại sự kiện chính) · model · số camera · công tắc.
 	const pluginColumns: ColumnsType<PluginInfo> = [
 		{
 			title: t("aiStation.plugin.displayName"),
 			dataIndex: "display_name",
-			render: (_, p) => (
-				<div className="min-w-[200px] max-w-[380px]">
-					<p className="font-medium">{p.display_name}</p>
-					<p className="font-mono text-xs text-text-secondary">{p.name}</p>
-					{p.description && <p className="mt-0.5 text-xs text-text-secondary">{p.description}</p>}
-				</div>
-			),
-		},
-		{
-			title: t("common.statusLabel"),
-			dataIndex: "enabled",
-			render: (_, p) => <PluginSwitch station={st} plugin={p} canManage={canManage} />,
-		},
-		{
-			title: t("aiStation.field.version"),
-			dataIndex: "version",
-			render: (v) => <span className="font-mono text-sm">v{v}</span>,
+			render: (_, p) => {
+				const m = eventMeta(p.event_types[0] ?? "");
+				return (
+					<div className="flex min-w-[260px] max-w-[460px] items-start gap-3">
+						<span className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl", m.tone)}>
+							<Icon icon={m.icon} size={22} />
+						</span>
+						<div className="min-w-0">
+							<p className="font-semibold leading-snug">{p.display_name}</p>
+							{p.description && (
+								<p className="mt-0.5 line-clamp-2 text-xs text-text-secondary" title={p.description}>
+									{p.description}
+								</p>
+							)}
+						</div>
+					</div>
+				);
+			},
 		},
 		{
 			title: t("aiStation.plugin.model"),
 			dataIndex: "model",
-			render: (v, p) =>
-				v ? (
-					<span className={cn("font-mono text-xs", p.missing_models?.length && "text-error line-through")}>{v}</span>
-				) : (
-					"—"
-				),
-		},
-		{
-			title: t("aiStation.plugin.eventTypes"),
-			dataIndex: "event_types",
-			render: (ts: string[]) => (
-				<span className="flex flex-wrap gap-1">
-					{ts.map((x) => (
-						<Tag key={x} className="m-0">
-							{eventTypeLabel(t, x)}
-						</Tag>
-					))}
-				</span>
-			),
+			render: (v: string | null | undefined, p) => {
+				const missing = p.missing_models ?? [];
+				if (missing.length)
+					return (
+						<span className="inline-flex items-center gap-1.5 text-xs text-error">
+							<Icon icon="solar:danger-triangle-bold" size={16} />
+							<span className="font-mono">{missing.join(", ")}</span>
+						</span>
+					);
+				if (!v) return <span className="text-text-disabled">—</span>;
+				return (
+					<span className="inline-flex items-center gap-1.5 text-xs text-text-secondary">
+						<Icon icon="solar:check-circle-bold" size={16} className="text-success" />
+						<span className="font-mono">{v}</span>
+					</span>
+				);
+			},
 		},
 		{
 			title: t("aiStation.plugin.usedBy"),
 			key: "cams",
-			align: "right",
-			render: (_, p) => st.cameras.filter((c) => c.plugins.includes(p.name)).length,
+			align: "center",
+			width: 120,
+			render: (_, p) => {
+				const n = st.cameras.filter((c) => c.plugins.includes(p.name)).length;
+				return (
+					<span
+						className={cn(
+							"inline-flex min-w-9 items-center justify-center gap-1 rounded-full px-2 py-0.5 text-sm font-semibold tabular-nums",
+							n ? "bg-primary/10 text-primary" : "text-text-disabled",
+						)}
+					>
+						<Icon icon="solar:videocamera-record-linear" size={14} />
+						{n}
+					</span>
+				);
+			},
+		},
+		{
+			title: t("common.statusLabel"),
+			dataIndex: "enabled",
+			width: 220,
+			render: (_, p) => <PluginSwitch station={st} plugin={p} canManage={canManage} />,
 		},
 	];
 
