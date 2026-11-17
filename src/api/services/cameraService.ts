@@ -15,6 +15,8 @@ const cameraService = {
 		apiClient.request<CameraPushResult[]>({ url: `/cameras/${id}`, method: "DELETE", timeout: PUSH_TIMEOUT }),
 	assign: (id: number, data: { station_id: string; enabled?: boolean; plugins?: PluginBindingInput[] }) =>
 		apiClient.post<CameraChange>({ url: `/cameras/${id}/stations`, data, timeout: PUSH_TIMEOUT }),
+	/** Vé xem trực tiếp do máy chủ CMC tự kéo RTSP (camera chưa gán trạm / trạm mất kết nối). */
+	liveTicket: (id: number) => apiClient.post<{ ticket: string; ws_path: string }>({ url: `/cameras/${id}/live` }),
 	unassign: (id: number, stationId: string) =>
 		apiClient.request<CameraChange>({
 			url: `/cameras/${id}/stations/${stationId}`,

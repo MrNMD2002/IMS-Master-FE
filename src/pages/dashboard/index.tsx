@@ -55,7 +55,7 @@ export default function DashboardPage() {
 	const canIncident = can(...INCIDENT_READ_GATE);
 	const canGps = can(P.GPS_READ);
 	const canCamera = can(...AI_STATION_READ_GATE);
-	const [live, setLive] = useState<{ camera: Camera; link: CameraStationLink } | null>(null);
+	const [live, setLive] = useState<{ camera: Camera; link: CameraStationLink | null } | null>(null);
 
 	const stats = useQuery({
 		queryKey: ["dashboard-stats", tenantId],
@@ -239,6 +239,7 @@ export default function DashboardPage() {
 								))}
 								{cameras.map((c) => {
 									const link = liveLink(c);
+									const direct = !link && /^rtsps?:\/\//i.test(c.source);
 									return (
 										<Marker
 											key={`c${c.id}`}
@@ -252,10 +253,16 @@ export default function DashboardPage() {
 													<span className="text-xs text-text-secondary">
 														{c.stations.length > 0
 															? c.stations.map((l) => l.station_name ?? l.station_id).join(", ")
-															: t("aiCamera.liveNeedsStation")}
+															: direct
+																? t("aiCamera.liveViaServer")
+																: t("aiCamera.liveNeedsStation")}
 													</span>
-													{link && (
-														<Button size="sm" className="mt-1" onClick={() => setLive({ camera: c, link })}>
+													{(link || direct) && (
+														<Button
+															size="sm"
+															className="mt-1"
+															onClick={() => setLive({ camera: c, link: link ?? null })}
+														>
 															<Icon icon="solar:play-circle-bold" size={16} />
 															{t("aiStation.live.open")}
 														</Button>
@@ -312,8 +319,8 @@ export default function DashboardPage() {
 			)}
 			{live && (
 				<LiveViewModal
-					station={{ id: live.link.station_id }}
-					camera={{ id: live.link.remote_id ?? 0, name: live.camera.name }}
+					station={live.link ? { id: live.link.station_id } : null}
+					camera={{ id: live.link ? (live.link.remote_id ?? 0) : live.camera.id, name: live.camera.name }}
 					open
 					onClose={() => setLive(null)}
 				/>

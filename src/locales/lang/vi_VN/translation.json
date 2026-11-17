@@ -912,7 +912,8 @@
 			"hint": "Đóng cửa sổ là trạm dừng phát",
 			"unsupported": "Trình duyệt không phát được luồng H.264 này",
 			"network": "Mất kết nối luồng xem trực tiếp",
-			"cameraOff": "Camera đang tắt"
+			"cameraOff": "Camera đang tắt",
+			"viaServer": "qua máy chủ CMC"
 		},
 		"command": {
 			"name": {
@@ -1173,7 +1174,7 @@
 		"unassigned": "Đã gỡ camera khỏi trạm",
 		"deleteConfirm": "Xoá camera \"{{name}}\"?",
 		"deleteHint": "Camera sẽ bị gỡ khỏi {{n}} trạm đang xử lý (trạm phải đang kết nối).",
-		"liveNeedsStation": "Cần gán cho trạm đang kết nối để xem trực tiếp",
+		"liveNeedsStation": "Chưa có trạm đang kết nối và nguồn không phải RTSP — gán cho trạm AI để xem trực tiếp",
 		"field": {
 			"name": "Camera",
 			"source": "Nguồn RTSP",
@@ -1247,6 +1248,7 @@
 			"unassignHint": "Trạm sẽ xoá camera này và dừng mọi chức năng AI trên camera. Camera vẫn còn trong danh mục, gán lại được bất cứ lúc nào.",
 			"offlineHint": "Trạm đang mất kết nối — chờ trạm kết nối lại rồi gỡ",
 			"add": "Gán thêm trạm"
-		}
+		},
+		"liveViaServer": "Xem trực tiếp qua máy chủ CMC (camera cần địa chỉ RTSP truy cập được từ máy chủ)"
 	}
 }

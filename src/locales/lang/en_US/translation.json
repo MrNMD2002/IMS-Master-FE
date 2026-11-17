@@ -912,7 +912,8 @@
 			"hint": "Closing this window stops the stream",
 			"unsupported": "This browser cannot play this H.264 stream",
 			"network": "Live stream connection lost",
-			"cameraOff": "Camera is off"
+			"cameraOff": "Camera is off",
+			"viaServer": "via CMC server"
 		},
 		"command": {
 			"name": {
@@ -1173,7 +1174,7 @@
 		"unassigned": "Camera removed from station",
 		"deleteConfirm": "Delete camera \"{{name}}\"?",
 		"deleteHint": "It will be removed from {{n}} station(s) (stations must be online).",
-		"liveNeedsStation": "Assign to an online station to watch live",
+		"liveNeedsStation": "No connected station and the source is not RTSP — assign it to an AI station to watch live",
 		"field": {
 			"name": "Camera",
 			"source": "RTSP source",
@@ -1247,6 +1248,7 @@
 			"unassignHint": "The station deletes this camera and stops all AI on it. The camera stays in the catalog and can be assigned again anytime.",
 			"offlineHint": "Station is offline — wait until it reconnects",
 			"add": "Assign to another station"
-		}
+		},
+		"liveViaServer": "Watch live through the CMC server (the camera needs an RTSP address reachable from the server)"
 	}
 }

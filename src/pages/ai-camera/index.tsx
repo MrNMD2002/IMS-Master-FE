@@ -22,6 +22,8 @@ import { CameraFormModal, STATE_DOT, StationsModal } from "./camera-modals";
 
 /** Lần gán xem trực tiếp được: trạm online, trạm đã nhận camera, camera đang bật. */
 const watchable = (l: CameraStationLink) => l.station_online && l.remote_id !== null && l.enabled !== false;
+/** Không có trạm xem được thì máy chủ CMC tự kéo — chỉ với nguồn RTSP. */
+const serverPullable = (c: Camera) => /^rtsps?:\/\//i.test(c.source);
 
 /**
  * Danh mục camera tập trung (học từ quản lý camera + gán camera cho AI agent của hệ tham khảo):
@@ -40,7 +42,7 @@ export default function AiCameraPage() {
 	const [stationId, setStationId] = useState<string | undefined>();
 	const [editing, setEditing] = useState<Camera | null | undefined>(undefined);
 	const [managing, setManaging] = useState<number | null>(null);
-	const [live, setLive] = useState<{ camera: Camera; link: CameraStationLink } | null>(null);
+	const [live, setLive] = useState<{ camera: Camera; link: CameraStationLink | null } | null>(null);
 
 	const { data, isFetching, refetch } = useQuery({
 		queryKey: ["camera", "list", keyword, tenantId, stationId],
@@ -154,14 +156,19 @@ export default function AiCameraPage() {
 			width: 168,
 			render: (_, c) => {
 				const link = c.stations.find(watchable);
+				const direct = !link && serverPullable(c);
 				return (
 					<div className="flex items-center justify-end gap-1">
-						<Tooltip title={link ? t("aiStation.live.open") : t("aiCamera.liveNeedsStation")}>
+						<Tooltip
+							title={
+								link ? t("aiStation.live.open") : direct ? t("aiCamera.liveViaServer") : t("aiCamera.liveNeedsStation")
+							}
+						>
 							<Button
 								variant="ghost"
 								size="icon"
-								disabled={!link}
-								onClick={() => link && setLive({ camera: c, link })}
+								disabled={!link && !direct}
+								onClick={() => setLive({ camera: c, link: link ?? null })}
 								aria-label={t("aiStation.live.open")}
 							>
 								<Icon icon="solar:play-circle-linear" size={18} />
@@ -309,8 +316,8 @@ export default function AiCameraPage() {
 			<StationsModal cameraId={managing} canManage={canManage} onClose={() => setManaging(null)} />
 			{live && (
 				<LiveViewModal
-					station={{ id: live.link.station_id }}
-					camera={{ id: live.link.remote_id ?? 0, name: live.camera.name }}
+					station={live.link ? { id: live.link.station_id } : null}
+					camera={{ id: live.link ? (live.link.remote_id ?? 0) : live.camera.id, name: live.camera.name }}
 					open
 					onClose={() => setLive(null)}
 				/>
