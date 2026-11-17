@@ -10,7 +10,7 @@ import { type CameraFilter, cameraBucket } from "./station-overview";
 import { CameraStateBadge } from "./station-status";
 
 /**
- * Tab Camera (bố cục tab Cameras của hệ tham khảo): lọc theo nhóm trạng thái + tìm theo
+ * Tab Camera: lọc theo nhóm trạng thái + tìm theo
  * tên, mỗi camera một dòng thẻ với điều khiển ở cuối dòng.
  */
 export default function StationCameras({

@@ -1,0 +1,39 @@
+GIẤY PHÉP ĐỘC QUYỀN — BẢO LƯU MỌI QUYỀN
+
+Bản quyền © 2026 Nguyễn Minh Dũng (GitHub: MrNMD2002). Bảo lưu mọi quyền.
+
+Command Center Web — web quản trị / chỉ huy, thuộc hệ thống chỉ huy CMC (Command Center), đồ án luận văn
+thạc sĩ của Nguyễn Minh Dũng.
+
+Toàn bộ mã nguồn, tài liệu, thiết kế giao diện, hình ảnh và các tệp khác trong kho này
+(trừ thành phần bên thứ ba nêu dưới đây) là tài sản trí tuệ của tác giả Nguyễn Minh Dũng.
+
+Khi chưa có văn bản đồng ý của tác giả, không ai được:
+  - sao chép, sửa đổi, tạo sản phẩm phái sinh từ bất kỳ phần nào của phần mềm;
+  - phân phối, công bố, cấp phép lại, cho thuê, bán hoặc dùng cho mục đích thương mại;
+  - gỡ bỏ hay thay đổi thông báo bản quyền này.
+
+Hội đồng, giảng viên hướng dẫn và người phản biện được xem, chạy thử mã nguồn để chấm
+và đánh giá luận văn.
+
+Thành phần bên thứ ba (thư viện, khung mã nguồn mở) giữ nguyên giấy phép riêng của chúng — xem `THIRD_PARTY_NOTICES.md`.
+
+PHẦN MỀM ĐƯỢC CUNG CẤP "NGUYÊN TRẠNG", KHÔNG KÈM BẤT KỲ BẢO ĐẢM NÀO.
+
+Liên hệ cấp phép: https://github.com/MrNMD2002
+
+--------------------------------------------------------------------------------
+
+PROPRIETARY LICENSE — ALL RIGHTS RESERVED
+
+Copyright © 2026 Nguyễn Minh Dũng (GitHub: MrNMD2002). All rights reserved.
+
+All source code, documentation, UI designs, images and other files in this repository
+(except the third-party components noted below) are the intellectual property of the
+author. No part may be copied, modified, distributed, published, sublicensed, sold or
+used commercially without the author's prior written permission. Thesis committee
+members, supervisors and reviewers may view and run the code for evaluation purposes.
+
+Third-party components (libraries, open-source frameworks) remain under their own licenses — see `THIRD_PARTY_NOTICES.md`.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
