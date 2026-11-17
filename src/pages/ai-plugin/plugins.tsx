@@ -6,7 +6,7 @@ import { classLabel, EventTypeTag, PlateText } from "../ai-event/components/even
 import PlateCrop, { plateInfo } from "../ai-event/components/plate-crop";
 
 /**
- * Trang riêng của từng plugin Vigil (theo cách hệ tham khảo chia menu theo chức năng: mỗi chức
+ * Trang riêng của từng plugin Vigil (menu chia theo chức năng: mỗi chức
  * năng có "Danh sách" + "Thống kê"). Mỗi plugin khai báo cột số liệu riêng lấy từ `extra` và các
  * ô chỉ số cho trang thống kê; phần khung (bộ lọc, bảng, biểu đồ) dùng chung.
  */

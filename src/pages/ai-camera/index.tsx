@@ -26,7 +26,7 @@ const watchable = (l: CameraStationLink) => l.station_online && l.remote_id !== 
 const serverPullable = (c: Camera) => /^rtsps?:\/\//i.test(c.source);
 
 /**
- * Danh mục camera tập trung (học từ quản lý camera + gán camera cho AI agent của hệ tham khảo):
+ * Danh mục camera tập trung (quản lý camera + gán camera cho trạm AI):
  * thêm camera RTSP trên CMC rồi gán cho một hay nhiều trạm AI xử lý; camera thêm trên trạm Vigil
  * tự vào danh mục.
  */

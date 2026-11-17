@@ -13,7 +13,7 @@ import { eventMeta, eventTypeLabel } from "../ai-event/components/event-meta";
 import PluginShell from "./plugin-shell";
 import type { PluginPage } from "./plugins";
 
-/** Thống kê của một plugin (`/ai/p/:slug/stats`) — bố cục trang thống kê chức năng của hệ tham khảo. */
+/** Thống kê của một plugin (`/ai/p/:slug/stats`). */
 export default function PluginStatsPage() {
 	return <PluginShell view="stats">{(p) => <StatsBody {...p} />}</PluginShell>;
 }

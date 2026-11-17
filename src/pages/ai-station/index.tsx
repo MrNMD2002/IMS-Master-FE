@@ -33,7 +33,7 @@ const VIEW_KEY = "cmc.aiStation.view";
 
 function readView(): View {
 	try {
-		// Mặc định dạng thẻ như danh sách AI agent của hệ tham khảo; nhớ lựa chọn của người xem.
+		// Mặc định dạng thẻ; nhớ lựa chọn của người xem.
 		return localStorage.getItem(VIEW_KEY) === "table" ? "table" : "grid";
 	} catch {
 		return "grid";
@@ -257,7 +257,7 @@ export default function AiStationListPage() {
 	);
 }
 
-/** Một dòng "nhãn — giá trị" trong thẻ trạm (bố cục thẻ AI agent của hệ tham khảo). */
+/** Một dòng "nhãn — giá trị" trong thẻ trạm. */
 function InfoRow({
 	icon,
 	label,

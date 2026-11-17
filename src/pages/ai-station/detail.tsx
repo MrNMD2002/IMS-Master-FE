@@ -30,7 +30,7 @@ const TABS = ["overview", "cameras", "plugins", "commands", "events", "system"] 
 type TabKey = (typeof TABS)[number];
 
 /**
- * Chi tiết một trạm AI — bố cục theo trang AI agent của hệ tham khảo: khối đầu trang (tên, trạng
+ * Chi tiết một trạm AI: khối đầu trang (tên, trạng
  * thái, thao tác) + dải nhịp tim, rồi các tab Tổng quan / Camera / Plugin / Lệnh / Sự kiện /
  * Hệ thống. Tab đang mở nằm trên URL (`?tab=`) để tải lại / chia sẻ link vẫn đúng tab.
  */

@@ -77,3 +77,9 @@ src/
 - Tài khoản không có `dashboard.access` (tài khoản App của cán bộ) bị chặn ngay ở trang đăng nhập web.
 - Bộ nhận diện: `src/assets/brand/` (biểu tượng, logo ngang), `public/` (favicon, icon PWA). Tên hệ thống ở
   `src/global-config.ts` (`appName`).
+
+## Bản quyền
+
+Bản quyền © 2026 **Nguyễn Minh Dũng** ([MrNMD2002](https://github.com/MrNMD2002)). Bảo lưu mọi quyền.
+Phần mềm độc quyền thuộc đồ án luận văn thạc sĩ — hệ thống chỉ huy CMC. Không sao chép, sửa
+đổi, phân phối hay dùng thương mại khi chưa có văn bản đồng ý của tác giả. Xem [`LICENSE`](LICENSE) và [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
