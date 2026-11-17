@@ -275,8 +275,8 @@ export function LiveViewModal({
 	open,
 	onClose,
 }: {
-	station: AiStation;
-	camera: StationCamera;
+	station: Pick<AiStation, "id">;
+	camera: Pick<StationCamera, "id" | "name">;
 	open: boolean;
 	onClose: () => void;
 }) {
