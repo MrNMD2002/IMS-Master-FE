@@ -897,6 +897,21 @@
 			"usedBy": "Số camera dùng"
 		},
 		"notPaired": "Chưa ghép nối",
+		"live": {
+			"open": "Xem trực tiếp",
+			"title": "Trực tiếp · {{name}}",
+			"connecting": "Đang mở luồng từ trạm…",
+			"ended": "Luồng đã dừng (trạm ngắt hoặc mất nguồn camera)",
+			"retry": "Kết nối lại",
+			"boxes": "Hiện khung nhận diện AI",
+			"transcoded": "trạm mã hoá lại",
+			"lag": "Trễ bộ đệm {{s}} s",
+			"lagHint": "Độ trễ bộ đệm của trình duyệt; tự đuổi kịp khi vượt 0,6 s",
+			"hint": "Đóng cửa sổ là trạm dừng phát",
+			"unsupported": "Trình duyệt không phát được luồng H.264 này",
+			"network": "Mất kết nối luồng xem trực tiếp",
+			"cameraOff": "Camera đang tắt"
+		},
 		"command": {
 			"name": {
 				"camera_enable": "Bật camera",

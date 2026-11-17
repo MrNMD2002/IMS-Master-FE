@@ -44,6 +44,9 @@ const real = {
 	/** Gửi lệnh và chờ trạm trả lời (tối đa ~20 s); lỗi 409 = trạm mất kết nối. */
 	sendCommand: (id: string, data: { cmd: AiCommandName; camera_id?: number; args?: Record<string, unknown> }) =>
 		apiClient.post<AiCommand>({ url: `/ai-stations/${id}/commands`, data, timeout: 30_000 }),
+	/** Vé xem trực tiếp camera (dùng 1 lần, 60 s) → mở WebSocket `ws_path?ticket=…`. */
+	liveTicket: (id: string, cameraId: number) =>
+		apiClient.post<{ ticket: string; ws_path: string }>({ url: `/ai-stations/${id}/cameras/${cameraId}/live` }),
 	listCommands: (id: string) => apiClient.get<AiCommand[]>({ url: `/ai-stations/${id}/commands` }),
 	listEvents: (params: AiEventQuery) => apiClient.get<AiEventPage>({ url: "/ai-events", params }),
 	getEvent: (eventId: string) => apiClient.get<AiEvent>({ url: `/ai-events/${eventId}` }),
