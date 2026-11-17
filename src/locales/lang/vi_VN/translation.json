@@ -142,7 +142,7 @@
 		"mobilizedCount": "{{count}} xe đang làm nhiệm vụ",
 		"processing": "Sự vụ đang xử lý",
 		"pendingApproval": "Chờ xét duyệt",
-		"liveMap": "Bản đồ phương tiện & camera",
+		"liveMap": "Bản đồ phương tiện trực tuyến",
 		"openMap": "Mở bản đồ",
 		"incidentByStatus": "Sự vụ theo trạng thái",
 		"totalIncidents": "Tổng",
@@ -236,7 +236,7 @@
 			}
 		],
 		"nextQuote": "Câu khác",
-		"cameraCount": "{{count}} camera"
+		"onlineCount": "{{count}} xe đang trực tuyến"
 	},
 	"monitor": {
 		"vehicles": "Phương tiện",
@@ -273,7 +273,8 @@
 			"useHq": "Về trụ sở",
 			"pickHint": "Bấm lên bản đồ để đặt tâm vòng lọc"
 		},
-		"reason": "Lý do"
+		"reason": "Lý do",
+		"showCameras": "Hiện camera trên bản đồ ({{count}})"
 	},
 	"incident": {
 		"description": "Tiếp nhận, điều động và theo dõi xử lý sự vụ",
@@ -1250,5 +1251,13 @@
 			"add": "Gán thêm trạm"
 		},
 		"liveViaServer": "Xem trực tiếp qua máy chủ CMC (camera cần địa chỉ RTSP truy cập được từ máy chủ)"
+	},
+	"locationPicker": {
+		"lat": "Vĩ độ",
+		"lng": "Kinh độ",
+		"copy": "Sao chép toạ độ",
+		"copied": "Đã sao chép toạ độ",
+		"finding": "Đang tìm địa chỉ…",
+		"noAddress": "Không tìm được địa chỉ cho điểm này"
 	}
 }

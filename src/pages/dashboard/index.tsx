@@ -1,25 +1,23 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Marker, Popup } from "react-leaflet";
+import { Marker } from "react-leaflet";
 import { useNavigate } from "react-router";
-import type { Camera, CameraStationLink } from "#/camera";
 import { INCIDENT_STATUSES, type Incident } from "#/cmc";
-import cameraService from "@/api/services/cameraService";
 import incidentService from "@/api/services/incidentService";
 import systemService from "@/api/services/systemService";
 import { Chart, useChart } from "@/components/chart";
 import EmptyState from "@/components/cmc/empty-state";
 import BaseMap from "@/components/cmc/map/base-map";
 import FitBounds from "@/components/cmc/map/fit-bounds";
-import { type CameraMapState, cameraIcon, vehicleIcon } from "@/components/cmc/map/markers";
+import { vehicleIcon } from "@/components/cmc/map/markers";
 import OrgUnitFilter from "@/components/cmc/org-unit-filter";
 import { STICKY_PAGE_BAR } from "@/components/cmc/page-header";
 import StatCard from "@/components/cmc/stat-card";
 import { INCIDENT_STATUS_COLOR, IncidentStatusBadge } from "@/components/cmc/status";
 import { LiveClock, WorkQuote } from "@/components/cmc/work-hero";
 import { Icon } from "@/components/icon";
-import { AI_STATION_READ_GATE, INCIDENT_READ_GATE, P } from "@/constants/permission";
+import { INCIDENT_READ_GATE, P } from "@/constants/permission";
 import { useLiveVehicles } from "@/hooks/use-live-vehicles";
 import { useCompactOnScroll } from "@/hooks/use-scrolled";
 import { useCan, useUserInfo } from "@/store/userStore";
@@ -27,21 +25,6 @@ import { Button } from "@/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
 import { cn } from "@/utils";
 import { fmtFromNow } from "@/utils/format";
-import { LiveViewModal } from "../ai-station/components/live-view";
-
-/** Trạng thái tốt nhất của camera trên các trạm đang chạy nó. */
-function cameraState(c: Camera): CameraMapState {
-	const states = c.stations.map((l) => l.state);
-	if (states.includes("live")) return "live";
-	if (states.includes("connecting")) return "connecting";
-	if (states.includes("error")) return "error";
-	return "off";
-}
-
-/** Trạm xem trực tiếp được: đang kết nối và đã có mã camera phía trạm. */
-const liveLink = (c: Camera): CameraStationLink | undefined =>
-	c.stations.find((l) => l.station_online && l.remote_id != null && l.state === "live") ??
-	c.stations.find((l) => l.station_online && l.remote_id != null);
 
 export default function DashboardPage() {
 	const { t } = useTranslation();
@@ -54,8 +37,6 @@ export default function DashboardPage() {
 	const { full_name, username, tenant_name } = useUserInfo();
 	const canIncident = can(...INCIDENT_READ_GATE);
 	const canGps = can(P.GPS_READ);
-	const canCamera = can(...AI_STATION_READ_GATE);
-	const [live, setLive] = useState<{ camera: Camera; link: CameraStationLink | null } | null>(null);
 
 	const stats = useQuery({
 		queryKey: ["dashboard-stats", tenantId],
@@ -102,27 +83,15 @@ export default function DashboardPage() {
 		},
 	});
 
-	// Camera đã đặt vị trí trên bản đồ (theo tổ chức đang lọc).
-	const cameraList = useQuery({
-		queryKey: ["camera", "dashboard-map", tenantId],
-		queryFn: () => cameraService.list({ page: 1, page_size: 200, tenant_id: tenantId }),
-		enabled: canCamera,
-		refetchInterval: 30_000,
-	});
-	const cameras = useMemo(
-		() => (cameraList.data?.data ?? []).filter((c) => c.latitude != null && c.longitude != null),
-		[cameraList.data],
-	);
+	// Bản đồ thu nhỏ chỉ hiện xe đang trực tuyến; camera và xe ngoại tuyến xem ở bản đồ đầy đủ (Mở bản đồ).
+	const onlineVehicles = useMemo(() => vehicles.filter((v) => v.is_active), [vehicles]);
 	const points = useMemo(
-		() => [
-			...vehicles.map((v) => [v.latitude, v.longitude] as [number, number]),
-			...cameras.map((c) => [c.latitude, c.longitude] as [number, number]),
-		],
-		[vehicles, cameras],
+		() => onlineVehicles.map((v) => [v.latitude, v.longitude] as [number, number]),
+		[onlineVehicles],
 	);
 	// Khung lại khi danh sách xe đổi, không phải mỗi lần xe nhích vị trí.
-	const fitKey = [...vehicles.map((v) => v.id), ...cameras.map((c) => `c${c.id}`)].join(",");
-	const showMap = canGps || canCamera;
+	const fitKey = onlineVehicles.map((v) => v.id).join(",");
+	const showMap = canGps;
 
 	return (
 		<div className="flex flex-col gap-5">
@@ -220,11 +189,9 @@ export default function DashboardPage() {
 						<CardHeader className="flex flex-row items-center justify-between py-4">
 							<CardTitle className="flex items-center gap-2">
 								{t("dashboard.liveMap")}
-								{cameras.length > 0 && (
-									<span className="text-xs font-normal text-text-secondary">
-										· {t("dashboard.cameraCount", { count: cameras.length })}
-									</span>
-								)}
+								<span className="text-xs font-normal text-text-secondary">
+									· {t("dashboard.onlineCount", { count: onlineVehicles.length })}
+								</span>
 							</CardTitle>
 							<Button variant="ghost" size="sm" onClick={() => navigate("/monitoring")}>
 								{t("dashboard.openMap")}
@@ -234,44 +201,9 @@ export default function DashboardPage() {
 						<div className="h-[340px]">
 							<BaseMap zoom={12} scrollWheelZoom={false}>
 								<FitBounds points={points} fitKey={fitKey} maxZoom={14} />
-								{vehicles.map((v) => (
+								{onlineVehicles.map((v) => (
 									<Marker key={v.id} position={[v.latitude, v.longitude]} icon={vehicleIcon(v.state)} />
 								))}
-								{cameras.map((c) => {
-									const link = liveLink(c);
-									const direct = !link && /^rtsps?:\/\//i.test(c.source);
-									return (
-										<Marker
-											key={`c${c.id}`}
-											position={[c.latitude as number, c.longitude as number]}
-											icon={cameraIcon(cameraState(c))}
-										>
-											<Popup>
-												<div className="flex min-w-44 flex-col gap-1">
-													<span className="font-semibold">{c.name}</span>
-													{c.location && <span className="text-xs text-text-secondary">{c.location}</span>}
-													<span className="text-xs text-text-secondary">
-														{c.stations.length > 0
-															? c.stations.map((l) => l.station_name ?? l.station_id).join(", ")
-															: direct
-																? t("aiCamera.liveViaServer")
-																: t("aiCamera.liveNeedsStation")}
-													</span>
-													{(link || direct) && (
-														<Button
-															size="sm"
-															className="mt-1"
-															onClick={() => setLive({ camera: c, link: link ?? null })}
-														>
-															<Icon icon="solar:play-circle-bold" size={16} />
-															{t("aiStation.live.open")}
-														</Button>
-													)}
-												</div>
-											</Popup>
-										</Marker>
-									);
-								})}
 							</BaseMap>
 						</div>
 					</Card>
@@ -316,14 +248,6 @@ export default function DashboardPage() {
 						)}
 					</CardContent>
 				</Card>
-			)}
-			{live && (
-				<LiveViewModal
-					station={live.link ? { id: live.link.station_id } : null}
-					camera={{ id: live.link ? (live.link.remote_id ?? 0) : live.camera.id, name: live.camera.name }}
-					open
-					onClose={() => setLive(null)}
-				/>
 			)}
 		</div>
 	);

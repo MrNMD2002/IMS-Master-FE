@@ -142,7 +142,7 @@
 		"mobilizedCount": "{{count}} on a mission",
 		"processing": "Incidents in progress",
 		"pendingApproval": "Awaiting confirmation",
-		"liveMap": "Vehicle & camera map",
+		"liveMap": "Online vehicles map",
 		"openMap": "Open map",
 		"incidentByStatus": "Incidents by status",
 		"totalIncidents": "Total",
@@ -236,7 +236,7 @@
 			}
 		],
 		"nextQuote": "Another quote",
-		"cameraCount": "{{count}} cameras"
+		"onlineCount": "{{count}} vehicles online"
 	},
 	"monitor": {
 		"vehicles": "Vehicles",
@@ -273,7 +273,8 @@
 			"useHq": "Use headquarters",
 			"pickHint": "Click the map to set the radius center"
 		},
-		"reason": "Reason"
+		"reason": "Reason",
+		"showCameras": "Show cameras on map ({{count}})"
 	},
 	"incident": {
 		"description": "Receive, dispatch and follow up on incidents",
@@ -1250,5 +1251,13 @@
 			"add": "Assign to another station"
 		},
 		"liveViaServer": "Watch live through the CMC server (the camera needs an RTSP address reachable from the server)"
+	},
+	"locationPicker": {
+		"lat": "Latitude",
+		"lng": "Longitude",
+		"copy": "Copy coordinates",
+		"copied": "Coordinates copied",
+		"finding": "Looking up address…",
+		"noAddress": "No address found for this point"
 	}
 }
