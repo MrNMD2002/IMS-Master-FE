@@ -74,3 +74,29 @@ export function radiusCenterIcon() {
 		iconAnchor: [9, 9],
 	});
 }
+
+const CAMERA_SVG =
+	'<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h11a2 2 0 0 1 2 2v1.6l3.4-2.3A1 1 0 0 1 22 8.1v7.8a1 1 0 0 1-1.6.8L17 14.4V16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/></svg>';
+
+/** Trạng thái camera trên bản đồ: đang chạy trên trạm / đang nối / lỗi / chưa chạy. */
+export type CameraMapState = "live" | "connecting" | "error" | "off";
+
+export const CAMERA_COLOR: Record<CameraMapState, string> = {
+	live: "#0EA5E9",
+	connecting: "#FFAB00",
+	error: "#FF5630",
+	off: "#637381",
+};
+
+/** Camera giám sát. */
+export function cameraIcon(state: CameraMapState, label?: string | null) {
+	const color = CAMERA_COLOR[state];
+	const text = label ? `<span class="cmc-camera__label">${escapeHtml(label)}</span>` : "";
+	return L.divIcon({
+		className: "cmc-camera",
+		html: `<div class="cmc-camera__body" style="background:${color}">${CAMERA_SVG}</div>${text}`,
+		iconSize: [30, 30],
+		iconAnchor: [15, 15],
+		popupAnchor: [0, -16],
+	});
+}
