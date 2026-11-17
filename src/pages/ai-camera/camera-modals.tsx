@@ -1,12 +1,25 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Checkbox, Form, Input, InputNumber, Modal, Select, Switch } from "antd";
+import { Checkbox, Form, Input, InputNumber, Modal, Popconfirm, Select, Switch, Tooltip } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import type { Camera, CameraChange, CameraInput, CameraPushResult } from "#/camera";
 import aiStationService from "@/api/services/aiStationService";
 import cameraService from "@/api/services/cameraService";
 import TenantSelect from "@/components/cmc/tenant-select";
+import { Icon } from "@/components/icon";
+import { Button } from "@/ui/button";
+import { cn } from "@/utils";
+import { stationState } from "../ai-station/components/station-status";
+
+/** Màu chấm trạng thái camera trên trạm. */
+export const STATE_DOT: Record<string, string> = {
+	live: "bg-success",
+	connecting: "bg-warning",
+	error: "bg-error",
+	off: "bg-text-disabled",
+};
 
 /** Báo kết quả đẩy xuống từng trạm: lỗi trạm nào hiện trạm đó. */
 export function reportPushed(pushed: CameraPushResult[], okText: string) {
@@ -137,52 +150,107 @@ export function CameraFormModal({ camera, onClose }: { camera: Camera | null | u
 	);
 }
 
-/** Gán camera cho một trạm AI xử lý: chọn trạm (đang online) + plugin chạy trên camera. */
-export function AssignModal({ camera, onClose }: { camera: Camera | null; onClose: () => void }) {
+/**
+ * Trạm xử lý một camera: danh sách trạm đang chạy camera (gỡ từng trạm, có xác nhận) + gán thêm
+ * trạm (chọn trạm đang kết nối và chức năng AI). Đọc lại camera sau mỗi thao tác để luôn đúng.
+ */
+export function StationsModal({
+	cameraId,
+	canManage,
+	onClose,
+}: {
+	cameraId: number | null;
+	canManage: boolean;
+	onClose: () => void;
+}) {
 	const { t } = useTranslation();
 	const qc = useQueryClient();
+	const navigate = useNavigate();
+	const open = cameraId !== null;
 	const [stationId, setStationId] = useState<string>();
 	const [plugins, setPlugins] = useState<string[]>([]);
 	const [enabled, setEnabled] = useState(true);
-	const open = !!camera;
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: làm mới khi mở camera khác
 	useEffect(() => {
 		setStationId(undefined);
 		setPlugins([]);
 		setEnabled(true);
-	}, [camera?.id]);
+	}, [cameraId]);
 
+	const cam = useQuery({
+		queryKey: ["camera", "detail", cameraId],
+		queryFn: () => cameraService.get(cameraId ?? 0),
+		enabled: open,
+		refetchInterval: open ? 10_000 : false,
+	});
+	const camera = cam.data;
 	const stations = useQuery({
 		queryKey: ["ai-station", "list", "assign"],
 		queryFn: () => aiStationService.listStations({ page: 1, page_size: 200 }),
-		enabled: open,
+		enabled: open && canManage,
 	});
 	const detail = useQuery({
 		queryKey: ["ai-station", "detail", stationId],
 		queryFn: () => aiStationService.getStation(stationId ?? ""),
 		enabled: !!stationId,
 	});
+
+	const refresh = () => {
+		qc.invalidateQueries({ queryKey: ["camera"] });
+		qc.invalidateQueries({ queryKey: ["ai-station"] });
+	};
+	const unassign = useMutation({
+		mutationFn: (station: string) => cameraService.unassign(cameraId ?? 0, station),
+		onSuccess: (r) => {
+			refresh();
+			reportPushed(r.pushed, t("aiCamera.unassigned"));
+		},
+		onError: refresh,
+	});
+	const assign = useMutation({
+		mutationFn: () =>
+			cameraService.assign(cameraId ?? 0, {
+				station_id: stationId ?? "",
+				enabled,
+				plugins: plugins.map((name) => ({ name, enabled: true, params: {} })),
+			}),
+		onSuccess: (r) => {
+			refresh();
+			reportPushed(r.pushed, t("aiCamera.assign.done"));
+			if (r.pushed.every((p) => p.ok)) {
+				setStationId(undefined);
+				setPlugins([]);
+			}
+		},
+		onError: refresh,
+	});
+
 	const linked = new Set(camera?.stations.map((s) => s.station_id));
-	const options = (stations.data?.data ?? []).map((s) => ({
-		value: s.id,
-		disabled: !s.online || linked.has(s.id),
-		label: (
-			<span className="flex items-center justify-between gap-2">
-				<span className="truncate">
-					{s.name} <span className="font-mono text-xs text-text-secondary">{s.id}</span>
+	const options = (stations.data?.data ?? []).map((s) => {
+		const state = stationState(s);
+		return {
+			value: s.id,
+			disabled: state !== "online" || linked.has(s.id),
+			label: (
+				<span className="flex items-center justify-between gap-2">
+					<span className="truncate">
+						{s.name} <span className="font-mono text-xs text-text-secondary">{s.id}</span>
+					</span>
+					<span className="shrink-0 text-xs text-text-secondary">
+						{linked.has(s.id)
+							? t("aiCamera.assign.already")
+							: state === "online"
+								? t("aiCamera.assign.cams", { n: s.cameras_total })
+								: state === "unpaired"
+									? t("aiCamera.assign.unpaired")
+									: t("aiCamera.assign.offline")}
+					</span>
 				</span>
-				<span className="shrink-0 text-xs text-text-secondary">
-					{linked.has(s.id)
-						? t("aiCamera.assign.already")
-						: s.online
-							? t("aiCamera.assign.cams", { n: s.cameras_total })
-							: t("aiCamera.assign.offline")}
-				</span>
-			</span>
-		),
-		search: `${s.name} ${s.id} ${s.location ?? ""}`,
-	}));
+			),
+			search: `${s.name} ${s.id} ${s.location ?? ""}`,
+		};
+	});
 	const pluginOpts = (detail.data?.plugins ?? []).map((p) => ({
 		value: p.name,
 		label: (
@@ -192,74 +260,143 @@ export function AssignModal({ camera, onClose }: { camera: Camera | null; onClos
 			</span>
 		),
 	}));
-
-	const assign = useMutation({
-		mutationFn: () =>
-			cameraService.assign(camera?.id ?? 0, {
-				station_id: stationId ?? "",
-				enabled,
-				plugins: plugins.map((name) => ({ name, enabled: true, params: {} })),
-			}),
-		onSuccess: (r) => {
-			qc.invalidateQueries({ queryKey: ["camera"] });
-			qc.invalidateQueries({ queryKey: ["ai-station"] });
-			reportPushed(r.pushed, t("aiCamera.assign.done"));
-			if (r.pushed.every((p) => p.ok)) onClose();
-		},
-	});
+	const busyStation = unassign.isPending ? unassign.variables : undefined;
 
 	return (
 		<Modal
 			open={open}
 			onCancel={onClose}
-			title={t("aiCamera.assign.title", { name: camera?.name ?? "" })}
-			okText={t("aiCamera.assign.submit")}
-			cancelText={t("common.cancelText")}
-			okButtonProps={{ disabled: !stationId }}
-			confirmLoading={assign.isPending}
-			onOk={() => assign.mutate()}
+			footer={null}
+			title={t("aiCamera.stationsModal.title", { name: camera?.name ?? "" })}
 			destroyOnHidden
-			width={560}
+			width={640}
 		>
-			<div className="flex flex-col gap-4 pt-2">
-				<p className="text-sm text-text-secondary">{t("aiCamera.assign.hint")}</p>
-				<div className="flex flex-col gap-1.5">
-					<span className="text-sm font-medium">{t("aiCamera.assign.station")}</span>
-					<Select
-						showSearch
-						value={stationId}
-						onChange={(v) => {
-							setStationId(v);
-							setPlugins([]);
-						}}
-						loading={stations.isLoading}
-						options={options}
-						optionFilterProp="search"
-						placeholder={t("aiCamera.assign.stationPlaceholder")}
-					/>
-				</div>
-				{stationId && (
-					<div className="flex flex-col gap-1.5">
-						<span className="text-sm font-medium">{t("aiCamera.assign.plugins")}</span>
-						{detail.isLoading ? (
-							<span className="text-sm text-text-secondary">{t("common.loadingText")}</span>
-						) : pluginOpts.length ? (
-							<Checkbox.Group
-								className="flex flex-col gap-2"
-								value={plugins}
-								onChange={(v) => setPlugins(v as string[])}
-								options={pluginOpts}
-							/>
-						) : (
-							<span className="text-sm text-text-disabled">{t("aiCamera.assign.noPlugins")}</span>
+			<div className="flex flex-col gap-5 pt-2">
+				<section className="flex flex-col gap-2">
+					<h4 className="text-sm font-semibold">
+						{t("aiCamera.stationsModal.current", { n: camera?.stations.length ?? 0 })}
+					</h4>
+					{cam.isLoading ? (
+						<span className="text-sm text-text-secondary">{t("common.loadingText")}</span>
+					) : camera?.stations.length ? (
+						<ul className="flex flex-col divide-y divide-border rounded-lg border">
+							{camera.stations.map((l) => (
+								<li key={l.station_id} className="flex flex-wrap items-center gap-3 px-3 py-2.5">
+									<span
+										className={cn(
+											"h-2.5 w-2.5 shrink-0 rounded-full",
+											l.station_online ? (STATE_DOT[l.state ?? "off"] ?? STATE_DOT.off) : "bg-text-disabled",
+										)}
+									/>
+									<div className="min-w-0 flex-1">
+										<button
+											type="button"
+											className="truncate text-left font-medium hover:text-primary"
+											onClick={() => navigate(`/ai/stations/${l.station_id}`)}
+										>
+											{l.station_name ?? l.station_id}
+										</button>
+										<p className="truncate text-xs text-text-secondary">
+											{[
+												l.station_online ? t("aiCamera.link.online") : t("aiCamera.link.offline"),
+												l.remote_id === null ? t("aiCamera.link.pending") : null,
+												l.enabled === false ? t("aiStation.live.cameraOff") : null,
+												l.resolution ? `${l.resolution}${l.fps ? ` · ${l.fps} fps` : ""}` : null,
+											]
+												.filter(Boolean)
+												.join(" · ")}
+										</p>
+										<p className="truncate text-xs text-text-secondary">
+											{l.plugins.length ? l.plugins.join(", ") : t("aiStation.cam.noPlugin")}
+										</p>
+									</div>
+									{canManage && (
+										<Popconfirm
+											title={t("aiCamera.stationsModal.unassignTitle", { station: l.station_name ?? l.station_id })}
+											description={<span className="block max-w-xs">{t("aiCamera.stationsModal.unassignHint")}</span>}
+											okText={t("aiCamera.stationsModal.unassign")}
+											cancelText={t("common.cancelText")}
+											okButtonProps={{ danger: true }}
+											disabled={!l.station_online || unassign.isPending}
+											onConfirm={() => unassign.mutateAsync(l.station_id).catch(() => {})}
+										>
+											<Tooltip title={l.station_online ? undefined : t("aiCamera.stationsModal.offlineHint")}>
+												<Button
+													variant="outline"
+													size="sm"
+													className="border-error/40 text-error hover:bg-error/10"
+													disabled={!l.station_online || unassign.isPending}
+												>
+													<Icon
+														icon={busyStation === l.station_id ? "svg-spinners:180-ring" : "solar:link-broken-linear"}
+														size={16}
+													/>
+													{t("aiCamera.stationsModal.unassign")}
+												</Button>
+											</Tooltip>
+										</Popconfirm>
+									)}
+								</li>
+							))}
+						</ul>
+					) : (
+						<p className="rounded-lg border border-dashed px-3 py-4 text-center text-sm text-text-secondary">
+							{t("aiCamera.stationsModal.none")}
+						</p>
+					)}
+				</section>
+
+				{canManage && (
+					<section className="flex flex-col gap-3 border-t pt-4">
+						<h4 className="text-sm font-semibold">{t("aiCamera.stationsModal.add")}</h4>
+						<p className="text-xs text-text-secondary">{t("aiCamera.assign.hint")}</p>
+						<Select
+							showSearch
+							value={stationId}
+							onChange={(v) => {
+								setStationId(v);
+								setPlugins([]);
+							}}
+							loading={stations.isLoading}
+							options={options}
+							optionFilterProp="search"
+							placeholder={t("aiCamera.assign.stationPlaceholder")}
+						/>
+						{stationId && (
+							<div className="flex flex-col gap-1.5">
+								<span className="text-sm font-medium">{t("aiCamera.assign.plugins")}</span>
+								{detail.isLoading ? (
+									<span className="text-sm text-text-secondary">{t("common.loadingText")}</span>
+								) : pluginOpts.length ? (
+									<Checkbox.Group
+										className="flex flex-col gap-2"
+										value={plugins}
+										onChange={(v) => setPlugins(v as string[])}
+										options={pluginOpts}
+									/>
+								) : (
+									<span className="text-sm text-text-disabled">{t("aiCamera.assign.noPlugins")}</span>
+								)}
+								<span className="text-xs text-text-secondary">{t("aiCamera.assign.pluginsHint")}</span>
+							</div>
 						)}
-						<span className="text-xs text-text-secondary">{t("aiCamera.assign.pluginsHint")}</span>
-					</div>
+						<div className="flex flex-wrap items-center justify-between gap-3">
+							<span className="flex items-center gap-2 text-sm">
+								<Switch
+									size="small"
+									checked={enabled}
+									onChange={setEnabled}
+									aria-label={t("aiCamera.assign.enabled")}
+								/>
+								{t("aiCamera.assign.enabled")}
+							</span>
+							<Button disabled={!stationId || assign.isPending} onClick={() => assign.mutate()}>
+								<Icon icon={assign.isPending ? "svg-spinners:180-ring" : "solar:link-round-angle-linear"} size={16} />
+								{t("aiCamera.assign.submit")}
+							</Button>
+						</div>
+					</section>
 				)}
-				<span className="flex items-center gap-2 text-sm">
-					<Switch size="small" checked={enabled} onChange={setEnabled} aria-label={t("aiCamera.assign.enabled")} />
-					{t("aiCamera.assign.enabled")}
-				</span>
 			</div>
 		</Modal>
 	);

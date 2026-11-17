@@ -3,7 +3,6 @@ import { Input, Popconfirm, Select, Table, Tag, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import type { Camera, CameraStationLink } from "#/camera";
 import aiStationService from "@/api/services/aiStationService";
@@ -19,14 +18,7 @@ import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
 import { cn } from "@/utils";
 import { LiveViewModal } from "../ai-station/components/live-view";
-import { AssignModal, CameraFormModal, reportPushed } from "./camera-modals";
-
-const STATE_DOT: Record<string, string> = {
-	live: "bg-success",
-	connecting: "bg-warning",
-	error: "bg-error",
-	off: "bg-text-disabled",
-};
+import { CameraFormModal, STATE_DOT, StationsModal } from "./camera-modals";
 
 /** Lần gán xem trực tiếp được: trạm online, trạm đã nhận camera, camera đang bật. */
 const watchable = (l: CameraStationLink) => l.station_online && l.remote_id !== null && l.enabled !== false;
@@ -38,7 +30,6 @@ const watchable = (l: CameraStationLink) => l.station_online && l.remote_id !== 
  */
 export default function AiCameraPage() {
 	const { t } = useTranslation();
-	const navigate = useNavigate();
 	const qc = useQueryClient();
 	const can = useCan();
 	const canManage = can(AI_STATION_MANAGE);
@@ -48,7 +39,7 @@ export default function AiCameraPage() {
 	const [tenantId, setTenantId] = useState<number | undefined>();
 	const [stationId, setStationId] = useState<string | undefined>();
 	const [editing, setEditing] = useState<Camera | null | undefined>(undefined);
-	const [assigning, setAssigning] = useState<Camera | null>(null);
+	const [managing, setManaging] = useState<number | null>(null);
 	const [live, setLive] = useState<{ camera: Camera; link: CameraStationLink } | null>(null);
 
 	const { data, isFetching, refetch } = useQuery({
@@ -77,14 +68,6 @@ export default function AiCameraPage() {
 		qc.invalidateQueries({ queryKey: ["camera"] });
 		qc.invalidateQueries({ queryKey: ["ai-station"] });
 	};
-	const unassign = useMutation({
-		mutationFn: ({ camera, station }: { camera: Camera; station: string }) =>
-			cameraService.unassign(camera.id, station),
-		onSuccess: (r) => {
-			done();
-			reportPushed(r.pushed, t("aiCamera.unassigned"));
-		},
-	});
 	const remove = useMutation({
 		mutationFn: (c: Camera) => cameraService.remove(c.id),
 		onSuccess: () => {
@@ -148,16 +131,7 @@ export default function AiCameraPage() {
 									</div>
 								}
 							>
-								<Tag
-									className="m-0 inline-flex cursor-pointer items-center gap-1.5"
-									closable={canManage}
-									onClick={() => navigate(`/ai/stations/${l.station_id}`)}
-									onClose={(e) => {
-										e.preventDefault();
-										e.stopPropagation();
-										unassign.mutate({ camera: c, station: l.station_id });
-									}}
-								>
+								<Tag className="m-0 inline-flex cursor-pointer items-center gap-1.5" onClick={() => setManaging(c.id)}>
 									<span
 										className={cn(
 											"h-2 w-2 rounded-full",
@@ -193,18 +167,18 @@ export default function AiCameraPage() {
 								<Icon icon="solar:play-circle-linear" size={18} />
 							</Button>
 						</Tooltip>
+						<Tooltip title={t("aiCamera.stationsModal.action")}>
+							<Button
+								variant="ghost"
+								size="icon"
+								onClick={() => setManaging(c.id)}
+								aria-label={t("aiCamera.stationsModal.action")}
+							>
+								<Icon icon="solar:link-round-angle-linear" size={18} />
+							</Button>
+						</Tooltip>
 						{canManage && (
 							<>
-								<Tooltip title={t("aiCamera.assign.action")}>
-									<Button
-										variant="ghost"
-										size="icon"
-										onClick={() => setAssigning(c)}
-										aria-label={t("aiCamera.assign.action")}
-									>
-										<Icon icon="solar:link-round-angle-linear" size={18} />
-									</Button>
-								</Tooltip>
 								<Tooltip title={t("common.editText")}>
 									<Button variant="ghost" size="icon" onClick={() => setEditing(c)} aria-label={t("common.editText")}>
 										<Icon icon="solar:pen-linear" size={18} />
@@ -332,7 +306,7 @@ export default function AiCameraPage() {
 			</Card>
 
 			<CameraFormModal camera={editing} onClose={() => setEditing(undefined)} />
-			<AssignModal camera={assigning} onClose={() => setAssigning(null)} />
+			<StationsModal cameraId={managing} canManage={canManage} onClose={() => setManaging(null)} />
 			{live && (
 				<LiveViewModal
 					station={{ id: live.link.station_id }}
