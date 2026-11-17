@@ -1084,7 +1084,9 @@
 			"lines1": "Biển 1 dòng",
 			"lines2": "Biển 2 dòng",
 			"score": "tin cậy {{score}}",
-			"noText": "Trạm khoanh vùng biển số, chưa đọc chữ — xem trên ảnh"
+			"noText": "Trạm chưa đọc được chữ — xem trên ảnh",
+			"textConf": "đọc chắc {{score}}",
+			"lowConf": "đọc chưa chắc ({{score}}) — đối chiếu ảnh"
 		}
 	},
 	"aiPlugin": {

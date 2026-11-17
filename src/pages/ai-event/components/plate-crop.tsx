@@ -4,6 +4,7 @@ import type { AiEvent } from "#/vigil";
 import { Icon } from "@/components/icon";
 import { cn } from "@/utils";
 import { useEventImage } from "./event-image";
+import { PlateText } from "./event-meta";
 
 /** `extra.plate` trạm gửi khi khoanh được biển số (model `mbfsn_lp_det_v8`). */
 export interface PlateInfo {
@@ -11,6 +12,8 @@ export interface PlateInfo {
 	kind?: string;
 	score?: number;
 	text?: string | null;
+	/** Độ tin cậy của chữ đọc được (0..1). */
+	text_conf?: number;
 }
 
 export function plateInfo(e: Pick<AiEvent, "extra">): PlateInfo | null {
@@ -19,8 +22,8 @@ export function plateInfo(e: Pick<AiEvent, "extra">): PlateInfo | null {
 }
 
 /**
- * Ảnh biển số trạm cắt ra (ảnh `crop` của sự kiện) + loại biển. Model hiện chỉ khoanh vùng,
- * chưa đọc chữ — người xem đọc trên ảnh. `compact` = ô nhỏ trong bảng.
+ * Ảnh biển số trạm cắt ra (ảnh `crop` của sự kiện) + chữ trạm đọc được + loại biển. Chữ tin
+ * cậy thấp vẫn hiện nhưng kèm cảnh báo, người xem đối chiếu ảnh. `compact` = ô nhỏ trong bảng.
  */
 export default function PlateCrop({
 	src,
@@ -57,14 +60,25 @@ export default function PlateCrop({
 	if (compact) {
 		return <Tooltip title={score ? `${label} · ${score}` : label}>{img}</Tooltip>;
 	}
+	const textConf = typeof info?.text_conf === "number" ? info.text_conf : 0;
 	return (
 		<div className="flex flex-col gap-1.5">
+			{info?.text && (
+				<span className="flex flex-wrap items-center gap-2">
+					<PlateText plate={info.text} />
+					<span className={cn("text-xs", textConf < 0.5 ? "text-warning" : "text-text-secondary")}>
+						{t(textConf < 0.5 ? "aiEvent.plate.lowConf" : "aiEvent.plate.textConf", {
+							score: `${Math.round(textConf * 100)}%`,
+						})}
+					</span>
+				</span>
+			)}
 			{img}
 			<span className="text-xs text-text-secondary">
 				{label}
 				{score && ` · ${t("aiEvent.plate.score", { score })}`}
 			</span>
-			<span className="text-xs text-text-disabled">{t("aiEvent.plate.noText")}</span>
+			{!info?.text && <span className="text-xs text-text-disabled">{t("aiEvent.plate.noText")}</span>}
 		</div>
 	);
 }
