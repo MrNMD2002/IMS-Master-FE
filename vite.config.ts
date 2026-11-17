@@ -38,6 +38,8 @@ export default defineConfig(({ mode }) => {
 				"/cmc/api": {
 					target: env.VITE_DEV_API_TARGET || "http://localhost:8010",
 					changeOrigin: true,
+					// Xem trực tiếp camera trạm AI đi qua WebSocket.
+					ws: true,
 				},
 			},
 		},
@@ -49,6 +51,8 @@ export default defineConfig(({ mode }) => {
 				"/cmc/api": {
 					target: env.VITE_DEV_API_TARGET || "http://localhost:8010",
 					changeOrigin: true,
+					// Xem trực tiếp camera trạm AI đi qua WebSocket.
+					ws: true,
 				},
 			},
 		},

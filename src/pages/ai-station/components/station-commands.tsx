@@ -11,6 +11,7 @@ import { Icon } from "@/components/icon";
 import { Button } from "@/ui/button";
 import { fmtDateTime } from "@/utils/format";
 import { useEventImage } from "../../ai-event/components/event-image";
+import { LiveViewModal } from "./live-view";
 
 const STATUS_COLOR: Record<AiCommand["status"], string> = {
 	ok: "success",
@@ -67,6 +68,7 @@ export function CameraControls({
 	const [snapshot, setSnapshot] = useState<AiCommand | null>(null);
 	/** Trạng thái người vừa bấm — hiện ngay, tới khi dữ liệu trạm gửi về khớp. */
 	const [want, setWant] = useState<boolean | null>(null);
+	const [live, setLive] = useState(false);
 	const send = useSendCommand(station, setSnapshot, () => setWant(null));
 	useEffect(() => {
 		if (want === null) return;
@@ -123,7 +125,27 @@ export function CameraControls({
 					<Icon icon={busy === "snapshot" ? "svg-spinners:180-ring" : "solar:camera-linear"} size={18} />
 				</Button>
 			</Tooltip>
+			<Tooltip
+				title={
+					!online
+						? t("aiStation.command.offline")
+						: !camera.enabled
+							? t("aiStation.live.cameraOff")
+							: t("aiStation.live.open")
+				}
+			>
+				<Button
+					variant="ghost"
+					size="icon"
+					disabled={!online || !camera.enabled}
+					onClick={() => setLive(true)}
+					aria-label={t("aiStation.live.open")}
+				>
+					<Icon icon="solar:play-circle-linear" size={18} />
+				</Button>
+			</Tooltip>
 			<SnapshotModal command={snapshot} onClose={() => setSnapshot(null)} />
+			{live && <LiveViewModal station={station} camera={camera} open={live} onClose={() => setLive(false)} />}
 		</div>
 	);
 }
