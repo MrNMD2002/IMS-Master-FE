@@ -18,6 +18,7 @@ import { cn } from "@/utils";
 import { fmtDateTime } from "@/utils/format";
 import { eventTypeLabel, pluginLabel } from "../ai-event/components/event-meta";
 import EventTable from "../ai-event/components/event-table";
+import { CameraControls, CommandHistory } from "./components/station-commands";
 import { PairingTokenModal, StationFormModal } from "./components/station-modals";
 import {
 	AccelLabel,
@@ -141,6 +142,12 @@ export default function AiStationDetailPage() {
 				) : (
 					<span className="text-sm text-text-disabled">{t("aiStation.cam.noPlugin")}</span>
 				),
+		},
+		{
+			title: t("aiStation.command.col.control"),
+			key: "control",
+			fixed: "right",
+			render: (_, c) => <CameraControls station={st} camera={c} online={st.online} canManage={canManage} />,
 		},
 	];
 
@@ -373,6 +380,16 @@ export default function AiStationDetailPage() {
 										locale={{ emptyText: <EmptyState text={t("aiStation.noPlugins")} /> }}
 									/>
 								),
+							},
+							{
+								key: "commands",
+								label: (
+									<span className="inline-flex items-center gap-1.5">
+										<Icon icon="solar:command-linear" size={16} />
+										{t("aiStation.tab.commands")}
+									</span>
+								),
+								children: tab === "commands" && <CommandHistory stationId={st.id} />,
 							},
 							{
 								key: "events",

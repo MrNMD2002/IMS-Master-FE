@@ -8,6 +8,8 @@
 import type { Paged } from "#/api";
 import type {
 	AccelKind,
+	AiCommand,
+	AiCommandName,
 	AiEvent,
 	AiEventPage,
 	AiEventQuery,
@@ -605,6 +607,14 @@ const localDay = (ms: number) => {
 
 // ── API giả ────────────────────────────────────────────────────────────────────────────────
 
+const mockCommands = new Map<string, AiCommand[]>();
+
+/** Ảnh chụp giả: khung xám ghi tên camera. */
+const fakeSnapshot = (name: string) =>
+	`data:image/svg+xml;utf8,${encodeURIComponent(
+		`<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720"><rect width="100%" height="100%" fill="#1f2937"/><text x="50%" y="50%" fill="#e5e7eb" font-family="sans-serif" font-size="40" text-anchor="middle">${name} — ảnh chụp thử</text></svg>`,
+	)}`;
+
 export const vigilMock = {
 	async listStations(params: { page?: number; page_size?: number; search?: string }): Promise<Paged<AiStation>> {
 		await sleep();
@@ -683,6 +693,49 @@ export const vigilMock = {
 			1,
 		);
 		events = events.filter((e) => e.station_id !== id);
+	},
+
+	async sendCommand(id: string, req: { cmd: AiCommandName; camera_id?: number }): Promise<AiCommand> {
+		await sleep(between(500, 1200));
+		const st = findStation(id);
+		if (st.offlineSince != null) throw new Error("Trạm đang mất kết nối — lệnh không tới được trạm");
+		const cam = st.cameras.find((c) => c.id === req.camera_id);
+		if (!cam) throw notFound();
+		const now = new Date().toISOString();
+		const cmd: AiCommand = {
+			id: crypto.randomUUID(),
+			station_id: id,
+			cmd: req.cmd,
+			camera_id: cam.id,
+			camera_name: cam.name,
+			args: {},
+			status: "ok",
+			error: null,
+			result: {},
+			image_url: null,
+			created_by_name: "Quản trị viên",
+			created_at: now,
+			acked_at: now,
+		};
+		if (req.cmd === "camera_enable" || req.cmd === "camera_disable") {
+			cam.enabled = req.cmd === "camera_enable";
+			cam.state = cam.enabled ? "live" : "off";
+			cmd.result = { enabled: cam.enabled };
+		} else if (req.cmd === "camera_restart" && !cam.enabled) {
+			cmd.status = "error";
+			cmd.error = "camera đang tắt — bật camera trước";
+		} else if (req.cmd === "snapshot") {
+			cmd.result = { width: 1280, height: 720 };
+			cmd.image_url = fakeSnapshot(cam.name);
+		}
+		mockCommands.set(id, [cmd, ...(mockCommands.get(id) ?? [])].slice(0, 30));
+		return cmd;
+	},
+
+	async listCommands(id: string): Promise<AiCommand[]> {
+		await sleep();
+		findStation(id);
+		return mockCommands.get(id) ?? [];
 	},
 
 	async listEvents(q: AiEventQuery): Promise<AiEventPage> {
