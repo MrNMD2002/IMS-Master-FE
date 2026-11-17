@@ -695,10 +695,35 @@ export const vigilMock = {
 		events = events.filter((e) => e.station_id !== id);
 	},
 
-	async sendCommand(id: string, req: { cmd: AiCommandName; camera_id?: number }): Promise<AiCommand> {
+	async sendCommand(
+		id: string,
+		req: { cmd: AiCommandName; camera_id?: number; args?: Record<string, unknown> },
+	): Promise<AiCommand> {
 		await sleep(between(500, 1200));
 		const st = findStation(id);
 		if (st.offlineSince != null) throw new Error("Trạm đang mất kết nối — lệnh không tới được trạm");
+		if (req.cmd === "station_settings") {
+			const days = Number(req.args?.retention_days);
+			(st as { retention_days?: number }).retention_days = days;
+			const now = new Date().toISOString();
+			const done: AiCommand = {
+				id: crypto.randomUUID(),
+				station_id: id,
+				cmd: req.cmd,
+				camera_id: null,
+				camera_name: null,
+				args: req.args ?? {},
+				status: "ok",
+				error: null,
+				result: { retention_days: days },
+				image_url: null,
+				created_by_name: "Quản trị viên",
+				created_at: now,
+				acked_at: now,
+			};
+			mockCommands.set(id, [done, ...(mockCommands.get(id) ?? [])].slice(0, 30));
+			return done;
+		}
 		const cam = st.cameras.find((c) => c.id === req.camera_id);
 		if (!cam) throw notFound();
 		const now = new Date().toISOString();

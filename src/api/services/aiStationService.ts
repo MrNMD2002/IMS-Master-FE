@@ -42,7 +42,7 @@ const real = {
 		apiClient.post<StationTokenRes>({ url: `/ai-stations/${id}/rotate-token` }).then(splitToken),
 	deleteStation: (id: string) => apiClient.request<void>({ url: `/ai-stations/${id}`, method: "DELETE" }),
 	/** Gửi lệnh và chờ trạm trả lời (tối đa ~20 s); lỗi 409 = trạm mất kết nối. */
-	sendCommand: (id: string, data: { cmd: AiCommandName; camera_id?: number }) =>
+	sendCommand: (id: string, data: { cmd: AiCommandName; camera_id?: number; args?: Record<string, unknown> }) =>
 		apiClient.post<AiCommand>({ url: `/ai-stations/${id}/commands`, data, timeout: 30_000 }),
 	listCommands: (id: string) => apiClient.get<AiCommand[]>({ url: `/ai-stations/${id}/commands` }),
 	listEvents: (params: AiEventQuery) => apiClient.get<AiEventPage>({ url: "/ai-events", params }),

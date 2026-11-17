@@ -902,7 +902,14 @@
 				"camera_enable": "Bật camera",
 				"camera_disable": "Tắt camera",
 				"camera_restart": "Khởi động lại camera",
-				"snapshot": "Chụp ảnh"
+				"snapshot": "Chụp ảnh",
+				"camera_create": "Thêm camera",
+				"camera_update": "Sửa camera",
+				"camera_delete": "Xoá camera",
+				"camera_plugins": "Gắn plugin cho camera",
+				"camera_zones": "Sửa vùng",
+				"plugin_settings": "Cấu hình plugin",
+				"station_settings": "Cài đặt trạm"
 			},
 			"status": {
 				"ok": "Thành công",
@@ -960,6 +967,15 @@
 		"card": {
 			"lastSeen": "Tín hiệu gần nhất",
 			"open": "Xem chi tiết"
+		},
+		"retention": {
+			"title": "Tự xoá sự kiện cũ",
+			"hint": "Sự kiện và ảnh bằng chứng cũ hơn số ngày này bị xoá — cả trên trạm lẫn trên CMC.",
+			"unit": "ngày",
+			"sync": "Đồng bộ hai chiều với Vigil: sửa ở trang Cài đặt > Lưu trữ của trạm hay ở đây đều được. Trạm dọn mỗi giờ, CMC dọn lúc 03:00 mỗi đêm.",
+			"saved": "Đã đặt giữ sự kiện {{days}} ngày",
+			"timeout": "Trạm chưa trả lời — xem kết quả ở tab Lệnh điều khiển",
+			"failed": "Không đổi được: {{error}}"
 		}
 	},
 	"aiEvent": {

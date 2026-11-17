@@ -90,6 +90,8 @@ export interface AiStation {
 	/** Lần ghép nối đầu (UTC). */
 	paired_at?: string | null;
 	created_at: string;
+	/** Giữ sự kiện bao nhiêu ngày (1–365) — đồng bộ hai chiều với Vigil. */
+	retention_days?: number;
 }
 
 /** `GET /ai-stations/{id}` */
@@ -194,7 +196,18 @@ export interface AiEventStats {
 }
 
 /** Lệnh CMC gửi xuống trạm (`POST /ai-stations/{id}/commands`). */
-export type AiCommandName = "camera_enable" | "camera_disable" | "camera_restart" | "snapshot";
+export type AiCommandName =
+	| "camera_enable"
+	| "camera_disable"
+	| "camera_restart"
+	| "snapshot"
+	| "camera_create"
+	| "camera_update"
+	| "camera_delete"
+	| "camera_plugins"
+	| "camera_zones"
+	| "plugin_settings"
+	| "station_settings";
 
 export interface AiCommand {
 	id: string;
