@@ -3,6 +3,7 @@ import type { TFunction } from "i18next";
 import type { AiEvent, AiEventStats } from "#/vigil";
 import { fmtDuration } from "@/utils/format";
 import { classLabel, EventTypeTag, PlateText } from "../ai-event/components/event-meta";
+import PlateCrop, { plateInfo } from "../ai-event/components/plate-crop";
 
 /**
  * Trang riêng của từng plugin Vigil (theo cách hệ tham khảo chia menu theo chức năng: mỗi chức
@@ -229,12 +230,11 @@ export const PLUGIN_PAGES: PluginPage[] = [
 				title: t("aiPlugin.col.plate"),
 				key: "plate",
 				render: (_, e) => {
-					const plate = str(e.extra?.plate_text);
-					return plate ? (
-						<PlateText plate={plate} />
-					) : (
-						<span className="text-xs text-text-disabled">{t("aiPlugin.col.noPlate")}</span>
-					);
+					const info = plateInfo(e);
+					const plate = str(e.extra?.plate_text) ?? (info?.text || undefined);
+					if (plate) return <PlateText plate={plate} />;
+					if (info && e.crop_url) return <PlateCrop src={e.crop_url} info={info} compact />;
+					return <span className="text-xs text-text-disabled">{t("aiPlugin.col.noPlate")}</span>;
 				},
 			},
 			{

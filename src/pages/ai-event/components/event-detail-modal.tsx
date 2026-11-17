@@ -18,6 +18,7 @@ import {
 	pluginLabel,
 	useClassLabel,
 } from "./event-meta";
+import PlateCrop, { type PlateInfo } from "./plate-crop";
 
 const fmtExtra = (v: unknown): string => {
 	if (v === null || v === undefined) return "—";
@@ -52,6 +53,12 @@ export default function EventDetailModal({ event, onClose }: { event: AiEvent | 
 		if ((k === "parked_secs" || k === "sustained_secs") && typeof v === "number") return fmtDuration(v, t);
 		if (k === "max_score" && typeof v === "number") return `${Math.round(v * 100)}%`;
 		if (k === "plate_text" && typeof v === "string") return <PlateText plate={v} />;
+		if (k === "plate" && v && typeof v === "object")
+			return (v as PlateInfo).text ? (
+				<PlateText plate={String((v as PlateInfo).text)} />
+			) : (
+				<PlateCrop src={e?.crop_url} info={v as PlateInfo} />
+			);
 		return fmtExtra(v);
 	};
 
