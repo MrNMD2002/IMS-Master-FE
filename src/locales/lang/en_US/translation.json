@@ -902,7 +902,14 @@
 				"camera_enable": "Turn camera on",
 				"camera_disable": "Turn camera off",
 				"camera_restart": "Restart camera",
-				"snapshot": "Take snapshot"
+				"snapshot": "Take snapshot",
+				"camera_create": "Add camera",
+				"camera_update": "Edit camera",
+				"camera_delete": "Delete camera",
+				"camera_plugins": "Assign plugins",
+				"camera_zones": "Edit zones",
+				"plugin_settings": "Plugin settings",
+				"station_settings": "Station settings"
 			},
 			"status": {
 				"ok": "Done",
@@ -960,6 +967,15 @@
 		"card": {
 			"lastSeen": "Last signal",
 			"open": "Open"
+		},
+		"retention": {
+			"title": "Auto-delete old events",
+			"hint": "Events and evidence images older than this are deleted — on the station and on CMC.",
+			"unit": "days",
+			"sync": "Synced both ways with Vigil: edit here or in the station's Settings > Storage. The station cleans hourly, CMC at 03:00 nightly.",
+			"saved": "Events are now kept for {{days}} days",
+			"timeout": "The station has not replied — check the Commands tab",
+			"failed": "Could not change: {{error}}"
 		}
 	},
 	"aiEvent": {
