@@ -180,22 +180,43 @@
 	border: none;
 }
 
-.cmc-camera__body {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 30px;
-	height: 30px;
-	border-radius: 50%;
-	color: #fff;
-	border: 2px solid #fff;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+/* Ghim giọt nước xoay -45° → mũi nhọn chĩa xuống đúng vị trí camera (iconAnchor 17,41). */
+.cmc-camera__pin {
+	position: relative;
+	z-index: 1;
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
 	cursor: pointer;
+	transition:
+		transform 0.15s ease,
+		filter 0.15s ease;
+}
+
+.cmc-camera:hover .cmc-camera__pin {
+	filter: brightness(1.08);
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+.cmc-camera--off .cmc-camera__pin {
+	opacity: 0.85;
+}
+
+/* Vòng sóng quanh mũi ghim khi camera đang phát. */
+.cmc-camera__pulse {
+	position: absolute;
+	left: 50%;
+	top: 41px;
+	width: 22px;
+	height: 8px;
+	margin-left: -11px;
+	margin-top: -4px;
+	border-radius: 50%;
+	border: 2px solid currentColor;
+	animation: cmc-pulse 1.8s ease-out infinite;
 }
 
 .cmc-camera__label {
 	position: absolute;
-	top: 32px;
+	top: 45px;
 	left: 50%;
 	transform: translateX(-50%);
 	white-space: nowrap;

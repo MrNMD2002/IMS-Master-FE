@@ -7,7 +7,7 @@ import cameraService from "@/api/services/cameraService";
 import { Icon } from "@/components/icon";
 import { LiveViewModal } from "@/pages/ai-station/components/live-view";
 import { Button } from "@/ui/button";
-import { type CameraMapState, cameraIcon } from "./markers";
+import { CAMERA_COLOR, type CameraMapState, cameraIcon } from "./markers";
 
 /** Trạng thái tốt nhất của camera trên các trạm đang chạy nó. */
 function cameraState(c: Camera): CameraMapState {
@@ -47,25 +47,49 @@ export default function CameraMarkers({ cameras }: { cameras: Camera[] }) {
 			{cameras.map((c) => {
 				const link = liveLink(c);
 				const direct = !link && /^rtsps?:\/\//i.test(c.source);
+				const state = cameraState(c);
+				const color = CAMERA_COLOR[state];
 				return (
 					<Marker
 						key={`c${c.id}`}
 						position={[c.latitude as number, c.longitude as number]}
-						icon={cameraIcon(cameraState(c))}
+						icon={cameraIcon(state, c.name)}
 					>
 						<Popup>
-							<div className="flex min-w-44 flex-col gap-1">
-								<span className="font-semibold">{c.name}</span>
-								{c.location && <span className="text-xs text-text-secondary">{c.location}</span>}
-								<span className="text-xs text-text-secondary">
-									{c.stations.length > 0
-										? c.stations.map((l) => l.station_name ?? l.station_id).join(", ")
-										: direct
-											? t("aiCamera.liveViaServer")
-											: t("aiCamera.liveNeedsStation")}
-								</span>
+							<div className="flex w-60 flex-col gap-2">
+								<div className="flex items-start gap-2.5">
+									<span
+										className="flex size-9 shrink-0 items-center justify-center rounded-lg text-white"
+										style={{ background: color }}
+									>
+										<Icon icon="solar:videocamera-record-bold" size={20} />
+									</span>
+									<div className="min-w-0 flex-1">
+										<p className="truncate font-semibold leading-tight">{c.name}</p>
+										<span className="mt-1 inline-flex items-center gap-1 text-xs font-medium" style={{ color }}>
+											<span className="size-1.5 rounded-full" style={{ background: color }} />
+											{t(`aiStation.camState.${state}`)}
+										</span>
+									</div>
+								</div>
+								{c.location && (
+									<p className="flex items-start gap-1.5 text-xs text-text-secondary">
+										<Icon icon="solar:map-point-linear" size={14} className="mt-px shrink-0" />
+										<span>{c.location}</span>
+									</p>
+								)}
+								<p className="flex items-start gap-1.5 text-xs text-text-secondary">
+									<Icon icon="solar:cpu-bolt-linear" size={14} className="mt-px shrink-0" />
+									<span>
+										{c.stations.length > 0
+											? c.stations.map((l) => l.station_name ?? l.station_id).join(", ")
+											: direct
+												? t("aiCamera.liveViaServer")
+												: t("aiCamera.liveNeedsStation")}
+									</span>
+								</p>
 								{(link || direct) && (
-									<Button size="sm" className="mt-1" onClick={() => setLive({ camera: c, link: link ?? null })}>
+									<Button size="sm" className="w-full" onClick={() => setLive({ camera: c, link: link ?? null })}>
 										<Icon icon="solar:play-circle-bold" size={16} />
 										{t("aiStation.live.open")}
 									</Button>

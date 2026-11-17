@@ -897,7 +897,15 @@
 			"offOnStation": "Plugin đang tắt trên trạm",
 			"model": "Model",
 			"eventTypes": "Loại sự kiện",
-			"usedBy": "Số camera dùng"
+			"usedBy": "Số camera dùng",
+			"onIdle": "Bật · chưa gán camera",
+			"turnOn": "Bật plugin trên trạm",
+			"turnOff": "Tắt plugin trên trạm (mọi camera ngừng chạy plugin này)",
+			"turnedOn": "Đã bật plugin {{name}} trên trạm",
+			"turnedOff": "Đã tắt plugin {{name}} trên trạm",
+			"timeout": "Trạm chưa xác nhận đổi plugin {{name}} — kiểm tra lại sau ít giây",
+			"noModel": "Chưa có model",
+			"noModelHint": "Trạm chưa cài model {{files}} — chép tệp vào %LOCALAPPDATA%\\Vigil\\models trên máy trạm rồi khởi động lại Vigil"
 		},
 		"notPaired": "Chưa ghép nối",
 		"live": {

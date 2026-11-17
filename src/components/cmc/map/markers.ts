@@ -88,15 +88,27 @@ export const CAMERA_COLOR: Record<CameraMapState, string> = {
 	off: "#637381",
 };
 
-/** Camera giám sát. */
+/**
+ * Camera giám sát: ghim giọt nước (mũi ghim = vị trí camera), biểu tượng camera ở giữa, màu theo
+ * trạng thái, vòng sóng khi đang phát, nhãn tên bên dưới. Kích thước / hình ghim đặt cả trong
+ * `style` để vẫn đúng hình khi CSS bản đồ chưa nạp (trước đây rơi về khối chữ nhật xám).
+ */
 export function cameraIcon(state: CameraMapState, label?: string | null) {
 	const color = CAMERA_COLOR[state];
+	const pulse = state === "live" ? `<span class="cmc-camera__pulse" style="color:${color}"></span>` : "";
 	const text = label ? `<span class="cmc-camera__label">${escapeHtml(label)}</span>` : "";
+	const pin =
+		`width:34px;height:34px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);` +
+		`background:${color};border:2px solid #fff;box-sizing:border-box;display:flex;align-items:center;justify-content:center`;
 	return L.divIcon({
-		className: "cmc-camera",
-		html: `<div class="cmc-camera__body" style="background:${color}">${CAMERA_SVG}</div>${text}`,
-		iconSize: [30, 30],
-		iconAnchor: [15, 15],
-		popupAnchor: [0, -16],
+		className: `cmc-camera cmc-camera--${state}`,
+		html:
+			`${pulse}<div class="cmc-camera__pin" style="${pin}">` +
+			`<span class="cmc-camera__glyph" style="transform:rotate(45deg);display:flex;color:#fff">${CAMERA_SVG}</span>` +
+			`</div>${text}`,
+		iconSize: [34, 42],
+		iconAnchor: [17, 41],
+		popupAnchor: [0, -40],
+		tooltipAnchor: [0, -40],
 	});
 }

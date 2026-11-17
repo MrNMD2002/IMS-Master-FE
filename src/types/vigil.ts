@@ -51,7 +51,12 @@ export interface PluginInfo {
 	version: string;
 	display_name: string;
 	description?: string;
+	/** Công tắc chung của plugin trên trạm (đổi bằng lệnh `plugin_settings`). */
 	enabled: boolean;
+	/** Đang chạy trên ít nhất một camera bật (trạm cũ không gửi). */
+	in_use?: boolean;
+	/** Tệp model plugin cần mà trạm chưa có — khác rỗng thì plugin không bật được. */
+	missing_models?: string[];
 	event_types: string[];
 	model?: string | null;
 	params_schema?: Record<string, unknown>;
