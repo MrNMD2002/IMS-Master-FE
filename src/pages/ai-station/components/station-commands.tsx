@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Modal, Switch, Table, Tag, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import type { AiCommand, AiCommandName, AiStation, StationCamera } from "#/vigil";
@@ -20,9 +20,10 @@ const STATUS_COLOR: Record<AiCommand["status"], string> = {
 };
 
 /** Gửi lệnh + báo kết quả; dùng chung cho các nút trên một dòng camera. */
-function useSendCommand(station: AiStation, onSnapshot: (c: AiCommand) => void) {
+function useSendCommand(station: AiStation, onSnapshot: (c: AiCommand) => void, onFailed?: () => void) {
 	const { t } = useTranslation();
 	const qc = useQueryClient();
+	const refresh = () => qc.invalidateQueries({ queryKey: ["ai-station", "detail", station.id] });
 	return useMutation({
 		mutationFn: (v: { cmd: AiCommandName; camera: StationCamera }) =>
 			aiStationService.sendCommand(station.id, { cmd: v.cmd, camera_id: v.camera.id }),
@@ -35,10 +36,15 @@ function useSendCommand(station: AiStation, onSnapshot: (c: AiCommand) => void) 
 				toast.warning(t("aiStation.command.timeout", { what, camera: v.camera.name }));
 			} else {
 				toast.error(t("aiStation.command.failed", { what, error: c.error ?? "" }));
+				onFailed?.();
 			}
-			qc.invalidateQueries({ queryKey: ["ai-station", "detail", station.id] });
+			// Trạm trả lời lệnh TRƯỚC khi gửi lại danh sách camera (MQTT) — tải lại thêm vài
+			// nhịp để trạng thái mới về tới trang mà không phải F5.
+			refresh();
+			for (const ms of [800, 2000, 4500]) setTimeout(refresh, ms);
 			qc.invalidateQueries({ queryKey: ["ai-station", "commands", station.id] });
 		},
+		onError: () => onFailed?.(),
 	});
 }
 
@@ -59,7 +65,20 @@ export function CameraControls({
 }) {
 	const { t } = useTranslation();
 	const [snapshot, setSnapshot] = useState<AiCommand | null>(null);
-	const send = useSendCommand(station, setSnapshot);
+	/** Trạng thái người vừa bấm — hiện ngay, tới khi dữ liệu trạm gửi về khớp. */
+	const [want, setWant] = useState<boolean | null>(null);
+	const send = useSendCommand(station, setSnapshot, () => setWant(null));
+	useEffect(() => {
+		if (want === null) return;
+		if (camera.enabled === want) {
+			setWant(null);
+			return;
+		}
+		// Trạm không gửi về trạng thái mới (lỗi mạng…) → thôi giữ, theo dữ liệu thật.
+		const id = setTimeout(() => setWant(null), 15_000);
+		return () => clearTimeout(id);
+	}, [want, camera.enabled]);
+	const checked = want ?? camera.enabled;
 	const busy = send.isPending ? send.variables?.cmd : undefined;
 	const locked = !online || !canManage;
 	const why = !canManage ? t("aiStation.command.noPermission") : t("aiStation.command.offline");
@@ -69,17 +88,20 @@ export function CameraControls({
 			<Tooltip title={locked ? why : camera.enabled ? t("aiStation.command.turnOff") : t("aiStation.command.turnOn")}>
 				<Switch
 					size="small"
-					checked={camera.enabled}
+					checked={checked}
 					disabled={locked || !!busy}
 					loading={busy === "camera_enable" || busy === "camera_disable"}
-					onChange={(on) => send.mutate({ cmd: on ? "camera_enable" : "camera_disable", camera })}
+					onChange={(on) => {
+						setWant(on);
+						send.mutate({ cmd: on ? "camera_enable" : "camera_disable", camera });
+					}}
 				/>
 			</Tooltip>
 			<Tooltip title={locked ? why : t("aiStation.command.name.camera_restart")}>
 				<Button
 					variant="ghost"
 					size="icon"
-					disabled={locked || !camera.enabled || !!busy}
+					disabled={locked || !checked || !!busy}
 					onClick={() => send.mutate({ cmd: "camera_restart", camera })}
 					aria-label={t("aiStation.command.name.camera_restart")}
 				>
