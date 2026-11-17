@@ -636,7 +636,7 @@ export const vigilMock = {
 		const id = `st-${Array.from(crypto.getRandomValues(new Uint8Array(2)), (b) => b.toString(16).padStart(2, "0")).join("")}`;
 		const st: MockStation = {
 			id,
-			name: req.name.trim(),
+			name: req.name?.trim() || "Trạm AI mới",
 			location: req.location?.trim() ?? "",
 			tenant_name: "—",
 			hostname: "",

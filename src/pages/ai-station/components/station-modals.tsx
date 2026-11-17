@@ -10,7 +10,7 @@ import { Icon } from "@/components/icon";
 import { Button } from "@/ui/button";
 
 interface FormValues {
-	name: string;
+	name?: string;
 	location?: string;
 	tenant_id?: number | null;
 }
@@ -46,8 +46,14 @@ export function StationFormModal({
 	const save = useMutation({
 		mutationFn: (v: FormValues) =>
 			station
-				? aiStationService.updateStation(station.id, { name: v.name, location: v.location ?? "" }).then(() => null)
-				: aiStationService.createStation({ name: v.name, location: v.location, tenant_id: v.tenant_id ?? null }),
+				? aiStationService
+						.updateStation(station.id, { name: v.name ?? "", location: v.location ?? "" })
+						.then(() => null)
+				: aiStationService.createStation({
+						name: v.name?.trim() || undefined,
+						location: v.location,
+						tenant_id: v.tenant_id ?? null,
+					}),
 		onSuccess: (r) => {
 			qc.invalidateQueries({ queryKey: ["ai-station"] });
 			qc.invalidateQueries({ queryKey: ["ai-event"] });
@@ -72,7 +78,11 @@ export function StationFormModal({
 				<Form.Item
 					name="name"
 					label={t("aiStation.field.name")}
-					rules={[{ required: true, whitespace: true, message: t("aiStation.form.nameRequired") }, { max: 120 }]}
+					rules={[
+						...(editing ? [{ required: true, whitespace: true, message: t("aiStation.form.nameRequired") }] : []),
+						{ max: 120 },
+					]}
+					extra={editing ? undefined : t("aiStation.form.nameHint")}
 				>
 					<Input placeholder={t("aiStation.form.namePlaceholder")} autoFocus />
 				</Form.Item>
@@ -80,7 +90,7 @@ export function StationFormModal({
 					<Input placeholder={t("aiStation.form.locationPlaceholder")} />
 				</Form.Item>
 				{!editing && (
-					<Form.Item name="tenant_id" label={t("aiStation.field.tenant")} extra={t("aiStation.form.tenantHint")}>
+					<Form.Item name="tenant_id" label={t("aiStation.form.tenantLabel")} extra={t("aiStation.form.tenantHint")}>
 						<TenantSelect />
 					</Form.Item>
 				)}
@@ -102,7 +112,7 @@ export function PairingTokenModal({ result, onClose }: { result: AiStationWithTo
 		}
 	};
 
-	const steps = [t("aiStation.token.step1"), t("aiStation.token.step2", { server }), t("aiStation.token.step3")];
+	const steps = [t("aiStation.token.step1"), t("aiStation.token.step2"), t("aiStation.token.step3")];
 
 	return (
 		<Modal
@@ -124,14 +134,26 @@ export function PairingTokenModal({ result, onClose }: { result: AiStationWithTo
 						{t("aiStation.token.for")} <b className="text-text-primary">{result.station.name}</b>{" "}
 						<span className="font-mono text-xs">({result.station.id})</span>
 					</p>
-					<div className="flex items-center gap-2 rounded-xl border-2 border-dashed border-primary/40 bg-primary/5 p-4">
-						<code className="flex-1 select-all break-all text-center font-mono text-xl font-bold tracking-wider sm:text-2xl">
-							{result.pairing_token}
-						</code>
-						<Button onClick={() => copy(result.pairing_token, t("aiStation.token.copied"))}>
-							<Icon icon="solar:copy-bold" size={18} />
-							{t("aiStation.token.copy")}
-						</Button>
+					<div className="grid grid-cols-1 gap-3 rounded-xl border-2 border-dashed border-primary/40 bg-primary/5 p-4 sm:grid-cols-[auto_1fr_auto] sm:items-center">
+						<CopyRow
+							label={t("aiStation.field.id")}
+							value={result.station.id}
+							onCopy={() => copy(result.station.id, t("aiStation.token.idCopied"))}
+							copyText={t("aiStation.token.copy")}
+						/>
+						<CopyRow
+							label={t("aiStation.token.code")}
+							value={result.pairing_token}
+							big
+							onCopy={() => copy(result.pairing_token, t("aiStation.token.copied"))}
+							copyText={t("aiStation.token.copy")}
+						/>
+						<CopyRow
+							label={t("aiStation.token.server")}
+							value={server}
+							onCopy={() => copy(server, t("aiStation.token.serverCopied"))}
+							copyText={t("aiStation.token.copy")}
+						/>
 					</div>
 					<div className="flex items-start gap-2 rounded-lg bg-warning/10 px-3 py-2 text-sm text-warning-dark dark:text-warning">
 						<Icon icon="solar:danger-triangle-bold" size={18} className="mt-0.5 shrink-0" />
@@ -145,19 +167,7 @@ export function PairingTokenModal({ result, onClose }: { result: AiStationWithTo
 									<span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
 										{i + 1}
 									</span>
-									<span className="pt-0.5 text-sm">
-										{s}
-										{i === 1 && (
-											<button
-												type="button"
-												className="ml-1 inline-flex items-center gap-0.5 text-xs text-primary hover:underline"
-												onClick={() => copy(server, t("aiStation.token.serverCopied"))}
-											>
-												<Icon icon="solar:copy-linear" size={14} />
-												{t("aiStation.token.copyServer")}
-											</button>
-										)}
-									</span>
+									<span className="pt-0.5 text-sm">{s}</span>
 								</li>
 							))}
 						</ol>
@@ -165,5 +175,39 @@ export function PairingTokenModal({ result, onClose }: { result: AiStationWithTo
 				</div>
 			)}
 		</Modal>
+	);
+}
+
+/** Một dòng "nhãn — giá trị — Sao chép" trong hộp mã (3 cột trên màn rộng, xếp chồng trên điện thoại). */
+function CopyRow({
+	label,
+	value,
+	big,
+	onCopy,
+	copyText,
+}: {
+	label: string;
+	value: string;
+	big?: boolean;
+	onCopy: () => void;
+	copyText: string;
+}) {
+	return (
+		<>
+			<span className="text-sm text-text-secondary">{label}</span>
+			<code
+				className={
+					big
+						? "select-all break-all font-mono text-xl font-bold tracking-wider sm:text-2xl"
+						: "select-all break-all font-mono text-base"
+				}
+			>
+				{value}
+			</code>
+			<Button variant="outline" size="sm" onClick={onCopy}>
+				<Icon icon="solar:copy-linear" size={16} />
+				{copyText}
+			</Button>
+		</>
 	);
 }
