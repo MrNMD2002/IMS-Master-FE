@@ -1230,7 +1230,19 @@
 			"noPlugins": "Trạm chưa cài plugin nào",
 			"enabled": "Bật camera ngay",
 			"submit": "Gán",
-			"done": "Đã gán camera cho trạm"
+			"done": "Đã gán camera cho trạm",
+			"unpaired": "chưa ghép nối"
+		},
+		"stationsModal": {
+			"action": "Trạm xử lý camera",
+			"title": "Trạm xử lý · {{name}}",
+			"current": "Đang chạy trên {{n}} trạm",
+			"none": "Camera chưa gán cho trạm nào — gán ở phần bên dưới.",
+			"unassign": "Gỡ khỏi trạm",
+			"unassignTitle": "Gỡ camera khỏi trạm \"{{station}}\"?",
+			"unassignHint": "Trạm sẽ xoá camera này và dừng mọi chức năng AI trên camera. Camera vẫn còn trong danh mục, gán lại được bất cứ lúc nào.",
+			"offlineHint": "Trạm đang mất kết nối — chờ trạm kết nối lại rồi gỡ",
+			"add": "Gán thêm trạm"
 		}
 	}
 }
