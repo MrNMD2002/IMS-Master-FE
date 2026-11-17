@@ -35,7 +35,10 @@
 			"group": {
 				"operation": "Điều hành",
 				"management": "Quản lý",
-				"system": "Hệ thống"
+				"system": "Hệ thống",
+				"ai": "Giám sát AI",
+				"ai_security": "An ninh",
+				"ai_traffic": "Giao thông"
 			},
 			"dashboard": "Tổng quan",
 			"monitoring": "Giám sát trực tuyến",
@@ -976,14 +979,16 @@
 			"smoke": "Phát hiện khói",
 			"illegal_parking": "Đỗ xe sai quy định",
 			"red_light": "Vượt đèn đỏ",
-			"wrong_way": "Đi ngược chiều"
+			"wrong_way": "Đi ngược chiều",
+			"zone_intrusion": "Xâm nhập vùng"
 		},
 		"plugin": {
 			"people_counting": "Đếm người",
 			"crowd_detection": "Phát hiện đám đông",
 			"smoke_fire_detection": "Phát hiện khói lửa",
 			"parking_violation_detection": "Đậu xe vi phạm",
-			"traffic_violation_detection": "Vi phạm giao thông"
+			"traffic_violation_detection": "Vi phạm giao thông",
+			"zone_intrusion": "Xâm nhập vùng cấm"
 		},
 		"cls": {
 			"person": "Người",
@@ -1010,7 +1015,8 @@
 			"crowd": "{{n}} người · ngưỡng {{threshold}} · kéo dài {{dur}}",
 			"parking": "{{vehicle}} · đỗ {{dur}}",
 			"plate": "Biển số {{plate}}",
-			"frames": "{{n}} khung hình liên tiếp"
+			"frames": "{{n}} khung hình liên tiếp",
+			"dwell": "Lưu lại {{dur}}"
 		},
 		"field": {
 			"time": "Thời điểm",
@@ -1056,6 +1062,50 @@
 			"parked": "Thời gian đỗ",
 			"plate": "Biển số xe",
 			"noPlate": "Chưa đọc được biển số"
+		}
+	},
+	"aiPlugin": {
+		"notFound": "Không có chức năng này",
+		"view": {
+			"list": "Danh sách",
+			"stats": "Thống kê"
+		},
+		"desc": {
+			"smoke_fire_detection": "Cảnh báo lửa và khói từ camera của các trạm AI",
+			"crowd_detection": "Đám đông vượt ngưỡng số người và kéo dài",
+			"zone_intrusion": "Người hoặc phương tiện đi vào vùng cấm đã vẽ",
+			"people_counting": "Số người trong vùng theo từng lần trạm báo",
+			"parking_violation_detection": "Phương tiện đỗ quá thời gian cho phép trong vùng cấm đỗ"
+		},
+		"col": {
+			"people": "Số người",
+			"sustained": "Kéo dài",
+			"frames": "Số khung xác nhận",
+			"objects": "Đối tượng",
+			"dwell": "Thời gian lưu",
+			"vehicle": "Phương tiện",
+			"parked": "Thời gian đỗ",
+			"day": "Ngày"
+		},
+		"kpi": {
+			"perDay": "≈ {{n}} sự kiện / ngày",
+			"fire": "Phát hiện lửa",
+			"smoke": "Phát hiện khói",
+			"peakPeople": "Số người cao nhất",
+			"avgPeople": "Trung bình mỗi lần báo",
+			"avgSustained": "Kéo dài trung bình",
+			"longest": "Lâu nhất {{dur}}",
+			"avgDwell": "Lưu lại trung bình",
+			"maxDwell": "Lưu lại lâu nhất",
+			"avgParked": "Đỗ trung bình",
+			"maxParked": "Đỗ lâu nhất",
+			"peakHour": "Giờ cao điểm"
+		},
+		"chart": {
+			"byDay": "Xu hướng theo ngày",
+			"byCamera": "Theo camera",
+			"byHour": "Theo giờ trong ngày",
+			"dailyTable": "Chi tiết theo ngày"
 		}
 	}
 }

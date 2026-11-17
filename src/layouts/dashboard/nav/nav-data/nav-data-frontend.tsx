@@ -1,6 +1,7 @@
 import { Icon } from "@/components/icon";
 import type { NavProps } from "@/components/nav";
 import { AI_STATION_READ_GATE, INCIDENT_READ_GATE, P, TENANT_READ_GATE } from "@/constants/permission";
+import { PLUGIN_PAGES } from "@/pages/ai-plugin/plugins";
 
 /** Menu trái. `auth` = cần ít nhất một trong các quyền. */
 export const frontendNavData: NavProps["data"] = [
@@ -20,16 +21,6 @@ export const frontendNavData: NavProps["data"] = [
 				auth: [P.GPS_READ],
 			},
 			{
-				title: "sys.nav.aiStation",
-				path: "/ai",
-				icon: <Icon icon="solar:server-square-cloud-bold-duotone" size="24" />,
-				auth: AI_STATION_READ_GATE,
-				children: [
-					{ title: "sys.nav.aiStationList", path: "/ai/stations", auth: AI_STATION_READ_GATE },
-					{ title: "sys.nav.aiEvent", path: "/ai/events", auth: AI_STATION_READ_GATE },
-				],
-			},
-			{
 				title: "sys.nav.incident",
 				path: "/incidents",
 				icon: <Icon icon="solar:siren-rounded-bold-duotone" size="24" />,
@@ -43,6 +34,38 @@ export const frontendNavData: NavProps["data"] = [
 			},
 		],
 	},
+	// Giám sát AI — theo cách hệ tham khảo chia menu: trạm + từng chức năng (plugin) có
+	// "Danh sách" và "Thống kê" riêng, gom theo lĩnh vực An ninh / Giao thông.
+	{
+		name: "sys.nav.group.ai",
+		items: [
+			{
+				title: "sys.nav.aiStation",
+				path: "/ai/stations",
+				icon: <Icon icon="solar:server-square-cloud-bold-duotone" size="24" />,
+				auth: AI_STATION_READ_GATE,
+			},
+			{
+				title: "sys.nav.aiEvent",
+				path: "/ai/events",
+				icon: <Icon icon="solar:bell-bing-bold-duotone" size="24" />,
+				auth: AI_STATION_READ_GATE,
+			},
+		],
+	},
+	...(["security", "traffic"] as const).map((group) => ({
+		name: `sys.nav.group.ai_${group}`,
+		items: PLUGIN_PAGES.filter((p) => p.group === group).map((p) => ({
+			title: `aiEvent.plugin.${p.name}`,
+			path: `/ai/p/${p.slug}`,
+			icon: <Icon icon={p.icon} size="24" />,
+			auth: AI_STATION_READ_GATE,
+			children: [
+				{ title: "aiPlugin.view.list", path: `/ai/p/${p.slug}`, auth: AI_STATION_READ_GATE },
+				{ title: "aiPlugin.view.stats", path: `/ai/p/${p.slug}/stats`, auth: AI_STATION_READ_GATE },
+			],
+		})),
+	})),
 	{
 		name: "sys.nav.group.management",
 		items: [
