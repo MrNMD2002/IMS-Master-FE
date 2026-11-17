@@ -1084,7 +1084,9 @@
 			"lines1": "1-line plate",
 			"lines2": "2-line plate",
 			"score": "confidence {{score}}",
-			"noText": "The station locates the plate but does not read it yet — see the image"
+			"noText": "The station could not read the text — see the image",
+			"textConf": "read confidence {{score}}",
+			"lowConf": "uncertain read ({{score}}) — check the image"
 		}
 	},
 	"aiPlugin": {
