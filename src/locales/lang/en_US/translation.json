@@ -897,7 +897,15 @@
 			"offOnStation": "Plugin disabled on this station",
 			"model": "Model",
 			"eventTypes": "Event types",
-			"usedBy": "Cameras using"
+			"usedBy": "Cameras using",
+			"onIdle": "On · no camera",
+			"turnOn": "Turn the plugin on at the station",
+			"turnOff": "Turn the plugin off at the station (all cameras stop running it)",
+			"turnedOn": "Plugin {{name}} turned on at the station",
+			"turnedOff": "Plugin {{name}} turned off at the station",
+			"timeout": "The station has not confirmed the change to {{name}} yet — check again shortly",
+			"noModel": "No model",
+			"noModelHint": "The station is missing model {{files}} — copy it to %LOCALAPPDATA%\\Vigil\\models on the station and restart Vigil"
 		},
 		"notPaired": "Not paired",
 		"live": {

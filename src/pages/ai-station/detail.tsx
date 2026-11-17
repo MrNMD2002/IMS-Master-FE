@@ -18,6 +18,7 @@ import { cn } from "@/utils";
 import { fmtDateTime } from "@/utils/format";
 import { eventTypeLabel } from "../ai-event/components/event-meta";
 import EventTable from "../ai-event/components/event-table";
+import PluginSwitch from "./components/plugin-switch";
 import PulseStrip from "./components/pulse-strip";
 import StationCameras from "./components/station-cameras";
 import { CommandHistory } from "./components/station-commands";
@@ -126,8 +127,7 @@ export default function AiStationDetailPage() {
 		{
 			title: t("common.statusLabel"),
 			dataIndex: "enabled",
-			render: (on: boolean) =>
-				on ? <Tag color="success">{t("aiStation.plugin.on")}</Tag> : <Tag>{t("aiStation.plugin.off")}</Tag>,
+			render: (_, p) => <PluginSwitch station={st} plugin={p} canManage={canManage} />,
 		},
 		{
 			title: t("aiStation.field.version"),
@@ -137,7 +137,12 @@ export default function AiStationDetailPage() {
 		{
 			title: t("aiStation.plugin.model"),
 			dataIndex: "model",
-			render: (v) => (v ? <span className="font-mono text-xs">{v}</span> : "—"),
+			render: (v, p) =>
+				v ? (
+					<span className={cn("font-mono text-xs", p.missing_models?.length && "text-error line-through")}>{v}</span>
+				) : (
+					"—"
+				),
 		},
 		{
 			title: t("aiStation.plugin.eventTypes"),
@@ -161,7 +166,7 @@ export default function AiStationDetailPage() {
 	];
 
 	const s = st.status;
-	const pluginsOn = st.plugins.filter((p) => p.enabled).length;
+	const pluginsOn = st.plugins.filter((p) => p.enabled && !p.missing_models?.length).length;
 	const tabLabel = (icon: string, text: string, count?: number) => (
 		<span className="inline-flex items-center gap-1.5">
 			<Icon icon={icon} size={16} />
