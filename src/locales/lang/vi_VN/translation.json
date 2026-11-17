@@ -976,7 +976,8 @@
 			"saved": "Đã đặt giữ sự kiện {{days}} ngày",
 			"timeout": "Trạm chưa trả lời — xem kết quả ở tab Lệnh điều khiển",
 			"failed": "Không đổi được: {{error}}"
-		}
+		},
+		"emptyFiltered": "Không có trạm nào khớp bộ lọc"
 	},
 	"aiEvent": {
 		"description": "Cảnh báo do các trạm AI phát hiện từ camera",
