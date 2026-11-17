@@ -976,7 +976,8 @@
 			"saved": "Events are now kept for {{days}} days",
 			"timeout": "The station has not replied — check the Commands tab",
 			"failed": "Could not change: {{error}}"
-		}
+		},
+		"emptyFiltered": "No station matches the filter"
 	},
 	"aiEvent": {
 		"description": "Alerts raised by AI stations from camera feeds",
