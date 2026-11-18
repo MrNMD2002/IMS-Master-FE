@@ -1,6 +1,12 @@
 import { Icon } from "@/components/icon";
 import type { NavProps } from "@/components/nav";
-import { AI_STATION_READ_GATE, INCIDENT_READ_GATE, P, TENANT_READ_GATE } from "@/constants/permission";
+import {
+	AI_STATION_READ_GATE,
+	INCIDENT_READ_GATE,
+	P,
+	PLUGIN_PERMISSION,
+	TENANT_READ_GATE,
+} from "@/constants/permission";
 import { PLUGIN_PAGES } from "@/pages/ai-plugin/plugins";
 
 /** Menu trái. `auth` = cần ít nhất một trong các quyền. */
@@ -61,16 +67,20 @@ export const frontendNavData: NavProps["data"] = [
 	},
 	...(["security", "traffic"] as const).map((group) => ({
 		name: `sys.nav.group.ai_${group}`,
-		items: PLUGIN_PAGES.filter((p) => p.group === group).map((p) => ({
-			title: `aiEvent.plugin.${p.name}`,
-			path: `/ai/p/${p.slug}`,
-			icon: <Icon icon={p.icon} size="24" />,
-			auth: AI_STATION_READ_GATE,
-			children: [
-				{ title: "aiPlugin.view.list", path: `/ai/p/${p.slug}`, auth: AI_STATION_READ_GATE },
-				{ title: "aiPlugin.view.stats", path: `/ai/p/${p.slug}/stats`, auth: AI_STATION_READ_GATE },
-			],
-		})),
+		// Mỗi chức năng AI một quyền xem riêng (`PLUGIN_PERMISSION`).
+		items: PLUGIN_PAGES.filter((p) => p.group === group).map((p) => {
+			const auth = [PLUGIN_PERMISSION[p.name]];
+			return {
+				title: `aiEvent.plugin.${p.name}`,
+				path: `/ai/p/${p.slug}`,
+				icon: <Icon icon={p.icon} size="24" />,
+				auth,
+				children: [
+					{ title: "aiPlugin.view.list", path: `/ai/p/${p.slug}`, auth },
+					{ title: "aiPlugin.view.stats", path: `/ai/p/${p.slug}/stats`, auth },
+				],
+			};
+		}),
 	})),
 	{
 		name: "sys.nav.group.management",

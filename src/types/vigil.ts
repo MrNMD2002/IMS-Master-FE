@@ -57,6 +57,8 @@ export interface PluginInfo {
 	in_use?: boolean;
 	/** Tệp model plugin cần mà trạm chưa có — khác rỗng thì plugin không bật được. */
 	missing_models?: string[];
+	/** Trạm cho hiện plugin này trên giao diện (trạm cũ không gửi). */
+	shown?: boolean;
 	event_types: string[];
 	model?: string | null;
 	params_schema?: Record<string, unknown>;
@@ -197,7 +199,7 @@ export interface AiEventStats {
 	/** Từ `extra.count` (đếm người, đám đông). */
 	peak_count?: number | null;
 	avg_count?: number | null;
-	/** Từ `extra.sustained_secs` / `parked_secs` / `dwell_seconds`. */
+	/** Từ `extra.dwell_total_seconds` (tổng thật) / `sustained_secs` / `parked_secs` / `dwell_seconds`. */
 	avg_duration_s?: number | null;
 	max_duration_s?: number | null;
 }

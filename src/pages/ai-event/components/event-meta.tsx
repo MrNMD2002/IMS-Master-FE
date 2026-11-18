@@ -13,7 +13,7 @@ import { fmtDuration } from "@/utils/format";
  * biết thì rơi về tên gốc do trạm gửi lên.
  */
 
-/** Plugin Vigil thật (tên kỹ thuật) — chỉ những plugin đang mở trên CMC (`ENABLED_AI_PLUGINS`). */
+/** Plugin Vigil thật (tên kỹ thuật) — chỉ những plugin đang mở trên CMC (`PLUGIN_PERMISSION`). */
 export const KNOWN_PLUGINS = [
 	"people_counting",
 	"crowd_detection",
@@ -153,14 +153,14 @@ export function useEventSummary() {
 			case "illegal_parking":
 				return t("aiEvent.summary.parking", {
 					vehicle: classLabel(t, str(x.vehicle_class) ?? e.objects[0]?.class ?? "car"),
-					dur: fmtDuration(num(x.parked_secs), t),
+					dur: fmtDuration(num(x.dwell_total_seconds) ?? num(x.parked_secs), t),
 				});
 			case "red_light":
 			case "wrong_way":
 				return str(x.plate_text) ? <PlateText plate={str(x.plate_text) as string} /> : t("aiEvent.highlight.noPlate");
 			case "zone_intrusion":
-				return num(x.dwell_seconds) != null
-					? t("aiEvent.summary.dwell", { dur: fmtDuration(num(x.dwell_seconds), t) })
+				return (num(x.dwell_total_seconds) ?? num(x.dwell_seconds)) != null
+					? t("aiEvent.summary.dwell", { dur: fmtDuration(num(x.dwell_total_seconds) ?? num(x.dwell_seconds), t) })
 					: null;
 			case "fire":
 			case "smoke":
@@ -184,9 +184,9 @@ export function EventHighlight({ event: e }: { event: AiEvent }) {
 	} else if (e.event_type === "crowd" && num(x.count) != null) {
 		label = t("aiEvent.highlight.crowd", { threshold: num(x.threshold) ?? "—" });
 		value = num(x.count);
-	} else if (e.event_type === "illegal_parking" && num(x.parked_secs) != null) {
+	} else if (e.event_type === "illegal_parking" && (num(x.dwell_total_seconds) ?? num(x.parked_secs)) != null) {
 		label = t("aiEvent.highlight.parked");
-		value = fmtDuration(num(x.parked_secs), t);
+		value = fmtDuration(num(x.dwell_total_seconds) ?? num(x.parked_secs), t);
 	} else if (e.event_type === "red_light" || e.event_type === "wrong_way") {
 		label = t("aiEvent.highlight.plate");
 		value = str(x.plate_text) ? (

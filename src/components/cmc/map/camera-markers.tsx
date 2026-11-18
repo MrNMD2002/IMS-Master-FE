@@ -5,7 +5,9 @@ import { Marker, Popup } from "react-leaflet";
 import type { Camera, CameraStationLink } from "#/camera";
 import cameraService from "@/api/services/cameraService";
 import { Icon } from "@/components/icon";
+import { P } from "@/constants/permission";
 import { LiveViewModal } from "@/pages/ai-station/components/live-view";
+import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
 import { CAMERA_COLOR, type CameraMapState, cameraIcon } from "./markers";
 
@@ -41,6 +43,7 @@ export function useMapCameras(tenantId: number | undefined, enabled: boolean) {
 export default function CameraMarkers({ cameras }: { cameras: Camera[] }) {
 	const { t } = useTranslation();
 	const [live, setLive] = useState<{ camera: Camera; link: CameraStationLink | null } | null>(null);
+	const canLive = useCan()(P.CAMERA_LIVE_VIEW);
 
 	return (
 		<>
@@ -88,7 +91,7 @@ export default function CameraMarkers({ cameras }: { cameras: Camera[] }) {
 												: t("aiCamera.liveNeedsStation")}
 									</span>
 								</p>
-								{(link || direct) && (
+								{canLive && (link || direct) && (
 									<Button size="sm" className="w-full" onClick={() => setLive({ camera: c, link: link ?? null })}>
 										<Icon icon="solar:play-circle-bold" size={16} />
 										{t("aiStation.live.open")}

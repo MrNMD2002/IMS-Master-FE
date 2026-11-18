@@ -10,8 +10,8 @@ import aiStationService from "@/api/services/aiStationService";
 import EmptyState from "@/components/cmc/empty-state";
 import { STICKY_PAGE_BAR } from "@/components/cmc/page-header";
 import { Icon } from "@/components/icon";
-import { isAiPluginShown } from "@/constants/ai-plugins";
-import { AI_STATION_MANAGE } from "@/constants/permission";
+import { isStationPluginShown } from "@/constants/ai-plugins";
+import { AI_STATION_MANAGE, P } from "@/constants/permission";
 import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
@@ -43,6 +43,8 @@ export default function AiStationDetailPage() {
 	const qc = useQueryClient();
 	const can = useCan();
 	const canManage = can(AI_STATION_MANAGE);
+	const canPair = can(P.AI_STATION_PAIR);
+	const canCamera = can(P.CAMERA_MANAGE);
 	const id = useParams().id as string;
 	const [params, setParams] = useSearchParams();
 	const tab: TabKey = TABS.includes(params.get("tab") as TabKey) ? (params.get("tab") as TabKey) : "overview";
@@ -187,7 +189,7 @@ export default function AiStationDetailPage() {
 	];
 
 	const s = st.status;
-	const shownPlugins = st.plugins.filter((p) => isAiPluginShown(p.name));
+	const shownPlugins = st.plugins.filter(isStationPluginShown);
 	const pluginsOn = shownPlugins.filter((p) => p.enabled && !p.missing_models?.length).length;
 	const tabLabel = (icon: string, text: string, count?: number) => (
 		<span className="inline-flex items-center gap-1.5">
@@ -231,39 +233,47 @@ export default function AiStationDetailPage() {
 								{t("aiStation.viewEvents")}
 							</Button>
 							{canManage && (
-								<>
-									<Button variant="outline" onClick={() => setEditing(true)}>
-										<Icon icon="solar:pen-linear" size={18} />
-										{t("aiStation.rename")}
+								<Button variant="outline" onClick={() => setEditing(true)}>
+									<Icon icon="solar:pen-linear" size={18} />
+									{t("aiStation.rename")}
+								</Button>
+							)}
+							{(canManage || canPair) && (
+								<Dropdown
+									trigger={["click"]}
+									menu={{
+										items: [
+											...(canPair
+												? [
+														{
+															key: "rotate",
+															icon: <Icon icon="solar:key-minimalistic-square-linear" size={16} />,
+															label: t("aiStation.rotate"),
+															disabled: rotate.isPending,
+															onClick: confirmRotate,
+														},
+													]
+												: []),
+											...(canPair && canManage ? [{ type: "divider" as const }] : []),
+											...(canManage
+												? [
+														{
+															key: "delete",
+															danger: true,
+															icon: <Icon icon="solar:trash-bin-trash-linear" size={16} />,
+															label: t("common.delText"),
+															disabled: remove.isPending,
+															onClick: confirmDelete,
+														},
+													]
+												: []),
+										],
+									}}
+								>
+									<Button variant="outline" size="icon" aria-label={t("aiStation.more")}>
+										<Icon icon="solar:menu-dots-bold" size={18} />
 									</Button>
-									<Dropdown
-										trigger={["click"]}
-										menu={{
-											items: [
-												{
-													key: "rotate",
-													icon: <Icon icon="solar:key-minimalistic-square-linear" size={16} />,
-													label: t("aiStation.rotate"),
-													disabled: rotate.isPending,
-													onClick: confirmRotate,
-												},
-												{ type: "divider" },
-												{
-													key: "delete",
-													danger: true,
-													icon: <Icon icon="solar:trash-bin-trash-linear" size={16} />,
-													label: t("common.delText"),
-													disabled: remove.isPending,
-													onClick: confirmDelete,
-												},
-											],
-										}}
-									>
-										<Button variant="outline" size="icon" aria-label={t("aiStation.more")}>
-											<Icon icon="solar:menu-dots-bold" size={18} />
-										</Button>
-									</Dropdown>
-								</>
+								</Dropdown>
 							)}
 						</div>
 					</div>
@@ -309,7 +319,7 @@ export default function AiStationDetailPage() {
 										onFilterChange={setCamFilter}
 										search={camSearch}
 										onSearchChange={setCamSearch}
-										canManage={canManage}
+										canManage={canCamera}
 									/>
 								</CardContent>
 							</Card>

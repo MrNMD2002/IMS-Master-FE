@@ -13,7 +13,7 @@ import PageHeader from "@/components/cmc/page-header";
 import StatCard from "@/components/cmc/stat-card";
 import { Icon } from "@/components/icon";
 import { isAiPluginShown } from "@/constants/ai-plugins";
-import { AI_STATION_MANAGE } from "@/constants/permission";
+import { P } from "@/constants/permission";
 import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
@@ -35,7 +35,8 @@ export default function AiCameraPage() {
 	const { t } = useTranslation();
 	const qc = useQueryClient();
 	const can = useCan();
-	const canManage = can(AI_STATION_MANAGE);
+	const canManage = can(P.CAMERA_MANAGE);
+	const canLive = can(P.CAMERA_LIVE_VIEW);
 
 	const [search, setSearch] = useState("");
 	const [keyword, setKeyword] = useState("");
@@ -168,13 +169,19 @@ export default function AiCameraPage() {
 					<div className="flex items-center justify-end gap-1">
 						<Tooltip
 							title={
-								link ? t("aiStation.live.open") : direct ? t("aiCamera.liveViaServer") : t("aiCamera.liveNeedsStation")
+								!canLive
+									? t("aiStation.command.noPermission")
+									: link
+										? t("aiStation.live.open")
+										: direct
+											? t("aiCamera.liveViaServer")
+											: t("aiCamera.liveNeedsStation")
 							}
 						>
 							<Button
 								variant="ghost"
 								size="icon"
-								disabled={!link && !direct}
+								disabled={!canLive || (!link && !direct)}
 								onClick={() => setLive({ camera: c, link: link ?? null })}
 								aria-label={t("aiStation.live.open")}
 							>

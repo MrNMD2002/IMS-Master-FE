@@ -49,13 +49,22 @@ const countCol = (t: TFunction): ColumnsType<AiEvent>[number] => ({
 	},
 });
 
+/** Thời lượng: tổng thật (`dwell_total_seconds`, trạm gửi khi đối tượng rời vùng) nếu đã có, chưa
+ * có thì số lúc báo (`key`) kèm dấu "đang ở" — đối tượng còn trong vùng. */
 const durationCol = (t: TFunction, key: string, title: string): ColumnsType<AiEvent>[number] => ({
 	title,
 	key,
 	align: "center",
 	render: (_, e) => {
-		const s = num(e.extra?.[key]);
-		return s != null ? <span className="whitespace-nowrap tabular-nums">{fmtDuration(s, t)}</span> : dash;
+		const total = num(e.extra?.dwell_total_seconds);
+		const s = total ?? num(e.extra?.[key]);
+		if (s == null) return dash;
+		return (
+			<span className="whitespace-nowrap tabular-nums">
+				{fmtDuration(s, t)}
+				{total == null && <span className="ml-1 text-xs text-text-secondary">({t("aiPlugin.col.ongoing")})</span>}
+			</span>
+		);
 	},
 });
 

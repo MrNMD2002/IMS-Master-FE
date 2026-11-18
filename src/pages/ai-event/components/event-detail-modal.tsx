@@ -51,7 +51,11 @@ export default function EventDetailModal({ event, onClose }: { event: AiEvent | 
 	/** Định dạng giá trị `extra` theo khoá: giây → thời lượng, điểm → %, biển số → tấm biển. */
 	const renderExtra = (k: string, v: unknown) => {
 		if (k === "vehicle_class" && typeof v === "string") return classLabel(t, v);
-		if ((k === "parked_secs" || k === "sustained_secs") && typeof v === "number") return fmtDuration(v, t);
+		if (
+			(k === "parked_secs" || k === "sustained_secs" || k === "dwell_seconds" || k === "dwell_total_seconds") &&
+			typeof v === "number"
+		)
+			return fmtDuration(v, t);
 		if (k === "max_score" && typeof v === "number") return `${Math.round(v * 100)}%`;
 		if (k === "plate_text" && typeof v === "string") return <PlateText plate={v} />;
 		if (k === "plate" && v && typeof v === "object") return <PlateCrop src={e?.crop_url} info={v as PlateInfo} />;

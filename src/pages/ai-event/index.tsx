@@ -8,6 +8,8 @@ import type { AiEventQuery } from "#/vigil";
 import aiStationService from "@/api/services/aiStationService";
 import PageHeader from "@/components/cmc/page-header";
 import { Icon } from "@/components/icon";
+import { PLUGIN_PERMISSION } from "@/constants/permission";
+import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
 import { SHOWN_EVENT_TYPES } from "../ai-plugin/plugins";
@@ -23,6 +25,7 @@ const defaultRange = (): [Dayjs, Dayjs] => [dayjs().subtract(13, "day").startOf(
 /** Sự kiện AI từ mọi trạm: bộ lọc, thống kê, danh sách có ảnh và khung nhận diện. */
 export default function AiEventPage() {
 	const { t } = useTranslation();
+	const can = useCan();
 	const [params, setParams] = useSearchParams();
 	// ?station= giữ trên đường dẫn để trang chi tiết trạm dẫn sang đúng bộ lọc.
 	const stationId = params.get("station") ?? undefined;
@@ -111,7 +114,10 @@ export default function AiEventPage() {
 							placeholder={t("aiEvent.filter.plugin")}
 							value={plugin}
 							onChange={setPlugin}
-							options={KNOWN_PLUGINS.map((p) => ({ value: p, label: pluginLabel(t, p) }))}
+							options={KNOWN_PLUGINS.filter((p) => can(PLUGIN_PERMISSION[p])).map((p) => ({
+								value: p,
+								label: pluginLabel(t, p),
+							}))}
 						/>
 						<Select
 							allowClear
