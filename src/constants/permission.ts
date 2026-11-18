@@ -24,6 +24,12 @@ export const P = {
 	DASHBOARD_ACCESS: "dashboard.access",
 	AI_STATION_READ: "ai_station.read",
 	AI_STATION_MANAGE: "ai_station.manage",
+	AI_STATION_PAIR: "ai_station.pair",
+	CAMERA_MANAGE: "camera.manage",
+	CAMERA_LIVE_VIEW: "camera.live_view",
+	PARKING_VIOLATION_READ: "parking_violation.read",
+	FIRE_SMOKE_READ: "fire_smoke.read",
+	ZONE_INTRUSION_READ: "zone_intrusion.read",
 	// Cờ hệ thống đánh dấu tài khoản App (cán bộ trên xe).
 	SCOPE_DEVICE: "scope.device",
 	PLATFORM_BYPASS: "platform.bypass",
@@ -47,6 +53,17 @@ export const INCIDENT_READ_GATE = [P.INCIDENT_READ, P.INCIDENT_READ_ALL];
  */
 export const FLEXIBLE_ROLE = "custom";
 
-/** Trạm AI (Vigil): xem trạm + sự kiện / tạo, sửa, xoá, cấp mã ghép nối. */
+/** Trạm AI (Vigil): xem trạm, camera, sự kiện / tạo, sửa, xoá trạm, cài đặt trạm. */
 export const AI_STATION_READ_GATE = [P.AI_STATION_READ, P.AI_STATION_MANAGE];
 export const AI_STATION_MANAGE = P.AI_STATION_MANAGE;
+
+/**
+ * Plugin AI → quyền xem sự kiện của nó. Khớp `PLUGIN_PERMISSION` của CMC API; ánh xạ bất quy tắc
+ * (`smoke_fire_detection` → `fire_smoke.read`). Cũng là danh sách plugin đang mở trên CMC Web —
+ * hiện lại plugin nào thì thêm quyền ở API và một dòng ở đây.
+ */
+export const PLUGIN_PERMISSION: Record<string, string> = {
+	parking_violation_detection: P.PARKING_VIOLATION_READ,
+	smoke_fire_detection: P.FIRE_SMOKE_READ,
+	zone_intrusion: P.ZONE_INTRUSION_READ,
+};

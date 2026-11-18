@@ -8,6 +8,8 @@ import type { AiCommand, AiCommandName, AiStation, StationCamera } from "#/vigil
 import aiStationService from "@/api/services/aiStationService";
 import EmptyState from "@/components/cmc/empty-state";
 import { Icon } from "@/components/icon";
+import { P } from "@/constants/permission";
+import { useCan } from "@/store/userStore";
 import { Button } from "@/ui/button";
 import { fmtDateTime } from "@/utils/format";
 import { useEventImage } from "../../ai-event/components/event-image";
@@ -82,8 +84,11 @@ export function CameraControls({
 	}, [want, camera.enabled]);
 	const checked = want ?? camera.enabled;
 	const busy = send.isPending ? send.variables?.cmd : undefined;
+	const canLive = useCan()(P.CAMERA_LIVE_VIEW);
 	const locked = !online || !canManage;
 	const why = !canManage ? t("aiStation.command.noPermission") : t("aiStation.command.offline");
+	const snapLocked = !online || !canLive;
+	const snapWhy = !canLive ? t("aiStation.command.noPermission") : t("aiStation.command.offline");
 
 	return (
 		<div className="flex items-center gap-1.5">
@@ -114,11 +119,11 @@ export function CameraControls({
 					/>
 				</Button>
 			</Tooltip>
-			<Tooltip title={locked ? why : t("aiStation.command.name.snapshot")}>
+			<Tooltip title={snapLocked ? snapWhy : t("aiStation.command.name.snapshot")}>
 				<Button
 					variant="ghost"
 					size="icon"
-					disabled={locked || !!busy}
+					disabled={snapLocked || !!busy}
 					onClick={() => send.mutate({ cmd: "snapshot", camera })}
 					aria-label={t("aiStation.command.name.snapshot")}
 				>
@@ -127,17 +132,19 @@ export function CameraControls({
 			</Tooltip>
 			<Tooltip
 				title={
-					!online
-						? t("aiStation.command.offline")
-						: !camera.enabled
-							? t("aiStation.live.cameraOff")
-							: t("aiStation.live.open")
+					!canLive
+						? t("aiStation.command.noPermission")
+						: !online
+							? t("aiStation.command.offline")
+							: !camera.enabled
+								? t("aiStation.live.cameraOff")
+								: t("aiStation.live.open")
 				}
 			>
 				<Button
 					variant="ghost"
 					size="icon"
-					disabled={!online || !camera.enabled}
+					disabled={!canLive || !online || !camera.enabled}
 					onClick={() => setLive(true)}
 					aria-label={t("aiStation.live.open")}
 				>
