@@ -22,6 +22,14 @@ import { fmtNumber } from "@/utils/format";
 
 const { RangePicker } = DatePicker;
 const SPEEDS = [0.5, 1, 4, 16, 64];
+/** Khớp `MAX_HISTORY_DAYS` của API `/gps/history`. */
+const MAX_DAYS = 7;
+
+/** Khoảng chọn theo ngày → trọn ngày: 00:00 ngày đầu tới 23:59:59 ngày cuối (hôm nay thì tới bây giờ). */
+function wholeDays(a: Dayjs, b: Dayjs): [Dayjs, Dayjs] {
+	const end = b.endOf("day");
+	return [a.startOf("day"), end.isAfter(dayjs()) ? dayjs() : end];
+}
 
 function haversineKm(a: GpsPoint, b: GpsPoint) {
 	const R = 6371;
@@ -101,10 +109,14 @@ export default function ActivityPage() {
 		for (let i = 1; i < points.length; i++) dist += haversineKm(points[i - 1], points[i]);
 		for (const p of points) max = Math.max(max, p.speed ?? 0);
 		const dur = points.length > 1 ? points[points.length - 1].ts - points[0].ts : 0;
-		return { dist, max, dur };
-	}, [points]);
+		// Máy chủ tính quãng đường / tốc độ trên điểm GỐC (điểm trả về đã giản lược để vẽ) — ưu tiên.
+		const s = history.data?.summary;
+		return s ? { dist: s.distance_km, max: s.max_speed ?? max, dur } : { dist, max, dur };
+	}, [points, history.data]);
 
-	const tooLong = range[1].diff(range[0], "hour", true) > 24;
+	const tooLong = range[1].diff(range[0], "day", true) > MAX_DAYS;
+	// Khoảng nhiều ngày → mốc thời gian kèm ngày.
+	const multiDay = !!query && dayjs(query.end).diff(dayjs(query.start), "hour", true) > 24;
 	// Dữ liệu bắt đầu muộn hơn khoảng đã chọn (xe mới chạy / mới bật) → nói rõ, tránh tưởng 6h, 12h, 24h lọc sai.
 	const dataStartsLate =
 		!!query && points.length > 0 && points[0].ts - dayjs(query.start).unix() > 10 * 60
@@ -112,7 +124,12 @@ export default function ActivityPage() {
 			: null;
 
 	const run = (id = deviceId, r = range) => {
-		if (!id || r[1].diff(r[0], "hour", true) > 24) return;
+		if (!id) return;
+		if (r[1].diff(r[0], "day", true) > MAX_DAYS || !r[1].isAfter(r[0])) {
+			// Khoảng không hợp lệ: bỏ kết quả cũ, tránh hiện lộ trình / "không có dữ liệu" của lần trước.
+			setQuery(null);
+			return;
+		}
 		params.set("device", String(id));
 		setParams(params, { replace: true });
 		setQuery({ device_id: id, start: r[0].toISOString(), end: r[1].toISOString() });
@@ -125,6 +142,10 @@ export default function ActivityPage() {
 	}, []);
 
 	const current = points[index];
+	const durLabel =
+		stats.dur >= 86400
+			? `${Math.floor(stats.dur / 86400)}d ${Math.floor((stats.dur % 86400) / 3600)}h`
+			: `${Math.floor(stats.dur / 3600)}h ${Math.floor((stats.dur % 3600) / 60)}m`;
 	const path = points.map((p) => [p.lat, p.lng] as [number, number]);
 	const played = path.slice(0, index + 1);
 
@@ -147,7 +168,7 @@ export default function ActivityPage() {
 			<PageHeader
 				icon="solar:route-bold-duotone"
 				title={t("sys.nav.activity")}
-				description={t("activity.description")}
+				description={t("activity.description", { days: MAX_DAYS })}
 				toolbar={
 					<>
 						<Select
@@ -165,14 +186,18 @@ export default function ActivityPage() {
 							options={deviceOptions}
 							loading={devices.isFetching}
 						/>
+						{/* Chọn theo NGÀY (trọn ngày) — chọn giờ lẻ dùng các nút 1h / 6h / 12h / 24h. Bộ chọn có
+						    giờ của antd giữ giờ:phút cũ khi bấm ngày, nên "18 → 19/11" thành 16:33 → 22:33. */}
 						<RangePicker
-							showTime={{ format: "HH:mm" }}
-							format="DD/MM/YYYY HH:mm"
+							format="DD/MM/YYYY"
 							value={range}
+							disabledDate={(d) => d.isAfter(dayjs(), "day")}
 							onChange={(v) => {
 								if (v?.[0] && v[1]) {
-									setRange([v[0], v[1]]);
+									const r = wholeDays(v[0], v[1]);
+									setRange(r);
 									setQuickHours(null);
+									run(deviceId, r);
 								}
 							}}
 							status={tooLong ? "error" : undefined}
@@ -189,7 +214,15 @@ export default function ActivityPage() {
 							<Icon icon={history.isFetching ? "svg-spinners:180-ring" : "solar:play-circle-bold"} size={18} />
 							{t("activity.view")}
 						</Button>
-						{tooLong && <p className="w-full text-xs text-error">{t("activity.max24h")}</p>}
+						{tooLong && <p className="w-full text-xs text-error">{t("activity.maxDays", { days: MAX_DAYS })}</p>}
+						{!tooLong && query && (
+							<p className="w-full text-xs text-text-secondary">
+								{t("activity.showing", {
+									from: dayjs(query.start).format("HH:mm DD/MM/YYYY"),
+									to: dayjs(query.end).format("HH:mm DD/MM/YYYY"),
+								})}
+							</p>
+						)}
 						{!tooLong && dataStartsLate && (
 							<p className="w-full text-xs text-text-secondary">{t("activity.dataFrom", { time: dataStartsLate })}</p>
 						)}
@@ -201,7 +234,7 @@ export default function ActivityPage() {
 				<div className="mb-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
 					<StatCard
 						title={t("activity.points")}
-						value={fmtNumber(points.length)}
+						value={fmtNumber(history.data?.summary?.raw_count ?? points.length)}
 						icon="solar:map-point-linear"
 						tone="info"
 					/>
@@ -217,12 +250,7 @@ export default function ActivityPage() {
 						icon="solar:speedometer-max-linear"
 						tone="warning"
 					/>
-					<StatCard
-						title={t("activity.duration")}
-						value={`${Math.floor(stats.dur / 3600)}h ${Math.floor((stats.dur % 3600) / 60)}m`}
-						icon="solar:clock-circle-linear"
-						tone="success"
-					/>
+					<StatCard title={t("activity.duration")} value={durLabel} icon="solar:clock-circle-linear" tone="success" />
 				</div>
 			)}
 
@@ -286,7 +314,10 @@ export default function ActivityPage() {
 								setPlaying(false);
 								setIndex(v);
 							}}
-							tooltip={{ formatter: (v) => (v !== undefined ? dayjs.unix(points[v].ts).format("HH:mm:ss") : "") }}
+							tooltip={{
+								formatter: (v) =>
+									v !== undefined ? dayjs.unix(points[v].ts).format(multiDay ? "DD/MM HH:mm:ss" : "HH:mm:ss") : "",
+							}}
 						/>
 						<Segmented
 							size="small"

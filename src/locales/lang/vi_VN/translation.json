@@ -417,12 +417,11 @@
 		"routingDown": "Máy chủ dẫn đường chưa sẵn sàng — đang xếp theo khoảng cách đường chim bay."
 	},
 	"activity": {
-		"description": "Xem lại hành trình của phương tiện (tối đa 24 giờ mỗi lần)",
+		"description": "Xem lại hành trình của phương tiện (tối đa {{days}} ngày mỗi lần)",
 		"vehicle": "Phương tiện",
 		"pickVehicle": "Chọn phương tiện",
 		"timeRange": "Khoảng thời gian",
 		"view": "Xem lộ trình",
-		"max24h": "Khoảng thời gian tối đa là 24 giờ",
 		"points": "Số điểm GPS",
 		"distance": "Quãng đường",
 		"maxSpeed": "Tốc độ cao nhất",
@@ -430,7 +429,9 @@
 		"start": "Điểm đầu",
 		"end": "Điểm cuối",
 		"dataFrom": "Chỉ có dữ liệu GPS từ {{time}} — trước đó xe chưa gửi vị trí.",
-		"noData": "Không có dữ liệu GPS trong khoảng thời gian này"
+		"noData": "Không có dữ liệu GPS trong khoảng thời gian này",
+		"maxDays": "Khoảng thời gian tối đa là {{days}} ngày",
+		"showing": "Đang xem từ {{from}} đến {{to}}"
 	},
 	"device": {
 		"description": "Danh sách xe được theo dõi và cán bộ phụ trách",
