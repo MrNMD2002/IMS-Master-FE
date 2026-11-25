@@ -5,7 +5,7 @@ import EmptyState from "@/components/cmc/empty-state";
 import { Icon } from "@/components/icon";
 import { isAiPluginShown } from "@/constants/ai-plugins";
 import { cn } from "@/utils";
-import { pluginLabel } from "../../ai-event/components/event-meta";
+import { pluginLabel, pluginTitle } from "../../ai-event/components/event-meta";
 import { CameraControls } from "./station-commands";
 import { type CameraFilter, cameraBucket } from "./station-overview";
 import { CameraStateBadge } from "./station-status";
@@ -38,7 +38,10 @@ export default function StationCameras({
 			(filter === "all" || cameraBucket(c.state) === filter) &&
 			(!kw || c.name.toLowerCase().includes(kw) || String(c.id) === kw),
 	);
-	const pluginName = (n: string) => st.plugins.find((p) => p.name === n)?.display_name ?? pluginLabel(t, n);
+	const pluginName = (n: string) => {
+		const p = st.plugins.find((x) => x.name === n);
+		return p ? pluginTitle(t, p) : pluginLabel(t, n);
+	};
 
 	if (!st.cameras.length) return <EmptyState text={t("aiStation.noCameras")} />;
 
