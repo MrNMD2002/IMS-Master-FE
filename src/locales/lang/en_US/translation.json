@@ -417,12 +417,11 @@
 		"routingDown": "Routing server unavailable — sorted by straight-line distance."
 	},
 	"activity": {
-		"description": "Replay a vehicle's route (up to 24 hours at a time)",
+		"description": "Replay a vehicle's journey (up to {{days}} days at a time)",
 		"vehicle": "Vehicle",
 		"pickVehicle": "Choose a vehicle",
 		"timeRange": "Time range",
 		"view": "Show route",
-		"max24h": "The time range can be at most 24 hours",
 		"points": "GPS points",
 		"distance": "Distance",
 		"maxSpeed": "Top speed",
@@ -430,7 +429,9 @@
 		"start": "Start",
 		"end": "End",
 		"dataFrom": "GPS data only starts at {{time}} — the vehicle sent no positions before that.",
-		"noData": "No GPS data in this time range"
+		"noData": "No GPS data in this time range",
+		"maxDays": "The time range is limited to {{days}} days",
+		"showing": "Showing {{from}} to {{to}}"
 	},
 	"device": {
 		"description": "Tracked vehicles and the officers assigned to them",

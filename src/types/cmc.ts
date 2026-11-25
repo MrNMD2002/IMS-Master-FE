@@ -232,6 +232,14 @@ export interface GpsHistory {
 	end: string;
 	count: number;
 	points: GpsPoint[];
+	/** Số liệu tính trên toàn bộ điểm gốc (máy chủ cũ không gửi). */
+	summary?: {
+		raw_count: number;
+		distance_km: number;
+		max_speed: number | null;
+		first_ts: number | null;
+		last_ts: number | null;
+	} | null;
 }
 
 // ── Sự vụ ───────────────────────────────────────────────────────────────────
