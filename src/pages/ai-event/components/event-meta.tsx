@@ -24,6 +24,15 @@ export const KNOWN_PLUGINS = [
 ].filter(isAiPluginShown);
 
 export const pluginLabel = (t: TFunction, name: string) => t(`aiEvent.plugin.${name}`, { defaultValue: name });
+/**
+ * Tên plugin do trạm báo lên. Vigil bản cũ gửi `display_name` trùng tên kỹ thuật (vd. "zone_intrusion")
+ * hoặc bỏ trống → dùng tên tiếng Việt / Anh của CMC.
+ */
+export const pluginTitle = (t: TFunction, p: { name: string; display_name?: string | null }) =>
+	p.display_name && p.display_name !== p.name ? p.display_name : pluginLabel(t, p.name);
+/** Mô tả plugin: trạm không gửi thì lấy mô tả của CMC (nếu có). */
+export const pluginDescription = (t: TFunction, p: { name: string; description?: string | null }) =>
+	p.description || t(`aiPlugin.desc.${p.name}`, { defaultValue: "" });
 export const eventTypeLabel = (t: TFunction, type: string) => t(`aiEvent.type.${type}`, { defaultValue: type });
 /** Lớp đối tượng ("Fire" / "car" …) — không phân biệt hoa thường. */
 export const classLabel = (t: TFunction, cls: string) => t(`aiEvent.cls.${cls.toLowerCase()}`, { defaultValue: cls });

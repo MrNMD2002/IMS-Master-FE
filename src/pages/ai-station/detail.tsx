@@ -17,7 +17,7 @@ import { Button } from "@/ui/button";
 import { Card, CardContent } from "@/ui/card";
 import { cn } from "@/utils";
 import { fmtDateTime } from "@/utils/format";
-import { eventMeta } from "../ai-event/components/event-meta";
+import { eventMeta, pluginDescription, pluginTitle } from "../ai-event/components/event-meta";
 import EventTable from "../ai-event/components/event-table";
 import PluginSwitch from "./components/plugin-switch";
 import PulseStrip from "./components/pulse-strip";
@@ -122,16 +122,17 @@ export default function AiStationDetailPage() {
 			dataIndex: "display_name",
 			render: (_, p) => {
 				const m = eventMeta(p.event_types[0] ?? "");
+				const desc = pluginDescription(t, p);
 				return (
 					<div className="flex min-w-[260px] max-w-[460px] items-start gap-3">
 						<span className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl", m.tone)}>
 							<Icon icon={m.icon} size={22} />
 						</span>
 						<div className="min-w-0">
-							<p className="font-semibold leading-snug">{p.display_name}</p>
-							{p.description && (
-								<p className="mt-0.5 line-clamp-2 text-xs text-text-secondary" title={p.description}>
-									{p.description}
+							<p className="font-semibold leading-snug">{pluginTitle(t, p)}</p>
+							{desc && (
+								<p className="mt-0.5 line-clamp-2 text-xs text-text-secondary" title={desc}>
+									{desc}
 								</p>
 							)}
 						</div>

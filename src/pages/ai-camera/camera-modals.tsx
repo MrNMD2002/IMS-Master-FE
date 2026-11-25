@@ -15,6 +15,7 @@ import { isAiPluginShown } from "@/constants/ai-plugins";
 import { Button } from "@/ui/button";
 import { cn } from "@/utils";
 import { reverseGeocode } from "@/utils/geocode";
+import { pluginTitle } from "../ai-event/components/event-meta";
 import { stationState } from "../ai-station/components/station-status";
 
 /** Màu chấm trạng thái camera trên trạm. */
@@ -290,7 +291,7 @@ export function StationsModal({
 			value: p.name,
 			label: (
 				<span>
-					{p.display_name || p.name}
+					{pluginTitle(t, p)}
 					{!p.enabled && (
 						<span className="ml-1 text-xs text-text-disabled">({t("aiStation.plugin.offOnStation")})</span>
 					)}

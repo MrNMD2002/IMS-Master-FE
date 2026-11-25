@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import type { AiStation, PluginInfo } from "#/vigil";
 import aiStationService from "@/api/services/aiStationService";
+import { pluginTitle } from "../../ai-event/components/event-meta";
 
 /**
  * Công tắc chung của một plugin trên trạm — đồng bộ hai chiều với nút Bật/Tắt ở trang Plugin của
@@ -29,7 +30,7 @@ export default function PluginSwitch({
 		mutationFn: (enabled: boolean) =>
 			aiStationService.sendCommand(station.id, { cmd: "plugin_settings", args: { name: plugin.name, enabled } }),
 		onSuccess: (c, enabled) => {
-			const name = plugin.display_name;
+			const name = pluginTitle(t, plugin);
 			if (c.status === "ok") {
 				toast.success(t(enabled ? "aiStation.plugin.turnedOn" : "aiStation.plugin.turnedOff", { name }));
 			} else if (c.status === "timeout") {
